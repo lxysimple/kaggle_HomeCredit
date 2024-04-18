@@ -49,6 +49,15 @@ seed_everything(seed=42)
 # ======================================== 导入配置 =====================================
 
 
+def to_pandas(df_data, cat_cols=None):
+    
+    if not isinstance(df_data, pd.DataFrame):
+        df_data = df_data.to_pandas()
+    
+    if cat_cols is None:
+        cat_cols = list(df_data.select_dtypes("object").columns)
+    df_data[cat_cols] = df_data[cat_cols].astype("category")
+    return df_data, cat_cols
 
 df_train = pd.read_csv('/home/xyli/kaggle/train.csv')
 
