@@ -1,5 +1,5 @@
 
-# ============================ 导入配置 ============================
+# ======================================== 导入配置 =====================================
 import sys
 from pathlib import Path
 import subprocess
@@ -45,7 +45,7 @@ def seed_everything(seed=42):
     torch.backends.cudnn.deterministic = True
 seed_everything(seed=42)
 
-# ============================ 导入配置 ============================
+# ======================================== 导入配置 =====================================
 
 
 
@@ -80,7 +80,7 @@ df_test[cat_cols] = df_test[cat_cols].astype(str)
 
 # df_train = copy.deepcopy(df_train_copy)
 
-# ============================ 数据清理 ============================
+# ======================================== 清理数据 =====================================
 """
 对cat_cols列外的所有列进行数据清理，即把nan和inf换成该列的均值
 """
@@ -118,9 +118,9 @@ label_encoders = [LabelEncoder() for i in range(df_train.shape[1])]
 for i in range(len(cat_cols)):
     df_encoded = label_encoders[i].fit_transform(df_train[cat_cols[i]])
     df_train[cat_cols[i]] = df_encoded
-# ============================ 数据清理 ============================
+# ======================================== 清理数据 =====================================
     
-# ============================ print ============================
+# ======================================== print =====================================
 """ 查看分类器的映射字典 """
 
 print(label_encoders[0].classes_)
@@ -140,12 +140,152 @@ print('np.min(df_train[non_cat_cols]): ', np.min(df_train[non_cat_cols]))
 
 print('np.max(df_train): ', np.max(df_train))
 print('np.min(df_train): ', np.min(df_train))
-# ============================ print ============================
+# ======================================== print =====================================
 
 
+# ======================================== 训练3树模型 =====================================
+# %%time
 
+fitted_models_cat = []
+fitted_models_lgb = []
+fitted_models_xgb = []
+fitted_models_rf = []
 
+cv_scores_cat = []
+cv_scores_lgb = []
+cv_scores_xgb = []
+cv_scores_rf = []
 
+fold = 1
+for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环5次
+
+    # X_train(≈40000,386), y_train(≈40000)
+    X_train, y_train = df_train.iloc[idx_train], y.iloc[idx_train] 
+    X_valid, y_valid = df_train.iloc[idx_valid], y.iloc[idx_valid]    
+        
+    # ======================================
+# #     train_pool = Pool(X_train, y_train,cat_features=cat_cols)
+# #     val_pool = Pool(X_valid, y_valid,cat_features=cat_cols)
+    
+#     train_pool = Pool(X_train, y_train)
+#     val_pool = Pool(X_valid, y_valid)
+
+#     clf = CatBoostClassifier(
+#         eval_metric='AUC',
+#         task_type='GPU',
+#         learning_rate=0.03,
+#         iterations=n_est, # n_est
+# #         early_stopping_rounds = 500,
+#     )
+#     random_seed=3107
+#     clf.fit(
+#         train_pool, 
+#         eval_set=val_pool,
+#         verbose=300,
+# #         # 保证调试的时候不需要重新训练
+# #         save_snapshot = True, 
+# #         snapshot_file = '/kaggle/working/catboost.cbsnapshot',
+# #         snapshot_interval = 10
+#     )
+# #     clf.save_model(f'/kaggle/working/catboost_fold{fold}.cbm')
+#     fitted_models_cat.append(clf)
+#     y_pred_valid = clf.predict_proba(X_valid)[:,1]
+#     auc_score = roc_auc_score(y_valid, y_pred_valid)
+#     cv_scores_cat.append(auc_score)
+    # ==================================
+    
+    # ==================================
+    # 一些列是很多单词，将这些单词变为唯一标号，该列就能进行多类别分类了
+#     X_train[cat_cols] = X_train[cat_cols].astype("category") 
+#     X_valid[cat_cols] = X_valid[cat_cols].astype("category")
+    
+#     bst = XGBClassifier(
+#         n_estimators=2000, # 2000颗树
+#         max_depth=10,  # 10
+#         learning_rate=0.05, 
+#         objective='binary:logistic', # 最小化的目标函数，利用它优化模型
+#         metric= "auc", # 利用它选best model
+#         device= 'gpu',
+#         early_stopping_rounds=100, 
+#         enable_categorical=True, # 使用分类转换算法
+#         tree_method="hist", # 使用直方图算法加速
+#         reg_alpha = 0.1, # L1正则化0.1
+#         reg_lambda = 10, # L2正则化10
+#         max_leaves = 64, # 64
+#     )
+#     bst.fit(
+#         X_train, 
+#         y_train, 
+#         eval_set=[(X_valid, y_valid)],
+#         verbose=300,
+#     )
+#     fitted_models_xgb.append(bst)
+#     y_pred_valid = bst.predict_proba(X_valid)[:,1]
+#     auc_score = roc_auc_score(y_valid, y_pred_valid)
+#     cv_scores_xgb.append(auc_score)
+#     print(f'fold:{fold},auc_score:{auc_score}')
+    # ===============================
+    
+    # ===============================
+#     X_train[cat_cols] = X_train[cat_cols].astype("category")
+#     X_valid[cat_cols] = X_valid[cat_cols].astype("category")
+    params = {
+        "boosting_type": "gbdt",
+        "objective": "binary",
+        "metric": "auc",
+        "max_depth": 10,  
+        "learning_rate": 0.05,
+        "n_estimators": 2000,  
+        "colsample_bytree": 0.8,
+        "colsample_bynode": 0.8,
+        "verbose": -1,
+        "random_state": 42,
+        "reg_alpha": 0.1,
+        "reg_lambda": 10,
+        "extra_trees":True,
+        'num_leaves':64,
+        "device": 'gpu', # gpu
+        'gpu_use_dp' : True # 转化float为64精度
+    }
+    model = lgb.LGBMClassifier(**params)
+#     model = lgb.Booster(model_file=f"/kaggle/input/credit-models/lgbm_fold{fold}.txt")
+    model.fit(
+        X_train, y_train,
+        eval_set = [(X_valid, y_valid)],
+        callbacks = [lgb.log_evaluation(200), lgb.early_stopping(100)],
+#         init_model = f"/kaggle/input/credit-models/lgbm_fold{fold}.txt",
+    )
+#     model.booster_.save_model(f'/kaggle/working/lgbm_fold{fold}.txt')
+    # 二次优化
+#     params['learning_rate'] = 0.01
+#     model2 = lgb.LGBMClassifier(**params)
+#     model2.fit(
+#         X_train, y_train,
+#         eval_set = [(X_valid, y_valid)],
+#         callbacks = [lgb.log_evaluation(200), lgb.early_stopping(500)],
+#         init_model = model,
+#     )
+    fitted_models_lgb.append(model)
+    y_pred_valid = model.predict_proba(X_valid)[:,1]
+    auc_score = roc_auc_score(y_valid, y_pred_valid)
+    cv_scores_lgb.append(auc_score)
+    print()
+    print("分隔符")
+    print()
+    # ===========================
+    
+    fold = fold+1
+
+print("CV AUC scores: ", cv_scores_cat)
+print("Mean CV AUC score: ", np.mean(cv_scores_cat))
+
+print("CV AUC scores: ", cv_scores_lgb)
+print("Mean CV AUC score: ", np.mean(cv_scores_lgb))
+
+print("CV AUC scores: ", cv_scores_xgb)
+print("Mean CV AUC score: ", np.mean(cv_scores_xgb))
+
+# ======================================== 训练3树模型 =====================================
 
 
 
