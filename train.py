@@ -50,17 +50,17 @@ seed_everything(seed=42)
 
 
 
-df_train = pd.read_csv('/kaggle/input/home-credit-lgb-cat-ensemble/train.csv')
+df_train = pd.read_csv('/home/xyli/kaggle/train.csv')
 
 _, cat_cols = to_pandas(df_train)
 
-sample = pd.read_csv("/kaggle/input/home-credit-credit-risk-model-stability/sample_submission.csv")
+# sample = pd.read_csv("/kaggle/input/home-credit-credit-risk-model-stability/sample_submission.csv")
 device='gpu'
 #n_samples=200000
 n_est=6000
-DRY_RUN = True if sample.shape[0] == 10 else False   
-if DRY_RUN:
-# if False:
+# DRY_RUN = True if sample.shape[0] == 10 else False   
+# if DRY_RUN:
+if True:
     device='cpu'
     df_train = df_train.iloc[:50000]
     #n_samples=10000
