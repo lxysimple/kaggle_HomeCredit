@@ -285,7 +285,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
 # #     model.booster_.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/lgbm_fold{fold}.txt')
     
     # 二次优化
-    params['learning_rate'] = 0.01
+    params['learning_rate'] = 0.005
     model2 = lgb.LGBMClassifier(**params)
     model2.fit(
         X_train, y_train,
