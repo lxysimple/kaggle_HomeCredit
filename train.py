@@ -153,6 +153,10 @@ print('np.max(df_train): ', np.max(df_train))
 print('np.min(df_train): ', np.min(df_train))
 # ======================================== print =====================================
 
+# ======================================== nn模型 =====================================
+
+# ======================================== nn模型 =====================================
+
 
 # ======================================== 训练3树模型 =====================================
 # %%time
@@ -175,16 +179,16 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     X_valid, y_valid = df_train.iloc[idx_valid], y.iloc[idx_valid]    
         
     # ======================================
-#     train_pool = Pool(X_train, y_train,cat_features=cat_cols)
-#     val_pool = Pool(X_valid, y_valid,cat_features=cat_cols)
+    # train_pool = Pool(X_train, y_train,cat_features=cat_cols)
+    # val_pool = Pool(X_valid, y_valid,cat_features=cat_cols)
     
-#     # train_pool = Pool(X_train, y_train)
-#     # val_pool = Pool(X_valid, y_valid)
+#     train_pool = Pool(X_train, y_train)
+#     val_pool = Pool(X_valid, y_valid)
 
 #     clf = CatBoostClassifier(
 #         eval_metric='AUC',
 #         task_type='GPU',
-#         learning_rate=0.05, # 0.03
+#         learning_rate=0.03, # 0.03
 #         iterations=n_est, # n_est
 # #         early_stopping_rounds = 500,
 #     )
@@ -253,36 +257,36 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     # ===============================
     # X_train[cat_cols] = X_train[cat_cols].astype("category")
     # X_valid[cat_cols] = X_valid[cat_cols].astype("category")
-    params = {
-        "boosting_type": "gbdt",
-        "objective": "binary",
-        "metric": "auc",
-        "max_depth": 10,  
-        "learning_rate": 0.05,
-        "n_estimators": 2000,  
-        # 则每棵树在构建时会随机选择 80% 的特征进行训练，剩下的 20% 特征将不参与训练，从而增加模型的泛化能力和稳定性
-        "colsample_bytree": 0.8, 
-        "colsample_bynode": 0.8, # 控制每个节点的特征采样比例
-        "verbose": -1,
-        "random_state": 42,
-        "reg_alpha": 0.1,
-        "reg_lambda": 10,
-        "extra_trees":True,
-        'num_leaves':64,
-        "device": 'gpu', # gpu
-        'gpu_use_dp' : True # 转化float为64精度
-    }
+    # params = {
+    #     "boosting_type": "gbdt",
+    #     "objective": "binary",
+    #     "metric": "auc",
+    #     "max_depth": 10,  
+    #     "learning_rate": 0.05,
+    #     "n_estimators": 2000,  
+    #     # 则每棵树在构建时会随机选择 80% 的特征进行训练，剩下的 20% 特征将不参与训练，从而增加模型的泛化能力和稳定性
+    #     "colsample_bytree": 0.8, 
+    #     "colsample_bynode": 0.8, # 控制每个节点的特征采样比例
+    #     "verbose": -1,
+    #     "random_state": 42,
+    #     "reg_alpha": 0.1,
+    #     "reg_lambda": 10,
+    #     "extra_trees":True,
+    #     'num_leaves':64,
+    #     "device": 'gpu', # gpu
+    #     'gpu_use_dp' : True # 转化float为64精度
+    # }
 
-    # 一次训练
-    model = lgb.LGBMClassifier(**params)
-    model.fit(
-        X_train, y_train,
-        eval_set = [(X_valid, y_valid)],
-        callbacks = [lgb.log_evaluation(200), lgb.early_stopping(100)],
-        # init_model = f"/home/xyli/kaggle/kaggle_HomeCredit/dataset/lgbm_fold{fold}.txt",
-    )
-    model2 = model
-    model.booster_.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/lgbm_fold{fold}.txt')
+    # # 一次训练
+    # model = lgb.LGBMClassifier(**params)
+    # model.fit(
+    #     X_train, y_train,
+    #     eval_set = [(X_valid, y_valid)],
+    #     callbacks = [lgb.log_evaluation(200), lgb.early_stopping(100)],
+    #     # init_model = f"/home/xyli/kaggle/kaggle_HomeCredit/dataset/lgbm_fold{fold}.txt",
+    # )
+    # model2 = model
+    # model.booster_.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/lgbm_fold{fold}.txt')
     
     # # 二次优化
     # params['learning_rate'] = 0.01
