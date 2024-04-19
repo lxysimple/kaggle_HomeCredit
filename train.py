@@ -363,28 +363,28 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
 
     # print(valid_set[0])
 
-    for _fold in range(1):
-        print(f'Fold{_fold}:')
-        torch.cuda.empty_cache()
-        device = torch.device("cuda")
+    
+    print(f'Fold{fold}:')
+    torch.cuda.empty_cache()
+    device = torch.device("cuda")
 
-        model = Model()
-        model = model.cuda()
-        model = DataParallel(model)
+    model = Model()
+    model = model.cuda()
+    model = DataParallel(model)
 
-        optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
-        scheduler = None
-    #     loss_fn = nn.BCEWithLogitsLoss()
-        loss_fn = SmoothBCEwLogits(smoothing=0.005) # 0.005
+    optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
+    scheduler = None
+#     loss_fn = nn.BCEWithLogitsLoss()
+    loss_fn = SmoothBCEwLogits(smoothing=0.005) # 0.005
 
-        for epoch in range(20):
-                start_time = time.time()
-                train_loss = train_fn(model, optimizer, scheduler, loss_fn, train_loader, device)
-                valid_pred = inference_fn(model, valid_loader, device)
-                valid_auc = roc_auc_score(valid_y_raw, valid_pred)
-                print(f"FOLD{_fold} EPOCH:{epoch:3} train_loss={train_loss:.5f} "
-                        f"roc_auc_score={valid_auc:.5f} "
-                        f"time: {(time.time() - start_time) / 60:.2f}min")
+    for epoch in range(20):
+            start_time = time.time()
+            train_loss = train_fn(model, optimizer, scheduler, loss_fn, train_loader, device)
+            valid_pred = inference_fn(model, valid_loader, device)
+            valid_auc = roc_auc_score(y_valid, valid_pred)
+            print(f"FOLD{fold} EPOCH:{epoch:3} train_loss={train_loss:.5f} "
+                    f"roc_auc_score={valid_auc:.5f} "
+                    f"time: {(time.time() - start_time) / 60:.2f}min")
 
 
 
