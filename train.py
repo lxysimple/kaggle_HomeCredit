@@ -91,65 +91,65 @@ df_train[cat_cols] = df_train[cat_cols].astype(str)
 # df_train = copy.deepcopy(df_train_copy)
 
 # ======================================== 清理数据 =====================================
-"""
-对cat_cols列外的所有列进行数据清理，即把nan和inf换成该列的均值
-"""
+# """
+# 对cat_cols列外的所有列进行数据清理，即把nan和inf换成该列的均值
+# """
 
-# 找到除cat_cols列外的所有列
-non_cat_cols = df_train.columns.difference(cat_cols) 
-print('df_train.shape: ', df_train.shape)
-print('df_train[cat_cols].shape: ', df_train[cat_cols].shape)
-print('df_train[non_cat_cols].shape: ', df_train[non_cat_cols].shape)
-# 求1列均值时，遇到nan/inf会自动忽略
-mean_values = df_train[non_cat_cols].mean()# 找到所有列的均值
-# 如果该列都是nan/inf，均值为inf，则令均值为0
-mean_values = mean_values.replace([np.inf, -np.inf], 0)
+# # 找到除cat_cols列外的所有列
+# non_cat_cols = df_train.columns.difference(cat_cols) 
+# print('df_train.shape: ', df_train.shape)
+# print('df_train[cat_cols].shape: ', df_train[cat_cols].shape)
+# print('df_train[non_cat_cols].shape: ', df_train[non_cat_cols].shape)
+# # 求1列均值时，遇到nan/inf会自动忽略
+# mean_values = df_train[non_cat_cols].mean()# 找到所有列的均值
+# # 如果该列都是nan/inf，均值为inf，则令均值为0
+# mean_values = mean_values.replace([np.inf, -np.inf], 0)
 
-for column in non_cat_cols:   
-    # 将nan换成该列的均值，或者0
-    df_train[column] = df_train[column].fillna(mean_values[column])
-    # 将+-无穷值替换为该列均值
-    df_train[column].replace([np.inf,-np.inf], mean_values[column], inplace=True)
+# for column in non_cat_cols:   
+#     # 将nan换成该列的均值，或者0
+#     df_train[column] = df_train[column].fillna(mean_values[column])
+#     # 将+-无穷值替换为该列均值
+#     df_train[column].replace([np.inf,-np.inf], mean_values[column], inplace=True)
     
-# print('df_train: ',df_train[non_cat_cols])
+# # print('df_train: ',df_train[non_cat_cols])
     
 
 
-"""
-对cat_cols列进行编码，保存113个编码器
-"""
-print('len(cat_cols): ', len(cat_cols))
-# 定义113个编码器
-label_encoders = [LabelEncoder() for i in range(df_train.shape[1])]
+# """
+# 对cat_cols列进行编码，保存113个编码器
+# """
+# print('len(cat_cols): ', len(cat_cols))
+# # 定义113个编码器
+# label_encoders = [LabelEncoder() for i in range(df_train.shape[1])]
 
-# print(df_train[cat_cols])
+# # print(df_train[cat_cols])
 
-# 对每列进行一个编码
-for i in range(len(cat_cols)):
-    df_encoded = label_encoders[i].fit_transform(df_train[cat_cols[i]])
-    df_train[cat_cols[i]] = df_encoded
+# # 对每列进行一个编码
+# for i in range(len(cat_cols)):
+#     df_encoded = label_encoders[i].fit_transform(df_train[cat_cols[i]])
+#     df_train[cat_cols[i]] = df_encoded
 # ======================================== 清理数据 =====================================
     
 # ======================================== print =====================================
-""" 查看分类器的映射字典 """
+# """ 查看分类器的映射字典 """
 
-print(label_encoders[0].classes_)
-print(label_encoders[1].classes_)
-print(label_encoders[2].classes_)
-print(label_encoders[3].classes_)
-print(label_encoders[5].classes_)
+# print(label_encoders[0].classes_)
+# print(label_encoders[1].classes_)
+# print(label_encoders[2].classes_)
+# print(label_encoders[3].classes_)
+# print(label_encoders[5].classes_)
 
 
-""" 看一下数值列数据清理和非数值列打标签后大体是啥样 """
+# """ 看一下数值列数据清理和非数值列打标签后大体是啥样 """
 
-print('np.max(df_train[cat_cols]): ', np.max(df_train[cat_cols]))
-print('np.min(df_train[cat_cols]): ', np.min(df_train[cat_cols]))
+# print('np.max(df_train[cat_cols]): ', np.max(df_train[cat_cols]))
+# print('np.min(df_train[cat_cols]): ', np.min(df_train[cat_cols]))
 
-print('np.max(df_train[non_cat_cols]): ', np.max(df_train[non_cat_cols]))
-print('np.min(df_train[non_cat_cols]): ', np.min(df_train[non_cat_cols]))
+# print('np.max(df_train[non_cat_cols]): ', np.max(df_train[non_cat_cols]))
+# print('np.min(df_train[non_cat_cols]): ', np.min(df_train[non_cat_cols]))
 
-print('np.max(df_train): ', np.max(df_train))
-print('np.min(df_train): ', np.min(df_train))
+# print('np.max(df_train): ', np.max(df_train))
+# print('np.min(df_train): ', np.min(df_train))
 # ======================================== print =====================================
 
 
@@ -174,34 +174,34 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     X_valid, y_valid = df_train.iloc[idx_valid], y.iloc[idx_valid]    
         
     # ======================================
-# #     train_pool = Pool(X_train, y_train,cat_features=cat_cols)
-# #     val_pool = Pool(X_valid, y_valid,cat_features=cat_cols)
+    train_pool = Pool(X_train, y_train,cat_features=cat_cols)
+    val_pool = Pool(X_valid, y_valid,cat_features=cat_cols)
     
-#     train_pool = Pool(X_train, y_train)
-#     val_pool = Pool(X_valid, y_valid)
+    # train_pool = Pool(X_train, y_train)
+    # val_pool = Pool(X_valid, y_valid)
 
-#     clf = CatBoostClassifier(
-#         eval_metric='AUC',
-#         task_type='GPU',
-#         learning_rate=0.03,
-#         iterations=n_est, # n_est
-# #         early_stopping_rounds = 500,
-#     )
-#     random_seed=3107
-#     clf.fit(
-#         train_pool, 
-#         eval_set=val_pool,
-#         verbose=300,
-# #         # 保证调试的时候不需要重新训练
-# #         save_snapshot = True, 
-# #         snapshot_file = '/kaggle/working/catboost.cbsnapshot',
-# #         snapshot_interval = 10
-#     )
-# #     clf.save_model(f'/kaggle/working/catboost_fold{fold}.cbm')
-#     fitted_models_cat.append(clf)
-#     y_pred_valid = clf.predict_proba(X_valid)[:,1]
-#     auc_score = roc_auc_score(y_valid, y_pred_valid)
-#     cv_scores_cat.append(auc_score)
+    clf = CatBoostClassifier(
+        eval_metric='AUC',
+        task_type='GPU',
+        learning_rate=0.03,
+        iterations=n_est, # n_est
+#         early_stopping_rounds = 500,
+    )
+    random_seed=3107
+    clf.fit(
+        train_pool, 
+        eval_set=val_pool,
+        verbose=300,
+#         # 保证调试的时候不需要重新训练
+#         save_snapshot = True, 
+#         snapshot_file = '/kaggle/working/catboost.cbsnapshot',
+#         snapshot_interval = 10
+    )
+#     clf.save_model(f'/kaggle/working/catboost_fold{fold}.cbm')
+    fitted_models_cat.append(clf)
+    y_pred_valid = clf.predict_proba(X_valid)[:,1]
+    auc_score = roc_auc_score(y_valid, y_pred_valid)
+    cv_scores_cat.append(auc_score)
     # ==================================
     
     # ==================================
@@ -265,7 +265,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
         callbacks = [lgb.log_evaluation(200), lgb.early_stopping(100)],
 #         init_model = f"/kaggle/input/credit-models/lgbm_fold{fold}.txt",
     )
-#     model.booster_.save_model(f'/kaggle/working/lgbm_fold{fold}.txt')
+    # model.booster_.save_model(f'/kaggle/working/lgbm_fold{fold}.txt')
     # 二次优化
 #     params['learning_rate'] = 0.01
 #     model2 = lgb.LGBMClassifier(**params)
