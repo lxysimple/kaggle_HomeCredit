@@ -175,8 +175,8 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     X_valid, y_valid = df_train.iloc[idx_valid], y.iloc[idx_valid]    
         
     # ======================================
-#     train_pool = Pool(X_train, y_train,cat_features=cat_cols)
-#     val_pool = Pool(X_valid, y_valid,cat_features=cat_cols)
+    train_pool = Pool(X_train, y_train,cat_features=cat_cols)
+    val_pool = Pool(X_valid, y_valid,cat_features=cat_cols)
     
     # train_pool = Pool(X_train, y_train)
     # val_pool = Pool(X_valid, y_valid)
