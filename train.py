@@ -345,50 +345,96 @@ import torch
 import time
 import torch.nn.functional as F
 
-fold_index = int(len(y)*0.8)
 
-# 深拷贝前4折训练部分数据，df转numpy，下标索引从0开始
-train_set_raw = df_train[0:fold_index].copy()
-train_set_raw = train_set_raw.reset_index(drop=True).to_numpy()
-train_y_raw = y[0:fold_index].copy()
-train_y_raw = train_y_raw.reset_index(drop=True).to_numpy()
-valid_set_raw = df_train[fold_index:].copy()
-valid_set_raw = valid_set_raw.reset_index(drop=True).to_numpy()
-valid_y_raw = y[fold_index:].copy()
-valid_y_raw = valid_y_raw.reset_index(drop=True).to_numpy()
 
-# def model_nn_train(train_set_raw, train_y_raw):
+fold = 1
+for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环5次
 
-# 定义dataset与dataloader
-train_set = MarketDataset(train_set_raw, train_y_raw)
-train_loader = DataLoader(train_set, batch_size=8192, shuffle=True, num_workers=1)
-valid_set = MarketDataset(valid_set_raw, valid_y_raw)
-valid_loader = DataLoader(valid_set, batch_size=8192, shuffle=False, num_workers=1)
+    # X_train(≈40000,386), y_train(≈40000)
+    X_train, y_train = df_train.iloc[idx_train], y.iloc[idx_train] 
+    X_valid, y_valid = df_train.iloc[idx_valid], y.iloc[idx_valid]
 
-# print(valid_set[0])
+    
+    # 定义dataset与dataloader
+    train_set = MarketDataset(X_train, y_train)
+    train_loader = DataLoader(train_set, batch_size=30000, shuffle=True, num_workers=7)
+    valid_set = MarketDataset(X_valid, y_valid)
+    valid_loader = DataLoader(valid_set, batch_size=30000, shuffle=False, num_workers=7)
 
-for _fold in range(1):
-    print(f'Fold{_fold}:')
-    torch.cuda.empty_cache()
-    device = torch.device("cuda")
+    # print(valid_set[0])
 
-    model = Model()
-    model = model.cuda()
-    model = DataParallel(model)
+    for _fold in range(1):
+        print(f'Fold{_fold}:')
+        torch.cuda.empty_cache()
+        device = torch.device("cuda")
 
-    optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
-    scheduler = None
-#     loss_fn = nn.BCEWithLogitsLoss()
-    loss_fn = SmoothBCEwLogits(smoothing=0.005) # 0.005
+        model = Model()
+        model = model.cuda()
+        model = DataParallel(model)
 
-    for epoch in range(20):
-            start_time = time.time()
-            train_loss = train_fn(model, optimizer, scheduler, loss_fn, train_loader, device)
-            valid_pred = inference_fn(model, valid_loader, device)
-            valid_auc = roc_auc_score(valid_y_raw, valid_pred)
-            print(f"FOLD{_fold} EPOCH:{epoch:3} train_loss={train_loss:.5f} "
-                      f"roc_auc_score={valid_auc:.5f} "
-                      f"time: {(time.time() - start_time) / 60:.2f}min")
+        optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
+        scheduler = None
+    #     loss_fn = nn.BCEWithLogitsLoss()
+        loss_fn = SmoothBCEwLogits(smoothing=0.005) # 0.005
+
+        for epoch in range(20):
+                start_time = time.time()
+                train_loss = train_fn(model, optimizer, scheduler, loss_fn, train_loader, device)
+                valid_pred = inference_fn(model, valid_loader, device)
+                valid_auc = roc_auc_score(valid_y_raw, valid_pred)
+                print(f"FOLD{_fold} EPOCH:{epoch:3} train_loss={train_loss:.5f} "
+                        f"roc_auc_score={valid_auc:.5f} "
+                        f"time: {(time.time() - start_time) / 60:.2f}min")
+
+
+
+    fold = fold+1
+
+
+# fold_index = int(len(y)*0.8)
+
+# # 深拷贝前4折训练部分数据，df转numpy，下标索引从0开始
+# train_set_raw = df_train[0:fold_index].copy()
+# train_set_raw = train_set_raw.reset_index(drop=True).to_numpy()
+# train_y_raw = y[0:fold_index].copy()
+# train_y_raw = train_y_raw.reset_index(drop=True).to_numpy()
+# valid_set_raw = df_train[fold_index:].copy()
+# valid_set_raw = valid_set_raw.reset_index(drop=True).to_numpy()
+# valid_y_raw = y[fold_index:].copy()
+# valid_y_raw = valid_y_raw.reset_index(drop=True).to_numpy()
+
+# # def model_nn_train(train_set_raw, train_y_raw):
+
+# # 定义dataset与dataloader
+# train_set = MarketDataset(train_set_raw, train_y_raw)
+# train_loader = DataLoader(train_set, batch_size=8192, shuffle=True, num_workers=1)
+# valid_set = MarketDataset(valid_set_raw, valid_y_raw)
+# valid_loader = DataLoader(valid_set, batch_size=8192, shuffle=False, num_workers=1)
+
+# # print(valid_set[0])
+
+# for _fold in range(1):
+#     print(f'Fold{_fold}:')
+#     torch.cuda.empty_cache()
+#     device = torch.device("cuda")
+
+#     model = Model()
+#     model = model.cuda()
+#     model = DataParallel(model)
+
+#     optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
+#     scheduler = None
+# #     loss_fn = nn.BCEWithLogitsLoss()
+#     loss_fn = SmoothBCEwLogits(smoothing=0.005) # 0.005
+
+#     for epoch in range(20):
+#             start_time = time.time()
+#             train_loss = train_fn(model, optimizer, scheduler, loss_fn, train_loader, device)
+#             valid_pred = inference_fn(model, valid_loader, device)
+#             valid_auc = roc_auc_score(valid_y_raw, valid_pred)
+#             print(f"FOLD{_fold} EPOCH:{epoch:3} train_loss={train_loss:.5f} "
+#                       f"roc_auc_score={valid_auc:.5f} "
+#                       f"time: {(time.time() - start_time) / 60:.2f}min")
 
 # ======================================== nn模型训练 =====================================
 
