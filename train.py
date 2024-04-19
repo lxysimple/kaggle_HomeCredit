@@ -279,7 +279,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
 #     model.fit(
 #         X_train, y_train,
 #         eval_set = [(X_valid, y_valid)],
-#         callbacks = [lgb.log_evaluation(200), lgb.early_stopping(500)],
+#         callbacks = [lgb.log_evaluation(200), lgb.early_stopping(100)],
 #         init_model = f"/home/xyli/kaggle/kaggle_HomeCredit/dataset/lgbm_fold{fold}.txt",
 #     )
 #     model2 = model
