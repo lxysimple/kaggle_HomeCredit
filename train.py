@@ -272,6 +272,8 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
         "device": 'gpu', # gpu
         'gpu_use_dp' : True # 转化float为64精度
     }
+
+    # 一次训练
 # #     model = lgb.LGBMClassifier(**params)
 # # #     model = lgb.Booster(model_file=f"/kaggle/input/credit-models/lgbm_fold{fold}.txt")
 #     model.fit(
