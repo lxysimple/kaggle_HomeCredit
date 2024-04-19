@@ -70,7 +70,7 @@ n_est=6000
 # DRY_RUN = True if sample.shape[0] == 10 else False   
 # if DRY_RUN:
 if True:
-    device= gpu # 'cpu'
+    device= 'gpu' # 'cpu'
     df_train = df_train.iloc[:50000]
     #n_samples=10000
     n_est=600
