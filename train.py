@@ -197,7 +197,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
 #         snapshot_file = '/kaggle/working/catboost.cbsnapshot',
 #         snapshot_interval = 10
     )
-#     clf.save_model(f'/kaggle/working/catboost_fold{fold}.cbm')
+    clf.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/catboost_fold{fold}.cbm')
     fitted_models_cat.append(clf)
     y_pred_valid = clf.predict_proba(X_valid)[:,1]
     auc_score = roc_auc_score(y_valid, y_pred_valid)
@@ -265,7 +265,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
         callbacks = [lgb.log_evaluation(200), lgb.early_stopping(100)],
 #         init_model = f"/kaggle/input/credit-models/lgbm_fold{fold}.txt",
     )
-    # model.booster_.save_model(f'/kaggle/working/lgbm_fold{fold}.txt')
+    model.booster_.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/lgbm_fold{fold}.txt')
     # 二次优化
 #     params['learning_rate'] = 0.01
 #     model2 = lgb.LGBMClassifier(**params)
