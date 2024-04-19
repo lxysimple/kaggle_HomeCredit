@@ -354,8 +354,9 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     embed()
 
     # X_train(≈40000,386), y_train(≈40000)
-    X_train, y_train = df_train.iloc[idx_train], y.iloc[idx_train] 
-    X_valid, y_valid = df_train.iloc[idx_valid], y.iloc[idx_valid]
+    X_train, y_train = df_train.iloc[idx_train].values, y.iloc[idx_train].values 
+    X_valid, y_valid = df_train.iloc[idx_valid].values, y.iloc[idx_valid].values
+
 
     
     # 定义dataset与dataloader
@@ -367,7 +368,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     # print(valid_set[0])
 
     
-    print(f'Fold{fold}:')
+    print(f'Fold{fold}:') 
     torch.cuda.empty_cache()
     device = torch.device("cuda")
 
