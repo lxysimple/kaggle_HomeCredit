@@ -274,7 +274,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     }
 
     # 一次训练
-#     model = lgb.LGBMClassifier(**params)
+    model = lgb.LGBMClassifier(**params)
 # #     model = lgb.Booster(model_file=f"/kaggle/input/credit-models/lgbm_fold{fold}.txt")
     model.fit(
         X_train, y_train,
