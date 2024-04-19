@@ -36,6 +36,8 @@ from sklearn.preprocessing import LabelEncoder
 
 import torch
 
+from torch.nn.modules.loss import _WeightedLoss
+
 import random
 def seed_everything(seed=42):
     random.seed(seed)
@@ -154,9 +156,242 @@ print('np.min(df_train): ', np.min(df_train))
 # ======================================== print =====================================
 
 # ======================================== nn模型 =====================================
+import torch.nn as nn
+from torch.nn.parallel import DataParallel
+
+all_feat_cols = [i for i in range(386)]
+target_cols = [i for i in range(1)]
+
+class Model(nn.Module):
+    def __init__(self):
+        super(Model, self).__init__()
+        self.batch_norm0 = nn.BatchNorm1d(len(all_feat_cols))
+        self.dropout0 = nn.Dropout(0.2) # 0.2
+
+        dropout_rate = 0.2 # 0.1>0.2
+        hidden_size = 256 # 386>256
+        self.dense1 = nn.Linear(len(all_feat_cols), hidden_size)
+        self.batch_norm1 = nn.BatchNorm1d(hidden_size)
+        self.dropout1 = nn.Dropout(dropout_rate)
+
+        self.dense2 = nn.Linear(hidden_size+len(all_feat_cols), hidden_size)
+        self.batch_norm2 = nn.BatchNorm1d(hidden_size)
+        self.dropout2 = nn.Dropout(dropout_rate)
+
+        self.dense3 = nn.Linear(hidden_size+hidden_size, hidden_size)
+        self.batch_norm3 = nn.BatchNorm1d(hidden_size)
+        self.dropout3 = nn.Dropout(dropout_rate)
+
+        self.dense4 = nn.Linear(hidden_size+hidden_size, hidden_size)
+        self.batch_norm4 = nn.BatchNorm1d(hidden_size)
+        self.dropout4 = nn.Dropout(dropout_rate)
+
+        self.dense5 = nn.Linear(hidden_size+hidden_size, len(target_cols))
+        
+        
+        # ================================
+        self.dense6 = nn.Linear(4*hidden_size, len(target_cols))
+        # ================================
+
+        self.Relu = nn.ReLU(inplace=True)
+        self.PReLU = nn.PReLU()
+        self.LeakyReLU = nn.LeakyReLU(negative_slope=0.01, inplace=True)
+        # self.GeLU = nn.GELU()
+        self.RReLU = nn.RReLU()
+
+    def forward(self, x):
+        x = self.batch_norm0(x)
+        x = self.dropout0(x)
+
+        x1 = self.dense1(x)
+        x1 = self.batch_norm1(x1)
+        # x = F.relu(x)
+        # x = self.PReLU(x)
+        x1 = self.LeakyReLU(x1)
+        x1 = self.dropout1(x1)
+
+        x = torch.cat([x, x1], 1)
+
+        x2 = self.dense2(x)
+        x2 = self.batch_norm2(x2)
+        # x = F.relu(x)
+        # x = self.PReLU(x)
+        x2 = self.LeakyReLU(x2)
+        x2 = self.dropout2(x2)
+
+        x = torch.cat([x1, x2], 1)
+
+        x3 = self.dense3(x)
+        x3 = self.batch_norm3(x3)
+        # x = F.relu(x)
+        # x = self.PReLU(x)
+        x3 = self.LeakyReLU(x3)
+        x3 = self.dropout3(x3)
+
+        x = torch.cat([x2, x3], 1)
+
+        x4 = self.dense4(x)
+        x4 = self.batch_norm4(x4)
+        # x = F.relu(x)
+        # x = self.PReLU(x)
+        x4 = self.LeakyReLU(x4)
+        x4 = self.dropout4(x4)
+
+        x = torch.cat([x3, x4], 1)
+        x = self.dense5(x)
+
+        # x = torch.cat([x1, x2, x3, x4], 1)
+        # x = self.dense6(x)
+
+        
+        x = x.squeeze()
+        
+        return x
+
+from torch.utils.data import Dataset
+
+class MarketDataset:
+    def __init__(self, features, label):
+        
+        self.features = features
+        self.label = label
+
+    def __len__(self):
+        return len(self.label)
+
+    def __getitem__(self, idx):
+        
+        return {
+            'features': torch.tensor(self.features[idx], dtype=torch.float),
+            'label': torch.tensor(self.label[idx], dtype=torch.float)
+        }
+
+
+
+class SmoothBCEwLogits(_WeightedLoss):
+    def __init__(self, weight=None, reduction='mean', smoothing=0.0):
+        super().__init__(weight=weight, reduction=reduction)
+        self.smoothing = smoothing
+        self.weight = weight
+        self.reduction = reduction
+
+    @staticmethod
+    def _smooth(targets:torch.Tensor, n_labels:int, smoothing=0.0):
+        assert 0 <= smoothing < 1
+        with torch.no_grad():
+            targets = targets * (1.0 - smoothing) + 0.5 * smoothing
+        return targets
+
+    def forward(self, inputs, targets):
+        targets = SmoothBCEwLogits._smooth(targets, inputs.size(-1),
+            self.smoothing)
+        loss = F.binary_cross_entropy_with_logits(inputs, targets,self.weight)
+
+        if  self.reduction == 'sum':
+            loss = loss.sum()
+        elif  self.reduction == 'mean':
+            loss = loss.mean()
+
+        return loss
+
+def inference_fn(model, dataloader, device):
+    model.eval()
+    preds = []
+
+    for data in dataloader:
+        features = data['features'].to(device)
+
+        with torch.no_grad():
+            outputs = model(features)
+        
+        preds.append(outputs.detach().cpu().numpy())
+#         preds.append(outputs.sigmoid().detach().cpu().numpy())
+
+#     print(len(preds))
+    preds = np.concatenate(preds).reshape(-1, 1)
+
+
+    return preds
+
+def train_fn(model, optimizer, scheduler, loss_fn, dataloader, device):
+    model.train()
+    final_loss = 0
+
+    for data in dataloader:
+        optimizer.zero_grad()
+        features = data['features'].to(device)
+        label = data['label'].to(device)
+        outputs = model(features)
+
+        loss = loss_fn(outputs, label)
+        loss.backward()
+        optimizer.step()
+        if scheduler:
+            scheduler.step()
+
+        final_loss += loss.item()
+
+    final_loss /= len(dataloader)
+
+    return final_loss
+
 
 # ======================================== nn模型 =====================================
 
+# ======================================== nn模型训练 =====================================
+
+
+from torch.utils.data import DataLoader
+import torch
+import time
+import torch.nn.functional as F
+
+fold_index = int(len(y)*0.8)
+
+# 深拷贝前4折训练部分数据，df转numpy，下标索引从0开始
+train_set_raw = df_train[0:fold_index].copy()
+train_set_raw = train_set_raw.reset_index(drop=True).to_numpy()
+train_y_raw = y[0:fold_index].copy()
+train_y_raw = train_y_raw.reset_index(drop=True).to_numpy()
+valid_set_raw = df_train[fold_index:].copy()
+valid_set_raw = valid_set_raw.reset_index(drop=True).to_numpy()
+valid_y_raw = y[fold_index:].copy()
+valid_y_raw = valid_y_raw.reset_index(drop=True).to_numpy()
+
+# def model_nn_train(train_set_raw, train_y_raw):
+
+# 定义dataset与dataloader
+train_set = MarketDataset(train_set_raw, train_y_raw)
+train_loader = DataLoader(train_set, batch_size=8192, shuffle=True, num_workers=1)
+valid_set = MarketDataset(valid_set_raw, valid_y_raw)
+valid_loader = DataLoader(valid_set, batch_size=8192, shuffle=False, num_workers=1)
+
+# print(valid_set[0])
+
+for _fold in range(1):
+    print(f'Fold{_fold}:')
+    torch.cuda.empty_cache()
+    device = torch.device("cuda")
+
+    model = Model()
+    model = model.cuda()
+    model = DataParallel(model)
+
+    optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
+    scheduler = None
+#     loss_fn = nn.BCEWithLogitsLoss()
+    loss_fn = SmoothBCEwLogits(smoothing=0.005) # 0.005
+
+    for epoch in range(20):
+            start_time = time.time()
+            train_loss = train_fn(model, optimizer, scheduler, loss_fn, train_loader, device)
+            valid_pred = inference_fn(model, valid_loader, device)
+            valid_auc = roc_auc_score(valid_y_raw, valid_pred)
+            print(f"FOLD{_fold} EPOCH:{epoch:3} train_loss={train_loss:.5f} "
+                      f"roc_auc_score={valid_auc:.5f} "
+                      f"time: {(time.time() - start_time) / 60:.2f}min")
+
+# ======================================== nn模型训练 =====================================
 
 # ======================================== 训练3树模型 =====================================
 # %%time
