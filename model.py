@@ -1,5 +1,10 @@
 """ 用于服务器调试模型结构 """
 
+import torch.nn as nn
+from torch.nn.parallel import DataParallel
+
+all_feat_cols = [i for i in range(386)]
+target_cols = [i for i in range(1)]
 
 class Model(nn.Module):
     def __init__(self):
