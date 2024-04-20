@@ -305,13 +305,13 @@ class Model2(nn.Module):
         self.batch_norms = nn.ModuleList()
         self.dropouts = nn.ModuleList()
 
-        for i in range(10):
+        for i in range(100):
             self.dense = nn.Linear(hidden_size+hidden_size, hidden_size)
             self.denses.append(self.dense)
-        for i in range(10):
+        for i in range(100):
             self.batch_norm = nn.BatchNorm1d(hidden_size)
             self.batch_norms.append(self.batch_norm)
-        for i in range(10):
+        for i in range(10)0:
             self.dropout = nn.Dropout(dropout_rate)
             self.dropouts.append(self.dropout)
 
