@@ -140,8 +140,7 @@ embed()
 std = df_train.std()
 mean = df_train.mean()
 
-for i in df_train.columns.tolist():
-    df_train[i] = (df_train[i]-mean)/std
+df_train = (df_train-mean)/std
 
 
 # ======================================== 标准化 =====================================
