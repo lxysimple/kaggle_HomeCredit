@@ -412,7 +412,7 @@ class Model2(nn.Module):
         x_res.append(x4)
 
         x_pre = x4
-        for i in range(10):
+        for i in range(100):
 
             x_i = self.denses[i](x)
             x_i = self.batch_norms[i](x_i)
