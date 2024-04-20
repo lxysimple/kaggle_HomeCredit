@@ -289,58 +289,41 @@ class Model2(nn.Module):
         self.batch_norm2 = nn.BatchNorm1d(hidden_size)
         self.dropout2 = nn.Dropout(dropout_rate)
 
-        self.dense3 = nn.Linear(3*hidden_size, hidden_size)
+        self.dense3 = nn.Linear(len(all_feat_cols)+2*hidden_size, hidden_size)
         self.batch_norm3 = nn.BatchNorm1d(hidden_size)
         self.dropout3 = nn.Dropout(dropout_rate)
 
-        self.dense4 = nn.Linear(4*hidden_size, hidden_size)
+        self.dense4 = nn.Linear(len(all_feat_cols)+3*hidden_size, hidden_size)
         self.batch_norm4 = nn.BatchNorm1d(hidden_size)
         self.dropout4 = nn.Dropout(dropout_rate)
 
-        self.dense5 = nn.Linear(5*hidden_size, len(target_cols))
+        self.dense5 = nn.Linear(len(all_feat_cols)+4*hidden_size, len(target_cols))
         
         
         # ================================
-        self.denses = nn.ModuleList()
-        self.batch_norms = nn.ModuleList()
-        self.dropouts = nn.ModuleList()
+        # self.denses = nn.ModuleList()
+        # self.batch_norms = nn.ModuleList()
+        # self.dropouts = nn.ModuleList()
 
-        for i in range(5):
-            self.dense = nn.Linear(hidden_size+hidden_size, hidden_size)
-            self.denses.append(self.dense)
-        for i in range(5):
-            self.batch_norm = nn.BatchNorm1d(hidden_size)
-            self.batch_norms.append(self.batch_norm)
-        for i in range(5):
-            self.dropout = nn.Dropout(dropout_rate)
-            self.dropouts.append(self.dropout)
-
-        # layers = []
-        # for i in range(10):
-        #     dense = nn.Linear(hidden_size+hidden_size, hidden_size)
-        #     layers.append(self.dense)
+        # for i in range(5):
+        #     self.dense = nn.Linear(hidden_size+hidden_size, hidden_size)
+        #     self.denses.append(self.dense)
+        # for i in range(5):
         #     self.batch_norm = nn.BatchNorm1d(hidden_size)
         #     self.batch_norms.append(self.batch_norm)
-        # for i in range(10):
+        # for i in range(5):
         #     self.dropout = nn.Dropout(dropout_rate)
         #     self.dropouts.append(self.dropout)
-        
-        # self.denses = nn.Sequential(*denses)
-        # self.batch_norms = nn.Sequential(*batch_norms)
-        # self.dropouts = nn.Sequential(*dropouts)
 
+        # self.dense41 = nn.Linear(5*hidden_size, hidden_size)
+        # self.batch_norm41 = nn.BatchNorm1d(hidden_size)
+        # self.dropout41 = nn.Dropout(dropout_rate)
 
+        # self.dense42 = nn.Linear(6*hidden_size, hidden_size)
+        # self.batch_norm42 = nn.BatchNorm1d(hidden_size)
+        # self.dropout42 = nn.Dropout(dropout_rate)
 
-
-        self.dense41 = nn.Linear(5*hidden_size, hidden_size)
-        self.batch_norm41 = nn.BatchNorm1d(hidden_size)
-        self.dropout41 = nn.Dropout(dropout_rate)
-
-        self.dense42 = nn.Linear(6*hidden_size, hidden_size)
-        self.batch_norm42 = nn.BatchNorm1d(hidden_size)
-        self.dropout42 = nn.Dropout(dropout_rate)
-
-        self.dense6 = nn.Linear(6*hidden_size, len(target_cols))
+        self.dense6 = nn.Linear(4*hidden_size, len(target_cols))
         # ================================
 
         self.Relu = nn.ReLU(inplace=True)
@@ -390,28 +373,26 @@ class Model2(nn.Module):
 
         x = torch.cat([x, x4], 1)
 
-
-
-        # my code
-        x41 = self.dense41(x)
-        x41 = self.batch_norm41(x41)
-        x41 = self.LeakyReLU(x41)
-        x41 = self.dropout41(x41) 
-        x = torch.cat([x, x41], 1)
-        # my code
-        x42 = self.dense42(x)
-        x42 = self.batch_norm42(x42)
-        x42 = self.LeakyReLU(x42)
-        x42 = self.dropout42(x42) 
-        x = torch.cat([x, x42], 1)
+        # # my code
+        # x41 = self.dense41(x)
+        # x41 = self.batch_norm41(x41)
+        # x41 = self.LeakyReLU(x41)
+        # x41 = self.dropout41(x41) 
+        # x = torch.cat([x, x41], 1)
+        # # my code
+        # x42 = self.dense42(x)
+        # x42 = self.batch_norm42(x42)
+        # x42 = self.LeakyReLU(x42)
+        # x42 = self.dropout42(x42) 
+        # x = torch.cat([x, x42], 1)
 
         x_res = []
         x_res.append(x1)
         x_res.append(x2)
         x_res.append(x3)
         x_res.append(x4)
-        x_res.append(x41)
-        x_res.append(x42)
+        # x_res.append(x41)
+        # x_res.append(x42)
 
         # x_pre = x4
         # for i in range(5):
