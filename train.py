@@ -133,6 +133,15 @@ for i in range(len(cat_cols)):
     df_train[cat_cols[i]] = df_encoded
 # ======================================== 清理数据 =====================================
     
+# ======================================== 标准化 =====================================
+std = df_train.std()
+mean = df_train.mean()
+
+for i in df_train.columns.tolist():
+    df_train[i] = (df_train[i]-mean)/std
+
+# ======================================== 标准化 =====================================
+
 # ======================================== print =====================================
 """ 查看分类器的映射字典 """
 
@@ -297,16 +306,16 @@ class Model2(nn.Module):
         self.batch_norm4 = nn.BatchNorm1d(hidden_size)
         self.dropout4 = nn.Dropout(dropout_rate)
 
-        # self.dense5 = nn.Linear(2*hidden_size, len(target_cols))
+        self.dense5 = nn.Linear(2*hidden_size, len(target_cols))
         
-        self.dense51 = nn.Linear(2*hidden_size, hidden_size//8)
-        self.dense52 = nn.Linear(2*hidden_size, hidden_size//2)
-        self.batch_norm51 = nn.BatchNorm1d(hidden_size//8)
-        self.dropout51 = nn.Dropout(dropout_rate)
-        self.batch_norm52 = nn.BatchNorm1d(hidden_size//2)
-        self.dropout52 = nn.Dropout(dropout_rate)
+        # self.dense51 = nn.Linear(2*hidden_size, hidden_size//8)
+        # self.dense52 = nn.Linear(2*hidden_size, hidden_size//2)
+        # self.batch_norm51 = nn.BatchNorm1d(hidden_size//8)
+        # self.dropout51 = nn.Dropout(dropout_rate)
+        # self.batch_norm52 = nn.BatchNorm1d(hidden_size//2)
+        # self.dropout52 = nn.Dropout(dropout_rate)
 
-        self.dense5 = nn.Linear(hidden_size//8+hidden_size//2, len(target_cols)) 
+        # self.dense5 = nn.Linear(hidden_size//8+hidden_size//2, len(target_cols)) 
         # ================================
         # self.denses = nn.ModuleList()
         # self.batch_norms = nn.ModuleList()
@@ -417,17 +426,17 @@ class Model2(nn.Module):
 
         x = torch.cat([x3, x4], 1)
         
-        x51 = self.dense51(x)
-        x51 = self.batch_norm51(x51)
-        x51 = self.LeakyReLU(x51)
-        x51 = self.dropout51(x51)
+        # x51 = self.dense51(x)
+        # x51 = self.batch_norm51(x51)
+        # x51 = self.LeakyReLU(x51)
+        # x51 = self.dropout51(x51)
 
-        x52 = self.dense52(x)
-        x52 = self.batch_norm52(x52)
-        x52 = self.LeakyReLU(x52)
-        x52 = self.dropout52(x52)
+        # x52 = self.dense52(x)
+        # x52 = self.batch_norm52(x52)
+        # x52 = self.LeakyReLU(x52)
+        # x52 = self.dropout52(x52)
 
-        x = torch.cat([x51, x52], 1)
+        # x = torch.cat([x51, x52], 1)
         x = self.dense5(x)
 
         # x = torch.cat([x1, x2, x3, x4, x41, x42], 1)
