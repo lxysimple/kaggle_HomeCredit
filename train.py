@@ -297,7 +297,7 @@ class Model2(nn.Module):
         self.batch_norm4 = nn.BatchNorm1d(hidden_size)
         self.dropout4 = nn.Dropout(dropout_rate)
 
-        self.dense5 = nn.Linear(len(all_feat_cols)+4*hidden_size, len(target_cols))
+        self.dense5 = nn.Linear(2*hidden_size, len(target_cols))
         
         
         # ================================
@@ -386,11 +386,11 @@ class Model2(nn.Module):
         # x42 = self.dropout42(x42) 
         # x = torch.cat([x, x42], 1)
 
-        x_res = []
-        x_res.append(x1)
-        x_res.append(x2)
-        x_res.append(x3)
-        x_res.append(x4)
+        # x_res = []
+        # x_res.append(x1)
+        # x_res.append(x2)
+        # x_res.append(x3)
+        # x_res.append(x4)
         # x_res.append(x41)
         # x_res.append(x42)
 
