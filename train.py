@@ -405,13 +405,14 @@ class Model2(nn.Module):
         #     x_res.append(x_i)
         #     x = torch.cat([x_pre, x_i], 1)
         #     x_pre = x_i
-            
-        # x = self.dense5(x)
+
+        x = torch.cat([x3, x4], 1)  
+        x = self.dense5(x)
 
         # x = torch.cat([x1, x2, x3, x4, x41, x42], 1)
             
-        x = torch.cat(x_res, 1)
-        x = self.dense6(x)
+        # x = torch.cat(x_res, 1)
+        # x = self.dense6(x)
 
         x = x.squeeze()
         
