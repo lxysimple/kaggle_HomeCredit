@@ -301,9 +301,10 @@ class Model2(nn.Module):
         
         
         # ================================
-        self.denses = []
-        self.batch_norms = []
-        self.dropouts = []
+        self.denses = nn.ModuleList()
+        self.batch_norm = nn.ModuleList()
+        self.dropouts = nn.ModuleList()
+
         for i in range(10):
             self.dense = nn.Linear(hidden_size+hidden_size, hidden_size)
             self.denses.append(self.dense)
@@ -313,7 +314,22 @@ class Model2(nn.Module):
         for i in range(10):
             self.dropout = nn.Dropout(dropout_rate)
             self.dropouts.append(self.dropout)
+
+        # layers = []
+        # for i in range(10):
+        #     dense = nn.Linear(hidden_size+hidden_size, hidden_size)
+        #     layers.append(self.dense)
+        #     self.batch_norm = nn.BatchNorm1d(hidden_size)
+        #     self.batch_norms.append(self.batch_norm)
+        # for i in range(10):
+        #     self.dropout = nn.Dropout(dropout_rate)
+        #     self.dropouts.append(self.dropout)
         
+        # self.denses = nn.Sequential(*denses)
+        # self.batch_norms = nn.Sequential(*batch_norms)
+        # self.dropouts = nn.Sequential(*dropouts)
+
+
 
 
         self.dense41 = nn.Linear(hidden_size+hidden_size, hidden_size)
