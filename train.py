@@ -357,7 +357,7 @@ class Model2(nn.Module):
             x_res.append(x_i)
             
         for i in range(50):
-            x = torch.cat((x, x_res[i].unsqueeze(1)), dim=1)
+            x = torch.cat((x, x_res[i]), dim=1)
 
 
         x1 = self.dense1(x)
