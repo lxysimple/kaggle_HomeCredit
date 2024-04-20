@@ -1,9 +1,9 @@
 """ 用于服务器调试模型结构 """
 
 
-class Model3(nn.Module):
+class Model(nn.Module):
     def __init__(self):
-        super(Model3, self).__init__()
+        super(Model, self).__init__()
         self.batch_norm0 = nn.BatchNorm1d(len(all_feat_cols))
         self.dropout0 = nn.Dropout(0.2) # 0.2
 
