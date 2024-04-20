@@ -141,7 +141,9 @@ std = df_train.std()
 mean = df_train.mean()
 
 for i in df_train.columns:
-    df_train[i] = (df_train[i]-mean)/std
+    df_train[i] = (df_train[i]-mean[i])/std[i]
+
+# df_train['month_decision'] = (df_train[month_decision]-mean)/std
 
 # ======================================== 标准化 =====================================
 
