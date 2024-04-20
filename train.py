@@ -250,23 +250,23 @@ class Model(nn.Module):
 
 
 
-        # my code
-        x41 = self.dense41(x)
-        x41 = self.batch_norm41(x41)
-        x41 = self.LeakyReLU(x41)
-        x41 = self.dropout41(x41) 
-        x = torch.cat([x4, x41], 1)
-        # my code
-        x42 = self.dense42(x)
-        x42 = self.batch_norm42(x42)
-        x42 = self.LeakyReLU(x42)
-        x42 = self.dropout42(x42) 
-        x = torch.cat([x41, x42], 1)
+        # # my code
+        # x41 = self.dense41(x)
+        # x41 = self.batch_norm41(x41)
+        # x41 = self.LeakyReLU(x41)
+        # x41 = self.dropout41(x41) 
+        # x = torch.cat([x4, x41], 1)
+        # # my code
+        # x42 = self.dense42(x)
+        # x42 = self.batch_norm42(x42)
+        # x42 = self.LeakyReLU(x42)
+        # x42 = self.dropout42(x42) 
+        # x = torch.cat([x41, x42], 1)
 
-        # x = self.dense5(x)
+        x = self.dense5(x)
 
-        x = torch.cat([x1, x2, x3, x4, x41, x42], 1)
-        x = self.dense6(x)
+        # x = torch.cat([x1, x2, x3, x4, x41, x42], 1)
+        # x = self.dense6(x)
 
         
         x = x.squeeze()
