@@ -134,8 +134,8 @@ for i in range(len(cat_cols)):
 # ======================================== 清理数据 =====================================
     
 # ======================================== 标准化 =====================================
-from IPython import embed
-embed()
+# from IPython import embed
+# embed()
 
 std = df_train.std()
 mean = df_train.mean()
