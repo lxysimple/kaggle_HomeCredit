@@ -305,14 +305,14 @@ class Model2(nn.Module):
         self.batch_norms = []
         self.dropouts = []
         for i in range(10):
-            dense = nn.Linear(hidden_size+hidden_size, hidden_size)
-            self.denses.append(dense)
+            self.dense = nn.Linear(hidden_size+hidden_size, hidden_size)
+            self.denses.append(self.dense)
         for i in range(10):
-            batch_norm = nn.BatchNorm1d(hidden_size)
-            self.batch_norms.append(batch_norm)
+            self.batch_norm = nn.BatchNorm1d(hidden_size)
+            self.batch_norms.append(self.batch_norm)
         for i in range(10):
-            dropout = nn.Dropout(dropout_rate)
-            self.dropouts.append(dropout)
+            self.dropout = nn.Dropout(dropout_rate)
+            self.dropouts.append(self.dropout)
         
 
 
@@ -517,8 +517,8 @@ import torch.nn.functional as F
 fold = 1
 for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环5次
 
-    # from IPython import embed
-    # embed()
+    from IPython import embed
+    embed()
 
     # X_train(≈40000,386), y_train(≈40000)
     X_train, y_train = df_train.iloc[idx_train].values, y.iloc[idx_train].values 
