@@ -517,8 +517,8 @@ import torch.nn.functional as F
 fold = 1
 for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环5次
 
-    from IPython import embed
-    embed()
+    # from IPython import embed
+    # embed()
 
     # X_train(≈40000,386), y_train(≈40000)
     X_train, y_train = df_train.iloc[idx_train].values, y.iloc[idx_train].values 
@@ -539,7 +539,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     torch.cuda.empty_cache()
     device = torch.device("cuda")
 
-    model = Model()
+    model = Model2()
     model = model.cuda()
     model = DataParallel(model)
 
