@@ -302,7 +302,7 @@ class Model2(nn.Module):
         
         # ================================
         self.denses = nn.ModuleList()
-        self.batch_norm = nn.ModuleList()
+        self.batch_norms = nn.ModuleList()
         self.dropouts = nn.ModuleList()
 
         for i in range(10):
