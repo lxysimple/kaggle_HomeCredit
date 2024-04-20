@@ -162,9 +162,9 @@ from torch.nn.parallel import DataParallel
 all_feat_cols = [i for i in range(386)]
 target_cols = [i for i in range(1)]
 
-class Model(nn.Module):
+class Model3(nn.Module):
     def __init__(self):
-        super(Model, self).__init__()
+        super(Model3, self).__init__()
         self.batch_norm0 = nn.BatchNorm1d(len(all_feat_cols))
         self.dropout0 = nn.Dropout(0.2) # 0.2
 
@@ -198,7 +198,7 @@ class Model(nn.Module):
         self.batch_norm42 = nn.BatchNorm1d(hidden_size)
         self.dropout42 = nn.Dropout(dropout_rate)
 
-        self.dense6 = nn.Linear(6*hidden_size, len(target_cols))
+        self.dense6 = nn.Linear(4*hidden_size, len(target_cols))
         # ================================
 
         self.Relu = nn.ReLU(inplace=True)
@@ -508,7 +508,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     torch.cuda.empty_cache()
     device = torch.device("cuda")
 
-    model = Model()
+    model = Model2()
     model = model.cuda()
     model = DataParallel(model)
 
