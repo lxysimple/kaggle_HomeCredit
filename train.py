@@ -190,6 +190,14 @@ class Model(nn.Module):
         
         
         # ================================
+        self.dense41 = nn.Linear(hidden_size+hidden_size, hidden_size)
+        self.batch_norm41 = nn.BatchNorm1d(hidden_size)
+        self.dropout41 = nn.Dropout(dropout_rate)
+
+        self.dense42 = nn.Linear(hidden_size+hidden_size, hidden_size)
+        self.batch_norm42 = nn.BatchNorm1d(hidden_size)
+        self.dropout42 = nn.Dropout(dropout_rate)
+
         self.dense6 = nn.Linear(4*hidden_size, len(target_cols))
         # ================================
 
@@ -237,7 +245,24 @@ class Model(nn.Module):
         x4 = self.LeakyReLU(x4)
         x4 = self.dropout4(x4)
 
+
         x = torch.cat([x3, x4], 1)
+
+
+
+        # # my code
+        # x41 = self.dense41(x)
+        # x41 = self.batch_norm41(x41)
+        # x41 = self.LeakyReLU(x41)
+        # x41 = self.dropout41(x41) 
+        # x = torch.cat([x4, x41], 1)
+        # # my code
+        # x42 = self.dense42(x)
+        # x42 = self.batch_norm42(x42)
+        # x42 = self.LeakyReLU(x42)
+        # x42 = self.dropout42(x42) 
+        # x = torch.cat([x41, x42], 1)
+
         x = self.dense5(x)
 
         # x = torch.cat([x1, x2, x3, x4], 1)
@@ -361,7 +386,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     
     # 定义dataset与dataloader
     train_set = MarketDataset(X_train, y_train)
-    train_loader = DataLoader(train_set, batch_size=30000, shuffle=True, num_workers=7)
+    train_loader = DataLoader(train_set, batch_size=150000, shuffle=True, num_workers=7)
     valid_set = MarketDataset(X_valid, y_valid)
     valid_loader = DataLoader(valid_set, batch_size=30000, shuffle=False, num_workers=7)
 
@@ -389,8 +414,6 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
             print(f"FOLD{fold} EPOCH:{epoch:3} train_loss={train_loss:.5f} "
                     f"roc_auc_score={valid_auc:.5f} "
                     f"time: {(time.time() - start_time) / 60:.2f}min")
-
-
 
     fold = fold+1
 
