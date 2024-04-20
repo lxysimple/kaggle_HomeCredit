@@ -297,9 +297,11 @@ class Model2(nn.Module):
         self.batch_norm4 = nn.BatchNorm1d(hidden_size)
         self.dropout4 = nn.Dropout(dropout_rate)
 
-        self.dense5 = nn.Linear(2*hidden_size, len(target_cols))
+        # self.dense5 = nn.Linear(2*hidden_size, len(target_cols))
         
-        
+        self.dense51 = nn.Linear(2*hidden_size, hidden_size//8)
+        self.dense52 = nn.Linear(2*hidden_size, hidden_size//2)
+        self.dense5 = nn.Linear(hidden_size//8+hidden_size//2, len(target_cols)) 
         # ================================
         # self.denses = nn.ModuleList()
         # self.batch_norms = nn.ModuleList()
@@ -322,6 +324,8 @@ class Model2(nn.Module):
         # self.dense42 = nn.Linear(6*hidden_size, hidden_size)
         # self.batch_norm42 = nn.BatchNorm1d(hidden_size)
         # self.dropout42 = nn.Dropout(dropout_rate)
+
+
 
         self.dense6 = nn.Linear(4*hidden_size, len(target_cols))
         # ================================
