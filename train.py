@@ -386,9 +386,9 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     
     # 定义dataset与dataloader
     train_set = MarketDataset(X_train, y_train)
-    train_loader = DataLoader(train_set, batch_size=150000, shuffle=True, num_workers=7)
+    train_loader = DataLoader(train_set, batch_size=1600000, shuffle=True, num_workers=7)
     valid_set = MarketDataset(X_valid, y_valid)
-    valid_loader = DataLoader(valid_set, batch_size=30000, shuffle=False, num_workers=7)
+    valid_loader = DataLoader(valid_set, batch_size=400000, shuffle=False, num_workers=7)
 
     # print(valid_set[0])
 
@@ -402,7 +402,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     model = DataParallel(model)
 
     # lr = 1e-3 weight_decay=1e-5
-    optimizer = torch.optim.Adam(model.parameters(), lr=1e-2, weight_decay=1e-4)
+    optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
     scheduler = None
 #     loss_fn = nn.BCEWithLogitsLoss()
     loss_fn = SmoothBCEwLogits(smoothing=0.005) # 0.005
