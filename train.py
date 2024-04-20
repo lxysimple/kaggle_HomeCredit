@@ -397,9 +397,12 @@ class Model2(nn.Module):
 
         x_pre = x4
         for i in range(10):
+            
             x_i = self.denses[i](x)
             x_i = self.batch_norms[i](x_i)
+            x_i = self.LeakyReLU(x_i)
             x_i = self.dropouts[i](x_i)
+        
             x_res.append(x_i)
             x = torch.cat([x_pre, x_i], 1)
             x_pre = x_i
