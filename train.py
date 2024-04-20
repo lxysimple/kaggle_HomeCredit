@@ -340,7 +340,7 @@ class Model2(nn.Module):
         self.batch_norm42 = nn.BatchNorm1d(hidden_size)
         self.dropout42 = nn.Dropout(dropout_rate)
 
-        self.dense6 = nn.Linear(14*hidden_size, len(target_cols))
+        self.dense6 = nn.Linear(104*hidden_size, len(target_cols))
         # ================================
 
         self.Relu = nn.ReLU(inplace=True)
