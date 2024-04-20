@@ -508,7 +508,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     torch.cuda.empty_cache()
     device = torch.device("cuda")
 
-    model = Model2()
+    model = Model()
     model = model.cuda()
     model = DataParallel(model)
 

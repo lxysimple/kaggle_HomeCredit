@@ -2,6 +2,8 @@
 
 import torch.nn as nn
 from torch.nn.parallel import DataParallel
+import torch
+
 
 all_feat_cols = [i for i in range(386)]
 target_cols = [i for i in range(1)]
