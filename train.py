@@ -132,20 +132,6 @@ for i in range(len(cat_cols)):
     df_encoded = label_encoders[i].fit_transform(df_train[cat_cols[i]])
     df_train[cat_cols[i]] = df_encoded
 # ======================================== 清理数据 =====================================
-    
-# ======================================== 标准化 =====================================
-# from IPython import embed
-# embed()
-
-std = df_train.std()
-mean = df_train.mean()
-
-for i in df_train.columns:
-    df_train[i] = (df_train[i]-mean[i])/std[i]
-
-# df_train['month_decision'] = (df_train[month_decision]-mean)/std
-
-# ======================================== 标准化 =====================================
 
 # ======================================== print =====================================
 """ 查看分类器的映射字典 """
@@ -295,24 +281,24 @@ class Model2(nn.Module):
 
         dropout_rate = 0.2 # 0.1>0.2
         hidden_size = 256 # 386>256
-        self.dense1 = nn.Linear(len(all_feat_cols), hidden_size)
+        self.dense1 = nn.Linear(len(all_feat_cols)+50, hidden_size)
         self.batch_norm1 = nn.BatchNorm1d(hidden_size)
         self.dropout1 = nn.Dropout(dropout_rate)
 
-        self.dense2 = nn.Linear(hidden_size+len(all_feat_cols), hidden_size)
+        self.dense2 = nn.Linear(hidden_size+len(all_feat_cols)+50, hidden_size)
         self.batch_norm2 = nn.BatchNorm1d(hidden_size)
         self.dropout2 = nn.Dropout(dropout_rate)
 
-        self.dense3 = nn.Linear(len(all_feat_cols)+2*hidden_size, hidden_size)
+        self.dense3 = nn.Linear(len(all_feat_cols)+2*hidden_size+50, hidden_size)
         self.batch_norm3 = nn.BatchNorm1d(hidden_size)
         self.dropout3 = nn.Dropout(dropout_rate)
 
-        self.dense4 = nn.Linear(len(all_feat_cols)+3*hidden_size, hidden_size)
+        self.dense4 = nn.Linear(len(all_feat_cols)+3*hidden_size+50, hidden_size)
         self.batch_norm4 = nn.BatchNorm1d(hidden_size)
         self.dropout4 = nn.Dropout(dropout_rate)
 
         self.dense5 = nn.Linear(2*hidden_size, len(target_cols))
-        
+
         # self.dense51 = nn.Linear(2*hidden_size, hidden_size//8)
         # self.dense52 = nn.Linear(2*hidden_size, hidden_size//2)
         # self.batch_norm51 = nn.BatchNorm1d(hidden_size//8)
@@ -322,11 +308,17 @@ class Model2(nn.Module):
 
         # self.dense5 = nn.Linear(hidden_size//8+hidden_size//2, len(target_cols)) 
         # ================================
+
+        self.denses = nn.ModuleList()
+        for i in range(50):
+            self.dense = nn.Linear(len(all_feat_cols), 1)
+            self.denses.append(self.dense)
+
         # self.denses = nn.ModuleList()
         # self.batch_norms = nn.ModuleList()
         # self.dropouts = nn.ModuleList()
 
-        # for i in range(5):
+        # for i in range(100):
         #     self.dense = nn.Linear(hidden_size+hidden_size, hidden_size)
         #     self.denses.append(self.dense)
         # for i in range(5):
@@ -358,6 +350,15 @@ class Model2(nn.Module):
     def forward(self, x):
         x = self.batch_norm0(x)
         x = self.dropout0(x)
+
+        x_res = []
+        for i in range(50):
+            x_i = self.denses[i](x)
+            x_res.append(x_i)
+            
+        for i in range(50):
+            x = torch.cat((x, x_res[i].unsqueeze(1)), dim=1)
+
 
         x1 = self.dense1(x)
         x1 = self.batch_norm1(x1)
