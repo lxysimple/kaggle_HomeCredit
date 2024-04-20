@@ -369,7 +369,7 @@ class Model2(nn.Module):
         x2 = self.LeakyReLU(x2)
         x2 = self.dropout2(x2)
 
-        x = torch.cat([x, x1, x2], 1)
+        x = torch.cat([x, x2], 1)
 
         x3 = self.dense3(x)
         x3 = self.batch_norm3(x3)
@@ -378,7 +378,7 @@ class Model2(nn.Module):
         x3 = self.LeakyReLU(x3)
         x3 = self.dropout3(x3)
 
-        x = torch.cat([x, x1, x2, x3], 1)
+        x = torch.cat([x, x3], 1)
 
         x4 = self.dense4(x)
         x4 = self.batch_norm4(x4)
@@ -388,7 +388,7 @@ class Model2(nn.Module):
         x4 = self.dropout4(x4)
 
 
-        x = torch.cat([x, x1, x2, x3, x4], 1)
+        x = torch.cat([x, x4], 1)
 
 
 
@@ -397,13 +397,13 @@ class Model2(nn.Module):
         x41 = self.batch_norm41(x41)
         x41 = self.LeakyReLU(x41)
         x41 = self.dropout41(x41) 
-        x = torch.cat([x, x1, x2, x3, x4, x41], 1)
+        x = torch.cat([x, x41], 1)
         # my code
         x42 = self.dense42(x)
         x42 = self.batch_norm42(x42)
         x42 = self.LeakyReLU(x42)
         x42 = self.dropout42(x42) 
-        x = torch.cat([x, x1, x2, x3, x4, x41, x42], 1)
+        x = torch.cat([x, x42], 1)
 
         x_res = []
         x_res.append(x1)
