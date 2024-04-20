@@ -401,7 +401,8 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     model = model.cuda()
     model = DataParallel(model)
 
-    optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
+    # lr = 1e-3 weight_decay=1e-5
+    optimizer = torch.optim.Adam(model.parameters(), lr=1e-2, weight_decay=1e-4)
     scheduler = None
 #     loss_fn = nn.BCEWithLogitsLoss()
     loss_fn = SmoothBCEwLogits(smoothing=0.005) # 0.005
