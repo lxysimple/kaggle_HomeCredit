@@ -301,6 +301,11 @@ class Model2(nn.Module):
         
         self.dense51 = nn.Linear(2*hidden_size, hidden_size//8)
         self.dense52 = nn.Linear(2*hidden_size, hidden_size//2)
+        self.batch_norm51 = nn.BatchNorm1d(hidden_size//8)
+        self.dropout51 = nn.Dropout(dropout_rate)
+        self.batch_norm52 = nn.BatchNorm1d(hidden_size//2)
+        self.dropout52 = nn.Dropout(dropout_rate)
+
         self.dense5 = nn.Linear(hidden_size//8+hidden_size//2, len(target_cols)) 
         # ================================
         # self.denses = nn.ModuleList()
@@ -410,7 +415,19 @@ class Model2(nn.Module):
         #     x = torch.cat([x_pre, x_i], 1)
         #     x_pre = x_i
 
-        x = torch.cat([x3, x4], 1)  
+        x = torch.cat([x3, x4], 1)
+        
+        x51 = self.dense51(x)
+        x51 = self.batch_norm51(x51)
+        x51 = self.LeakyReLU(x51)
+        x51 = self.dropout51(x51)
+
+        x52 = self.dense52(x)
+        x52 = self.batch_norm52(x52)
+        x52 = self.LeakyReLU(x52)
+        x52 = self.dropout52(x52)
+
+        x = torch.cat([x51, x52], 1)
         x = self.dense5(x)
 
         # x = torch.cat([x1, x2, x3, x4, x41, x42], 1)
