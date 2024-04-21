@@ -277,7 +277,22 @@ class Model3(nn.Module):
         x = x.squeeze()
         
         return x
+
+class Attention(nn.Module):
+    def __init__(self, in_features, hidden_dim):
+        super(Attention, self).__init__()
+        self.linear1 = nn.Linear(in_features, hidden_dim)
+        self.linear2 = nn.Linear(hidden_dim, 1)
     
+    def forward(self, x):
+        # 输入特征经过线性层和激活函数
+        out = F.relu(self.linear1(x))
+        # 再经过一个线性层得到注意力权重
+        attn_weights = F.softmax(self.linear2(out), dim=1)
+        # 使用注意力权重加权得到加权后的特征
+        attn_output = torch.sum(attn_weights * x, dim=1)
+        return attn_output
+        
 class Model2(nn.Module):
     def __init__(self):
         super(Model2, self).__init__()
@@ -352,6 +367,7 @@ class Model2(nn.Module):
         # self.dropout42 = nn.Dropout(dropout_rate)
 
 
+        self.attention = Attention(2*hidden_size, 2*hidden_size)
 
         self.dense6 = nn.Linear(2*hidden_size, len(target_cols))
         # ================================
@@ -427,7 +443,7 @@ class Model2(nn.Module):
         # x42 = self.dropout42(x42) 
         # x = torch.cat([x, x42], 1)
 
-        x_res = []
+        # x_res = []
         # x_res.append(x1)
         # x_res.append(x2)
         # x_res.append(x3)
@@ -436,19 +452,21 @@ class Model2(nn.Module):
         # x_res.append(x42)
 
         # x_pre = x4
-        for i in range(5):
+        # for i in range(5):
 
-            x_i = self.denses[i](x)
-            x_i = self.batch_norms[i](x_i)
-            x_i = self.LeakyReLU(x_i)
-            x_i = self.dropouts[i](x_i)
+        #     x_i = self.denses[i](x)
+        #     x_i = self.batch_norms[i](x_i)
+        #     x_i = self.LeakyReLU(x_i)
+        #     x_i = self.dropouts[i](x_i)
         
-            x_res.append(x_i)
-            # x = torch.cat([x_pre, x_i], 1)
-            x = torch.cat([x, x_i], 1)
-            # x_pre = x_i
+        #     x_res.append(x_i)
+        #     # x = torch.cat([x_pre, x_i], 1)
+        #     x = torch.cat([x, x_i], 1)
+        #     # x_pre = x_i
 
-        # x = torch.cat([x3, x4], 1)
+        
+        x = torch.cat([x3, x4], 1)
+        x = self.attention(x)
         
         # x51 = self.dense51(x)
         # x51 = self.batch_norm51(x51)
@@ -461,12 +479,12 @@ class Model2(nn.Module):
         # x52 = self.dropout52(x52)
 
         # x = torch.cat([x51, x52], 1)
-        # x = self.dense5(x)
+        x = self.dense5(x)
 
         # x = torch.cat([x1, x2, x3, x4, x41, x42], 1)
             
-        x = torch.cat(x_res[-2:], 1)
-        x = self.dense6(x)
+        # x = torch.cat(x_res[-2:], 1)
+        # x = self.dense6(x)
 
         x = x.squeeze()
         
