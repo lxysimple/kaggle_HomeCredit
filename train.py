@@ -64,13 +64,9 @@ def to_pandas(df_data, cat_cols=None):
     df_data[cat_cols] = df_data[cat_cols].astype("category")
     return df_data, cat_cols
 
-@lru_cache(maxsize=None)
-def load_train_data():
-    return pd.read_csv('/home/xyli/kaggle/train.csv')
 
-# 第一次调用会加载数据
-df_train = load_train_data()
-# df_train = pd.read_csv('/home/xyli/kaggle/train.csv')
+
+df_train = pd.read_csv('/home/xyli/kaggle/train.csv')
 
 _, cat_cols = to_pandas(df_train)
 
