@@ -472,7 +472,6 @@ class Model2(nn.Module):
 
         
         x = torch.cat([x3, x4], 1)
-        # x = self.attention(x)
 
         # x51 = self.dense51(x)
         # x51 = self.batch_norm51(x51)
