@@ -581,6 +581,7 @@ def train_fn(model, optimizer, scheduler, loss_fn, dataloader, device):
         loss = loss_fn(outputs, label)
         loss.backward()
         optimizer.step()
+        
     if scheduler:
         scheduler.step()
 
