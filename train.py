@@ -309,20 +309,20 @@ class Model2(nn.Module):
         # self.dense5 = nn.Linear(hidden_size//8+hidden_size//2, len(target_cols)) 
         # ================================
 
-        self.denses = nn.ModuleList()
-        for i in range(50):
-            self.dense = nn.Linear(len(all_feat_cols), hidden_size)
-            self.denses.append(self.dense)
+        # self.denses = nn.ModuleList()
+        # for i in range(50):
+        #     self.dense = nn.Linear(len(all_feat_cols), hidden_size)
+        #     self.denses.append(self.dense)
 
-        self.batch_norms = nn.ModuleList()
-        for i in range(50):
-            self.batch_norm4 = nn.BatchNorm1d(hidden_size)
-            self.batch_norms.append(self.batch_norm4)
+        # self.batch_norms = nn.ModuleList()
+        # for i in range(50):
+        #     self.batch_norm4 = nn.BatchNorm1d(hidden_size)
+        #     self.batch_norms.append(self.batch_norm4)
 
-        self.denses2 = nn.ModuleList()
-        for i in range(50):
-            self.dense = nn.Linear(hidden_size, 1)
-            self.denses2.append(self.dense)   
+        # self.denses2 = nn.ModuleList()
+        # for i in range(50):
+        #     self.dense = nn.Linear(hidden_size, 1)
+        #     self.denses2.append(self.dense)   
 
         # self.denses = nn.ModuleList()
         # self.batch_norms = nn.ModuleList()
@@ -361,15 +361,15 @@ class Model2(nn.Module):
         x = self.batch_norm0(x)
         x = self.dropout0(x)
 
-        x_res = []
-        for i in range(50):
-            x_i = self.denses[i](x)
-            x_i = self.batch_norms[i](x_i)
-            x_i = self.denses2[i](x_i)
-            x_res.append(x_i)
+        # x_res = []
+        # for i in range(50):
+        #     x_i = self.denses[i](x)
+        #     x_i = self.batch_norms[i](x_i)
+        #     x_i = self.denses2[i](x_i)
+        #     x_res.append(x_i)
             
-        for i in range(50):
-            x = torch.cat((x, x_res[i]), dim=1)
+        # for i in range(50):
+        #     x = torch.cat((x, x_res[i]), dim=1)
 
 
         x1 = self.dense1(x)
@@ -465,6 +465,93 @@ class Model2(nn.Module):
         x = x.squeeze()
         
         return x
+
+class ResNet_1D_Block(nn.Module):
+    def __init__(
+        self,
+        in_channels=386, 
+        out_channels=256,
+        kernel_size=1,
+        stride=1,
+        padding=0,
+        downsampling=0,
+        dilation=1, # 取值为 1，表示卷积核的元素之间相邻，没有间隔。
+        groups=1,
+        dropout=0.0,
+    ):
+        super(ResNet_1D_Block, self).__init__()
+
+        self.bn1 = nn.BatchNorm1d(num_features=in_channels) # 修改BN层为1D
+        # self.relu = nn.ReLU(inplace=False)
+        # self.relu_1 = nn.PReLU()
+        # self.relu_2 = nn.PReLU()
+        self.relu_1 = nn.Hardswish()
+        self.relu_2 = nn.Hardswish()
+
+        self.dropout = nn.Dropout(p=dropout, inplace=False)
+        self.conv1 = nn.Conv1d(
+            in_channels=in_channels,
+            out_channels=out_channels,
+            kernel_size=kernel_size,
+            stride=stride,
+            padding=padding,
+            dilation=dilation,
+            groups=groups,
+            bias=False,
+        )
+
+        self.bn2 = nn.BatchNorm1d(num_features=out_channels)
+        self.conv2 = nn.Conv1d(
+            in_channels=out_channels,
+            out_channels=out_channels,
+            kernel_size=kernel_size,
+            stride=stride,
+            padding=padding,
+            dilation=dilation,
+            groups=groups,
+            bias=False,
+        )
+
+        self.maxpool = nn.MaxPool1d(
+            kernel_size=2,
+            stride=2,
+            padding=0,
+            dilation=dilation,
+        )
+        self.downsampling = downsampling
+
+    def forward(self, x):
+        identity = x
+        
+        # 和原代码有点不一样，这里就是先bn+relu，原代码是先conv
+        out = self.bn1(x)
+        out = self.relu_1(out)
+        out = self.dropout(out)
+        out = self.conv1(out)
+        
+        out = self.bn2(out)
+        out = self.relu_2(out)
+        out = self.dropout(out)
+        out = self.conv2(out)
+
+        out = self.maxpool(out)
+        identity = self.downsampling(x)
+        
+        # 输入进模型的是未bn+rulu的数据，所以跳跃连接也要是同类型
+        out += identity
+        return out
+
+
+
+
+
+
+
+
+
+
+
+
 
 from torch.utils.data import Dataset
 
