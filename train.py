@@ -655,7 +655,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
             print(
                 f"FOLD{fold} EPOCH:{epoch:3} train_loss={train_loss:.5f} "
                 f"roc_auc_score={valid_auc:.5f} "
-                f"time: {(time.time() - start_time) / 60:.2f}min"
+                f"time: {(time.time() - start_time) / 60:.2f}min "
                 f"lr: {optimizer.param_groups[0]['lr']}"
             )
             if train_loss < best_train_loss and valid_auc > best_valid_auc:
