@@ -633,20 +633,36 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
 
     # lr = 1e-3 weight_decay=1e-5
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
-    scheduler = None
+    # scheduler = None
+
+    scheduler = torch.optim.lr_scheduler.MultiStepLR(
+        optimizer, 
+        milestones=[20,40], 
+        gamma=0.1,
+        last_epoch=-1
+    )
+
 #     loss_fn = nn.BCEWithLogitsLoss()
     loss_fn = SmoothBCEwLogits(smoothing=0.005) # 0.005
 
+    best_train_loss = 999.0
+    best_valid_auc = -1
     for epoch in range(60):
             start_time = time.time()
             train_loss = train_fn(model, optimizer, scheduler, loss_fn, train_loader, device)
             valid_pred = inference_fn(model, valid_loader, device)
             valid_auc = roc_auc_score(y_valid, valid_pred)
-            print(f"FOLD{fold} EPOCH:{epoch:3} train_loss={train_loss:.5f} "
-                    f"roc_auc_score={valid_auc:.5f} "
-                    f"time: {(time.time() - start_time) / 60:.2f}min")
+            print(
+                f"FOLD{fold} EPOCH:{epoch:3} train_loss={train_loss:.5f} "
+                f"roc_auc_score={valid_auc:.5f} "
+                f"time: {(time.time() - start_time) / 60:.2f}min"
+                f"lr: {optimizer.param_groups[0]['lr']}"
+            )
+            if train_loss < best_train_loss and valid_auc > best_valid_auc:
+                torch.save(model.module.state_dict(), f"./best_nn_model.pt")
 
     fold = fold+1
+    scheduler.step()
     break
 
 
