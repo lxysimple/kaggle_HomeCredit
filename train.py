@@ -368,8 +368,10 @@ class Model2(nn.Module):
         # self.batch_norm42 = nn.BatchNorm1d(hidden_size)
         # self.dropout42 = nn.Dropout(dropout_rate)
 
-
-        self.attention = Attention(hidden_size, hidden_size)
+        self.attention1 = Attention(hidden_size, hidden_size)
+        self.attention2 = Attention(hidden_size, hidden_size)
+        self.attention3 = Attention(hidden_size, hidden_size)
+        self.attention4 = Attention(hidden_size, hidden_size)
 
         self.dense6 = nn.Linear(2*hidden_size, len(target_cols))
         # ================================
@@ -401,7 +403,7 @@ class Model2(nn.Module):
         # x = self.PReLU(x)
         x1 = self.LeakyReLU(x1)
         x1 = self.dropout1(x1)
-        x1 = self.attention(x1)
+        x1 = self.attention1(x1)
 
         x = torch.cat([x, x1], 1)
 
@@ -411,7 +413,7 @@ class Model2(nn.Module):
         # x = self.PReLU(x)
         x2 = self.LeakyReLU(x2)
         x2 = self.dropout2(x2)
-        x2 = self.attention(x2)
+        x2 = self.attention2(x2)
 
         x = torch.cat([x, x2], 1)
 
@@ -421,7 +423,7 @@ class Model2(nn.Module):
         # x = self.PReLU(x)
         x3 = self.LeakyReLU(x3)
         x3 = self.dropout3(x3)
-        x3 = self.attention(x3)
+        x3 = self.attention3(x3)
 
         x = torch.cat([x, x3], 1)
 
@@ -431,7 +433,7 @@ class Model2(nn.Module):
         # x = self.PReLU(x)
         x4 = self.LeakyReLU(x4)
         x4 = self.dropout4(x4)
-        x4 = self.attention(x4)
+        x4 = self.attention4(x4)
         
 
         x = torch.cat([x, x4], 1)
