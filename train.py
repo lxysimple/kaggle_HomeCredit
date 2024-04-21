@@ -581,7 +581,7 @@ def train_fn(model, optimizer, scheduler, loss_fn, dataloader, device):
         loss = loss_fn(outputs, label)
         loss.backward()
         optimizer.step()
-        
+
     if scheduler:
         scheduler.step()
 
@@ -662,7 +662,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
         if train_loss < best_train_loss and valid_auc > best_valid_auc:
             best_train_loss = train_loss
             best_valid_auc = valid_auc
-            torch.save(model.module.state_dict(), f"./best_nn_model.pt")
+            torch.save(model.module.state_dict(), f"./best_nn_fold{fold}.pt") 
 
             
     fold = fold+1
