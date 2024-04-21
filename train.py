@@ -581,8 +581,8 @@ def train_fn(model, optimizer, scheduler, loss_fn, dataloader, device):
         loss = loss_fn(outputs, label)
         loss.backward()
         optimizer.step()
-        if scheduler:
-            scheduler.step()
+    if scheduler:
+        scheduler.step()
 
         final_loss += loss.item()
 
@@ -648,23 +648,24 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     best_train_loss = 999.0
     best_valid_auc = -1
     for epoch in range(60):
-            start_time = time.time()
-            train_loss = train_fn(model, optimizer, scheduler, loss_fn, train_loader, device)
-            valid_pred = inference_fn(model, valid_loader, device)
-            valid_auc = roc_auc_score(y_valid, valid_pred)
-            print(
-                f"FOLD{fold} EPOCH:{epoch:3} train_loss={train_loss:.5f} "
-                f"roc_auc_score={valid_auc:.5f} "
-                f"time: {(time.time() - start_time) / 60:.2f}min "
-                f"lr: {optimizer.param_groups[0]['lr']}"
-            )
-            if train_loss < best_train_loss and valid_auc > best_valid_auc:
-                best_train_loss = train_loss
-                best_valid_auc = valid_auc
-                torch.save(model.module.state_dict(), f"./best_nn_model.pt")
+        start_time = time.time()
+        train_loss = train_fn(model, optimizer, scheduler, loss_fn, train_loader, device)
+        valid_pred = inference_fn(model, valid_loader, device)
+        valid_auc = roc_auc_score(y_valid, valid_pred)
+        print(
+            f"FOLD{fold} EPOCH:{epoch:3} train_loss={train_loss:.5f} "
+            f"roc_auc_score={valid_auc:.5f} "
+            f"time: {(time.time() - start_time) / 60:.2f}min "
+            f"lr: {optimizer.param_groups[0]['lr']}"
+        )
+        if train_loss < best_train_loss and valid_auc > best_valid_auc:
+            best_train_loss = train_loss
+            best_valid_auc = valid_auc
+            torch.save(model.module.state_dict(), f"./best_nn_model.pt")
 
+            
     fold = fold+1
-    scheduler.step()
+    
     break
 
 
