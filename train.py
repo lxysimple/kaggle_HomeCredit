@@ -48,6 +48,9 @@ def seed_everything(seed=42):
     torch.backends.cudnn.deterministic = True
 seed_everything(seed=42)
 
+from functools import lru_cache
+
+
 # ======================================== 导入配置 =====================================
 
 
@@ -61,7 +64,13 @@ def to_pandas(df_data, cat_cols=None):
     df_data[cat_cols] = df_data[cat_cols].astype("category")
     return df_data, cat_cols
 
-df_train = pd.read_csv('/home/xyli/kaggle/train.csv')
+@lru_cache(maxsize=None)
+def load_train_data():
+    return pd.read_csv('/home/xyli/kaggle/train.csv')
+
+# 第一次调用会加载数据
+df_train = load_train_data()
+# df_train = pd.read_csv('/home/xyli/kaggle/train.csv')
 
 _, cat_cols = to_pandas(df_train)
 
@@ -281,19 +290,19 @@ class Model2(nn.Module):
 
         dropout_rate = 0.2 # 0.1>0.2
         hidden_size = 256 # 386>256
-        self.dense1 = nn.Linear(len(all_feat_cols)+50, hidden_size)
+        self.dense1 = nn.Linear(len(all_feat_cols), hidden_size)
         self.batch_norm1 = nn.BatchNorm1d(hidden_size)
         self.dropout1 = nn.Dropout(dropout_rate)
 
-        self.dense2 = nn.Linear(hidden_size+len(all_feat_cols)+50, hidden_size)
+        self.dense2 = nn.Linear(hidden_size+len(all_feat_cols), hidden_size)
         self.batch_norm2 = nn.BatchNorm1d(hidden_size)
         self.dropout2 = nn.Dropout(dropout_rate)
 
-        self.dense3 = nn.Linear(len(all_feat_cols)+2*hidden_size+50, hidden_size)
+        self.dense3 = nn.Linear(len(all_feat_cols)+2*hidden_size, hidden_size)
         self.batch_norm3 = nn.BatchNorm1d(hidden_size)
         self.dropout3 = nn.Dropout(dropout_rate)
 
-        self.dense4 = nn.Linear(len(all_feat_cols)+3*hidden_size+50, hidden_size)
+        self.dense4 = nn.Linear(len(all_feat_cols)+3*hidden_size, hidden_size)
         self.batch_norm4 = nn.BatchNorm1d(hidden_size)
         self.dropout4 = nn.Dropout(dropout_rate)
 
