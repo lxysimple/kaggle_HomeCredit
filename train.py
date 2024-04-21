@@ -652,11 +652,11 @@ class EEGNet(nn.Module):
         return nn.Sequential(*layers)
 
     def extract_features(self, x):  
-       """
-       1.多尺度初步提取特征，并不是特征金字塔结构
-       2.堆叠basicblock提取特征
-       3.最后RNN提取时序特征
-       """  
+        """
+        1.多尺度初步提取特征，并不是特征金字塔结构
+        2.堆叠basicblock提取特征
+        3.最后RNN提取时序特征
+        """  
         
         # x = x.permute(0, 2, 1)   
        
