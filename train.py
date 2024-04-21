@@ -329,19 +329,19 @@ class Model2(nn.Module):
         #     self.dense = nn.Linear(hidden_size, 1)
         #     self.denses2.append(self.dense)   
 
-        # self.denses = nn.ModuleList()
-        # self.batch_norms = nn.ModuleList()
-        # self.dropouts = nn.ModuleList()
+        self.denses = nn.ModuleList()
+        self.batch_norms = nn.ModuleList()
+        self.dropouts = nn.ModuleList()
 
-        # for i in range(100):
-        #     self.dense = nn.Linear(hidden_size+hidden_size, hidden_size)
-        #     self.denses.append(self.dense)
-        # for i in range(5):
-        #     self.batch_norm = nn.BatchNorm1d(hidden_size)
-        #     self.batch_norms.append(self.batch_norm)
-        # for i in range(5):
-        #     self.dropout = nn.Dropout(dropout_rate)
-        #     self.dropouts.append(self.dropout)
+        for i in range(5):
+            self.dense = nn.Linear((i+4)*hidden_size, hidden_size) 
+            self.denses.append(self.dense)
+        for i in range(5):
+            self.batch_norm = nn.BatchNorm1d(hidden_size)
+            self.batch_norms.append(self.batch_norm)
+        for i in range(5):
+            self.dropout = nn.Dropout(dropout_rate)
+            self.dropouts.append(self.dropout)
 
         # self.dense41 = nn.Linear(5*hidden_size, hidden_size)
         # self.batch_norm41 = nn.BatchNorm1d(hidden_size)
@@ -353,7 +353,7 @@ class Model2(nn.Module):
 
 
 
-        self.dense6 = nn.Linear(4*hidden_size, len(target_cols))
+        self.dense6 = nn.Linear(7*hidden_size, len(target_cols))
         # ================================
 
         self.Relu = nn.ReLU(inplace=True)
@@ -427,27 +427,28 @@ class Model2(nn.Module):
         # x42 = self.dropout42(x42) 
         # x = torch.cat([x, x42], 1)
 
-        # x_res = []
+        x_res = []
         # x_res.append(x1)
         # x_res.append(x2)
-        # x_res.append(x3)
-        # x_res.append(x4)
+        x_res.append(x3)
+        x_res.append(x4)
         # x_res.append(x41)
         # x_res.append(x42)
 
         # x_pre = x4
-        # for i in range(5):
+        for i in range(5):
 
-        #     x_i = self.denses[i](x)
-        #     x_i = self.batch_norms[i](x_i)
-        #     x_i = self.LeakyReLU(x_i)
-        #     x_i = self.dropouts[i](x_i)
+            x_i = self.denses[i](x)
+            x_i = self.batch_norms[i](x_i)
+            x_i = self.LeakyReLU(x_i)
+            x_i = self.dropouts[i](x_i)
         
-        #     x_res.append(x_i)
-        #     x = torch.cat([x_pre, x_i], 1)
-        #     x_pre = x_i
+            x_res.append(x_i)
+            # x = torch.cat([x_pre, x_i], 1)
+            x = torch.cat([x, x_i], 1)
+            # x_pre = x_i
 
-        x = torch.cat([x3, x4], 1)
+        # x = torch.cat([x3, x4], 1)
         
         # x51 = self.dense51(x)
         # x51 = self.batch_norm51(x51)
@@ -460,12 +461,12 @@ class Model2(nn.Module):
         # x52 = self.dropout52(x52)
 
         # x = torch.cat([x51, x52], 1)
-        x = self.dense5(x)
+        # x = self.dense5(x)
 
         # x = torch.cat([x1, x2, x3, x4, x41, x42], 1)
             
-        # x = torch.cat(x_res, 1)
-        # x = self.dense6(x)
+        x = torch.cat(x_res, 1)
+        x = self.dense6(x)
 
         x = x.squeeze()
         
