@@ -322,7 +322,7 @@ class Model2(nn.Module):
         self.denses2 = nn.ModuleList()
         for i in range(50):
             self.dense = nn.Linear(hidden_size, 1)
-            self.denses.append(self.dense)   
+            self.denses2.append(self.dense)   
 
         # self.denses = nn.ModuleList()
         # self.batch_norms = nn.ModuleList()
