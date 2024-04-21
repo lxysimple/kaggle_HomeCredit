@@ -659,6 +659,8 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
                 f"lr: {optimizer.param_groups[0]['lr']}"
             )
             if train_loss < best_train_loss and valid_auc > best_valid_auc:
+                best_train_loss = train_loss
+                best_valid_auc = valid_auc
                 torch.save(model.module.state_dict(), f"./best_nn_model.pt")
 
     fold = fold+1
