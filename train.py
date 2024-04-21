@@ -311,8 +311,18 @@ class Model2(nn.Module):
 
         self.denses = nn.ModuleList()
         for i in range(50):
-            self.dense = nn.Linear(len(all_feat_cols), 1)
+            self.dense = nn.Linear(len(all_feat_cols), hidden_size)
             self.denses.append(self.dense)
+
+        self.batch_norms = nn.ModuleList()
+        for i in range(50):
+            self.batch_norm4 = nn.BatchNorm1d(hidden_size)
+            self.batch_norms.append(self.batch_norm4)
+
+        self.denses2 = nn.ModuleList()
+        for i in range(50):
+            self.dense = nn.Linear(hidden_size, 1)
+            self.denses.append(self.dense)   
 
         # self.denses = nn.ModuleList()
         # self.batch_norms = nn.ModuleList()
@@ -354,6 +364,8 @@ class Model2(nn.Module):
         x_res = []
         for i in range(50):
             x_i = self.denses[i](x)
+            x_i = self.batch_norms[i](x_i)
+            x_i = self.denses2[i](x_i)
             x_res.append(x_i)
             
         for i in range(50):
