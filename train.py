@@ -637,7 +637,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
 #     loss_fn = nn.BCEWithLogitsLoss()
     loss_fn = SmoothBCEwLogits(smoothing=0.005) # 0.005
 
-    for epoch in range(20):
+    for epoch in range(60):
             start_time = time.time()
             train_loss = train_fn(model, optimizer, scheduler, loss_fn, train_loader, device)
             valid_pred = inference_fn(model, valid_loader, device)
