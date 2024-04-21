@@ -284,8 +284,8 @@ class Model2(nn.Module):
         self.batch_norm0 = nn.BatchNorm1d(len(all_feat_cols))
         self.dropout0 = nn.Dropout(0.2) # 0.2
 
-        dropout_rate = 0.1 # 0.1>0.2
-        hidden_size = 386 # 386>256
+        dropout_rate = 0.2 # 0.1>0.2
+        hidden_size = 256 # 386>256
         self.dense1 = nn.Linear(len(all_feat_cols), hidden_size)
         self.batch_norm1 = nn.BatchNorm1d(hidden_size)
         self.dropout1 = nn.Dropout(dropout_rate)
