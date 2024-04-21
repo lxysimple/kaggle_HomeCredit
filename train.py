@@ -660,12 +660,14 @@ class EEGNet(nn.Module):
         
         # x = x.permute(0, 2, 1)   
        
-        out_sep = [] # 存放不同视野的特征图
-        for i in range(len(self.kernels)):
-            sep = self.parallel_conv[i](x)
-            out_sep.append(sep)
-        out = torch.cat(out_sep, dim=2) # 不同视野特征图堆叠到一起
+        # out_sep = [] # 存放不同视野的特征图
+        # for i in range(len(self.kernels)):
+        #     sep = self.parallel_conv[i](x)
+        #     out_sep.append(sep)
+        # out = torch.cat(out_sep, dim=2) # 不同视野特征图堆叠到一起
         
+        out = x
+
         # 对多尺度特征图进行一个初步的融合
         out = self.bn1(out)
         out = self.relu_1(out)
@@ -675,7 +677,7 @@ class EEGNet(nn.Module):
         out = self.block(out)
         out = self.bn2(out)
         out = self.relu_2(out)
-        out = self.avgpool(out)
+        # out = self.avgpool(out)
 
         # 对最终提取出的特征图进行一个尺度整理，喂给RNN
         # RNN能够捕捉不同样本间的时序关系
@@ -814,7 +816,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     
     # 定义dataset与dataloader
     train_set = MarketDataset(X_train, y_train)
-    train_loader = DataLoader(train_set, batch_size=15000, shuffle=True, num_workers=7)
+    train_loader = DataLoader(train_set, batch_size=15000, shuffle=False, num_workers=7)
     valid_set = MarketDataset(X_valid, y_valid)
     valid_loader = DataLoader(valid_set, batch_size=15000, shuffle=False, num_workers=7)
 
