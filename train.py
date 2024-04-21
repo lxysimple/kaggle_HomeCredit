@@ -369,7 +369,7 @@ class Model2(nn.Module):
         # self.dropout42 = nn.Dropout(dropout_rate)
 
 
-        self.attention = Attention(2*hidden_size, 2*hidden_size)
+        self.attention = Attention(hidden_size, hidden_size)
 
         self.dense6 = nn.Linear(2*hidden_size, len(target_cols))
         # ================================
