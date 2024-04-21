@@ -353,7 +353,7 @@ class Model2(nn.Module):
 
 
 
-        self.dense6 = nn.Linear(7*hidden_size, len(target_cols))
+        self.dense6 = nn.Linear(2*hidden_size, len(target_cols))
         # ================================
 
         self.Relu = nn.ReLU(inplace=True)
@@ -430,8 +430,8 @@ class Model2(nn.Module):
         x_res = []
         # x_res.append(x1)
         # x_res.append(x2)
-        x_res.append(x3)
-        x_res.append(x4)
+        # x_res.append(x3)
+        # x_res.append(x4)
         # x_res.append(x41)
         # x_res.append(x42)
 
@@ -465,7 +465,7 @@ class Model2(nn.Module):
 
         # x = torch.cat([x1, x2, x3, x4, x41, x42], 1)
             
-        x = torch.cat(x_res, 1)
+        x = torch.cat(x_res[-2:], 1)
         x = self.dense6(x)
 
         x = x.squeeze()
