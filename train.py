@@ -825,7 +825,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     
     # 定义dataset与dataloader
     train_set = MarketDataset(X_train, y_train)
-    train_loader = DataLoader(train_set, batch_size=15000, shuffle=False, num_workers=7)
+    train_loader = DataLoader(train_set, batch_size=15000, shuffle=True, num_workers=7)
     valid_set = MarketDataset(X_valid, y_valid)
     valid_loader = DataLoader(valid_set, batch_size=15000, shuffle=False, num_workers=7)
 
