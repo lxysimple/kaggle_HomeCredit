@@ -197,26 +197,26 @@ from torch.nn.parallel import DataParallel
 all_feat_cols = [i for i in range(386)]
 target_cols = [i for i in range(1)]
 
-class Attention(nn.Module):
-    def __init__(self, in_features, hidden_dim):
-        super(Attention, self).__init__()
-        self.linear1 = nn.Linear(in_features, hidden_dim*4, bias=False)
-        self.linear2 = nn.Linear(hidden_dim*4, in_features, bias=False)
-        self.LeakyReLU = nn.LeakyReLU(negative_slope=0.01, inplace=True)
-        self.sigmoid = nn.Sigmoid()    
-    def forward(self, x):
-        # # 进行平均池化, (b,w)->(1,w)
-        # out = torch.mean(x, axis=-2,  keepdim=True)
+# class Attention(nn.Module):
+#     def __init__(self, in_features, hidden_dim):
+#         super(Attention, self).__init__()
+#         self.linear1 = nn.Linear(in_features, hidden_dim*4, bias=False)
+#         self.linear2 = nn.Linear(hidden_dim*4, in_features, bias=False)
+#         self.LeakyReLU = nn.LeakyReLU(negative_slope=0.01, inplace=True)
+#         self.sigmoid = nn.Sigmoid()    
+#     def forward(self, x):
+#         # # 进行平均池化, (b,w)->(1,w)
+#         # out = torch.mean(x, axis=-2,  keepdim=True)
 
-        # 输入特征经过线性层和激活函数
-        # out = F.relu(self.linear1(x))
-        out = self.LeakyReLU(self.linear1(x))
+#         # 输入特征经过线性层和激活函数
+#         # out = F.relu(self.linear1(x))
+#         out = self.LeakyReLU(self.linear1(x))
 
-        # 再经过一个线性层得到注意力权重
-        # attn_weights = F.softmax(self.linear2(out), dim=1)
-        attn_weights = self.sigmoid(self.linear2(out))
-        # 使用注意力权重加权得到加权后的特征
-        return attn_weights * x
+#         # 再经过一个线性层得到注意力权重
+#         # attn_weights = F.softmax(self.linear2(out), dim=1)
+#         attn_weights = self.sigmoid(self.linear2(out))
+#         # 使用注意力权重加权得到加权后的特征
+#         return attn_weights * x
         
 class Model2(nn.Module):
     def __init__(self):
@@ -244,6 +244,26 @@ class Model2(nn.Module):
 
         self.dense5 = nn.Linear(2*hidden_size, len(target_cols))
 
+
+
+        hidden_size2 = 512 # 386>256
+        self.dense21 = nn.Linear(len(all_feat_cols), hidden_size2)
+        self.batch_norm21 = nn.BatchNorm1d(hidden_size2)
+        self.dropout21 = nn.Dropout(dropout_rate)
+
+        self.dense22 = nn.Linear(hidden_size2+len(all_feat_cols), hidden_size2)
+        self.batch_norm22 = nn.BatchNorm1d(hidden_size2)
+        self.dropout22 = nn.Dropout(dropout_rate)
+
+        self.dense23 = nn.Linear(len(all_feat_cols)+2*hidden_size2, hidden_size2)
+        self.batch_norm23 = nn.BatchNorm1d(hidden_size2)
+        self.dropout23 = nn.Dropout(dropout_rate)
+
+        self.dense24 = nn.Linear(len(all_feat_cols)+3*hidden_size2, hidden_size2)
+        self.batch_norm24 = nn.BatchNorm1d(hidden_size2)
+        self.dropout24 = nn.Dropout(dropout_rate)
+
+        self.dense25 = nn.Linear(2*hidden_size2 + 2*hidden_size, len(target_cols))
         # self.dense51 = nn.Linear(2*hidden_size, hidden_size//8)
         # self.dense52 = nn.Linear(2*hidden_size, hidden_size//2)
         # self.batch_norm51 = nn.BatchNorm1d(hidden_size//8)
@@ -309,6 +329,7 @@ class Model2(nn.Module):
         x = self.batch_norm0(x)
         x = self.dropout0(x)
 
+        x_clone = x.clone()
         # x_res = []
         # for i in range(50):
         #     x_i = self.denses[i](x)
@@ -358,8 +379,51 @@ class Model2(nn.Module):
         x4 = self.dropout4(x4)
         # x4 = self.attention4(x4)
         
-
         x = torch.cat([x, x4], 1)
+
+
+        x = x_clone
+        x21 = self.dense21(x)
+        x21 = self.batch_norm21(x21)
+        # x = F.relu(x)
+        # x = self.PReLU(x)
+        x21 = self.LeakyReLU(x21)
+        x21 = self.dropout1(x21)
+        # x1 = self.attention1(x1)
+
+        x = torch.cat([x, x21], 1)
+
+        x22 = self.dense22(x)
+        x22 = self.batch_norm22(x22)
+        # x = F.relu(x)
+        # x = self.PReLU(x)
+        x22 = self.LeakyReLU(x22)
+        x22 = self.dropout22(x22)
+        # x2 = self.attention2(x2)
+
+        x = torch.cat([x, x22], 1)
+
+        x23 = self.dense23(x)
+        x23 = self.batch_norm23(x23)
+        # x = F.relu(x)
+        # x = self.PReLU(x)
+        x23 = self.LeakyReLU(x23)
+        x23 = self.dropout23(x23)
+        # x3 = self.attention3(x3)
+
+        x = torch.cat([x, x23], 1)
+
+        x24 = self.dense24(x)
+        x24 = self.batch_norm24(x24)
+        # x = F.relu(x)
+        # x = self.PReLU(x)
+        x24 = self.LeakyReLU(x24)
+        x24 = self.dropout24(x24)
+        # x4 = self.attention4(x4)
+        
+        x = torch.cat([x, x24], 1)
+
+
 
         # # my code
         # x41 = self.dense41(x)
@@ -396,7 +460,8 @@ class Model2(nn.Module):
         #     # x_pre = x_i
 
         
-        x = torch.cat([x3, x4], 1)
+        x = torch.cat([x3, x4, x23, x24], 1)
+        # x = torch.cat([x3, x4], 1)
         # x = torch.cat([x2, x3], 1)
         # x = torch.cat([x4, x41], 1)
         
@@ -413,7 +478,8 @@ class Model2(nn.Module):
         # x52 = self.dropout52(x52)
 
         # x = torch.cat([x51, x52], 1)
-        x = self.dense5(x)
+        x = self.dense25(x)
+        # x = self.dense5(x)
 
         # x = torch.cat([x1, x2, x3, x4, x41, x42], 1)
             
