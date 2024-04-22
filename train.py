@@ -289,7 +289,7 @@ class Attention(nn.Module):
         # out = torch.mean(x, axis=-2,  keepdim=True)
 
         # 输入特征经过线性层和激活函数
-        out = F.relu(self.linear1(out))
+        out = F.relu(self.linear1(x))
         # 再经过一个线性层得到注意力权重
         attn_weights = F.softmax(self.linear2(out), dim=1)
         # 使用注意力权重加权得到加权后的特征
