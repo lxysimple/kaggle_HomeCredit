@@ -285,8 +285,8 @@ class Attention(nn.Module):
         self.linear2 = nn.Linear(hidden_dim//2, in_features, bias=False)
     
     def forward(self, x):
-        # 进行平均池化, (b,w)->(1,w)
-        out = torch.mean(x, axis=-2,  keepdim=True)
+        # # 进行平均池化, (b,w)->(1,w)
+        # out = torch.mean(x, axis=-2,  keepdim=True)
 
         # 输入特征经过线性层和激活函数
         out = F.relu(self.linear1(out))
@@ -617,7 +617,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     # 定义dataset与dataloader
     train_set = MarketDataset(X_train, y_train)
     # batch_size=15000
-    train_loader = DataLoader(train_set, batch_size=1500, shuffle=True, num_workers=7)
+    train_loader = DataLoader(train_set, batch_size=15000, shuffle=True, num_workers=7)
     valid_set = MarketDataset(X_valid, y_valid)
     valid_loader = DataLoader(valid_set, batch_size=15000, shuffle=False, num_workers=7)
 
