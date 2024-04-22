@@ -311,10 +311,10 @@ class Model2(nn.Module):
         # self.batch_norm42 = nn.BatchNorm1d(hidden_size)
         # self.dropout42 = nn.Dropout(dropout_rate)
 
-        self.attention1 = Attention(hidden_size, hidden_size)
-        self.attention2 = Attention(hidden_size, hidden_size)
-        self.attention3 = Attention(hidden_size, hidden_size)
-        self.attention4 = Attention(2*hidden_size, 2*hidden_size)
+        # self.attention1 = Attention(hidden_size, hidden_size)
+        # self.attention2 = Attention(hidden_size, hidden_size)
+        # self.attention3 = Attention(hidden_size, hidden_size)
+        # self.attention4 = Attention(2*hidden_size, 2*hidden_size)
 
         self.dense6 = nn.Linear(2*hidden_size, len(target_cols))
         # ================================
