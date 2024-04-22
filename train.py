@@ -364,9 +364,9 @@ class Model2(nn.Module):
             self.dropout = nn.Dropout(dropout_rate)
             self.dropouts.append(self.dropout)
 
-        # self.dense41 = nn.Linear(5*hidden_size, hidden_size)
-        # self.batch_norm41 = nn.BatchNorm1d(hidden_size)
-        # self.dropout41 = nn.Dropout(dropout_rate)
+        self.dense41 = nn.Linear(len(all_feat_cols)+4*hidden_size, hidden_size)
+        self.batch_norm41 = nn.BatchNorm1d(hidden_size)
+        self.dropout41 = nn.Dropout(dropout_rate)
 
         # self.dense42 = nn.Linear(6*hidden_size, hidden_size)
         # self.batch_norm42 = nn.BatchNorm1d(hidden_size)
@@ -431,16 +431,16 @@ class Model2(nn.Module):
 
         x = torch.cat([x, x3], 1)
 
-        # x4 = self.dense4(x)
-        # x4 = self.batch_norm4(x4)
-        # # x = F.relu(x)
-        # # x = self.PReLU(x)
-        # x4 = self.LeakyReLU(x4)
-        # x4 = self.dropout4(x4)
-        # # x4 = self.attention4(x4)
+        x4 = self.dense4(x)
+        x4 = self.batch_norm4(x4)
+        # x = F.relu(x)
+        # x = self.PReLU(x)
+        x4 = self.LeakyReLU(x4)
+        x4 = self.dropout4(x4)
+        # x4 = self.attention4(x4)
         
 
-        # x = torch.cat([x, x4], 1)
+        x = torch.cat([x, x4], 1)
 
         # # my code
         # x41 = self.dense41(x)
@@ -477,8 +477,9 @@ class Model2(nn.Module):
         #     # x_pre = x_i
 
         
-        # x = torch.cat([x3, x4], 1)
-        x = torch.cat([x2, x3], 1)
+        x = torch.cat([x3, x4], 1)
+        # x = torch.cat([x2, x3], 1)
+        # x = torch.cat([x4, x41], 1)
         
         # x = self.attention4(x)
 
