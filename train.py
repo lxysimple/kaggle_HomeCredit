@@ -637,7 +637,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     # optimizer = torch.optim.Adam(model.parameters(), lr=1e-2, weight_decay=1e-4)
     # adam的优化版本
     optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1e-5)
-    # scheduler = None
+    scheduler = None
 
     # scheduler = torch.optim.lr_scheduler.MultiStepLR(
     #     optimizer, 
