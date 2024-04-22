@@ -629,7 +629,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     device = torch.device("cuda")
 
     model = Model2()
-    model.load_state_dict(torch.load('/home/xyli/kaggle/kaggle_HomeCredit/best_nn_fold1.pt'))
+    # model.load_state_dict(torch.load('/home/xyli/kaggle/kaggle_HomeCredit/best_nn_fold1.pt'))
     model = model.cuda()
     model = DataParallel(model)
 
