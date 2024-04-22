@@ -283,15 +283,19 @@ class Attention(nn.Module):
         super(Attention, self).__init__()
         self.linear1 = nn.Linear(in_features, hidden_dim//2, bias=False)
         self.linear2 = nn.Linear(hidden_dim//2, in_features, bias=False)
-    
+        self.LeakyReLU = nn.LeakyReLU(negative_slope=0.01, inplace=True)
+        self.sigmoid = nn.Sigmoid()    
     def forward(self, x):
         # # 进行平均池化, (b,w)->(1,w)
         # out = torch.mean(x, axis=-2,  keepdim=True)
 
         # 输入特征经过线性层和激活函数
-        out = F.relu(self.linear1(x))
+        # out = F.relu(self.linear1(x))
+        out = self.LeakyReLU(self.linear1(x))
+
         # 再经过一个线性层得到注意力权重
-        attn_weights = F.softmax(self.linear2(out), dim=1)
+        # attn_weights = F.softmax(self.linear2(out), dim=1)
+        attn_weights = self.sigmoid(self.linear2(out), dim=1)
         # 使用注意力权重加权得到加权后的特征
         return attn_weights * x
         
@@ -634,9 +638,9 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     model = DataParallel(model)
 
     # lr = 1e-3 weight_decay=1e-5
-    # optimizer = torch.optim.Adam(model.parameters(), lr=1e-2, weight_decay=1e-4)
+    optimizer = torch.optim.Adam(model.parameters(), lr=1e-2, weight_decay=1e-4)
     # adam的优化版本
-    optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1e-5)
+    # optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1e-5)
     scheduler = None
 
     # scheduler = torch.optim.lr_scheduler.MultiStepLR(
