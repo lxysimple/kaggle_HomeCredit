@@ -68,12 +68,13 @@ def to_pandas(df_data, cat_cols=None):
 
 df_train = pd.read_csv('/home/xyli/kaggle/train.csv')
 
+
 _, cat_cols = to_pandas(df_train)
 
 # sample = pd.read_csv("/kaggle/input/home-credit-credit-risk-model-stability/sample_submission.csv")
 device='gpu'
 #n_samples=200000
-n_est=6000
+n_est=12000 # 6000
 # DRY_RUN = True if sample.shape[0] == 10 else False   
 # if DRY_RUN:
 # if True:
@@ -588,87 +589,85 @@ def train_fn(model, optimizer, scheduler, loss_fn, dataloader, device):
 
 # ======================================== nn模型训练 =====================================
 
-from torch.utils.data import DataLoader
-import torch
-import time
-import torch.nn.functional as F
+# from torch.utils.data import DataLoader
+# import torch
+# import time
+# import torch.nn.functional as F
 
 
 
-fold = 1
-for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环5次
+# fold = 1
+# for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环5次
 
-    # from IPython import embed
-    # embed()
+#     # from IPython import embed
+#     # embed()
 
-    # X_train(≈40000,386), y_train(≈40000)
-    X_train, y_train = df_train.iloc[idx_train].values, y.iloc[idx_train].values 
-    X_valid, y_valid = df_train.iloc[idx_valid].values, y.iloc[idx_valid].values
+#     # X_train(≈40000,386), y_train(≈40000)
+#     X_train, y_train = df_train.iloc[idx_train].values, y.iloc[idx_train].values 
+#     X_valid, y_valid = df_train.iloc[idx_valid].values, y.iloc[idx_valid].values
 
 
     
-    # 定义dataset与dataloader
-    train_set = MarketDataset(X_train, y_train)
-    # batch_size=15000
-    train_loader = DataLoader(train_set, batch_size=15000, shuffle=True, num_workers=7)
-    valid_set = MarketDataset(X_valid, y_valid)
-    valid_loader = DataLoader(valid_set, batch_size=15000, shuffle=False, num_workers=7)
+#     # 定义dataset与dataloader
+#     train_set = MarketDataset(X_train, y_train)
+#     # batch_size=15000
+#     train_loader = DataLoader(train_set, batch_size=15000, shuffle=True, num_workers=7)
+#     valid_set = MarketDataset(X_valid, y_valid)
+#     valid_loader = DataLoader(valid_set, batch_size=15000, shuffle=False, num_workers=7)
 
-    # print(valid_set[0])
+#     # print(valid_set[0])
 
     
-    print(f'Fold{fold}:') 
-    torch.cuda.empty_cache()
-    device = torch.device("cuda")
+#     print(f'Fold{fold}:') 
+#     torch.cuda.empty_cache()
+#     device = torch.device("cuda")
 
-    model = Model2()
-    # model.load_state_dict(torch.load('/home/xyli/kaggle/kaggle_HomeCredit/best_nn_fold1.pt'))
-    model = model.cuda()
-    model = DataParallel(model)
+#     model = Model2()
+#     # model.load_state_dict(torch.load('/home/xyli/kaggle/kaggle_HomeCredit/best_nn_fold1.pt'))
+#     model = model.cuda()
+#     model = DataParallel(model)
 
-    # lr = 1e-3 weight_decay=1e-5
-    optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
-    # adam的优化版本
-    # optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1e-5)
-    scheduler = None
+#     # lr = 1e-3 weight_decay=1e-5
+#     optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
+#     # adam的优化版本
+#     # optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1e-5)
+#     scheduler = None
 
-    # scheduler = torch.optim.lr_scheduler.MultiStepLR(
-    #     optimizer, 
-    #     milestones=[20,40], 
-    #     gamma=0.1,
-    #     last_epoch=-1
-    # )
+#     # scheduler = torch.optim.lr_scheduler.MultiStepLR(
+#     #     optimizer, 
+#     #     milestones=[20,40], 
+#     #     gamma=0.1,
+#     #     last_epoch=-1
+#     # )
 
-#     loss_fn = nn.BCEWithLogitsLoss()
-    loss_fn = SmoothBCEwLogits(smoothing=0.005) # 0.005
+# #     loss_fn = nn.BCEWithLogitsLoss()
+#     loss_fn = SmoothBCEwLogits(smoothing=0.005) # 0.005
 
-    best_train_loss = 999.0
-    best_valid_auc = -1
-    for epoch in range(60):
-        start_time = time.time()
-        train_loss = train_fn(model, optimizer, scheduler, loss_fn, train_loader, device)
-        valid_pred = inference_fn(model, valid_loader, device)
-        valid_auc = roc_auc_score(y_valid, valid_pred)
-        print(
-            f"FOLD{fold} EPOCH:{epoch:3} train_loss={train_loss:.5f} "
-            f"roc_auc_score={valid_auc:.5f} "
-            f"time: {(time.time() - start_time) / 60:.2f}min "
-            f"lr: {optimizer.param_groups[0]['lr']}"
-        )
-        if train_loss < best_train_loss and valid_auc > best_valid_auc:
-            best_train_loss = train_loss
-            best_valid_auc = valid_auc
-            torch.save(model.module.state_dict(), f"./best_nn_fold{fold}.pt") 
-            print(
-                f"best_nn_fold{fold}.pt "
-                f"best_train_loss: {best_train_loss} "
-                f"best_valid_auc: {best_valid_auc} "
-            )
+#     best_train_loss = 999.0
+#     best_valid_auc = -1
+#     for epoch in range(60):
+#         start_time = time.time()
+#         train_loss = train_fn(model, optimizer, scheduler, loss_fn, train_loader, device)
+#         valid_pred = inference_fn(model, valid_loader, device)
+#         valid_auc = roc_auc_score(y_valid, valid_pred)
+#         print(
+#             f"FOLD{fold} EPOCH:{epoch:3} train_loss={train_loss:.5f} "
+#             f"roc_auc_score={valid_auc:.5f} "
+#             f"time: {(time.time() - start_time) / 60:.2f}min "
+#             f"lr: {optimizer.param_groups[0]['lr']}"
+#         )
+#         if train_loss < best_train_loss and valid_auc > best_valid_auc:
+#             best_train_loss = train_loss
+#             best_valid_auc = valid_auc
+#             torch.save(model.module.state_dict(), f"./best_nn_fold{fold}.pt") 
+#             print(
+#                 f"best_nn_fold{fold}.pt "
+#                 f"best_train_loss: {best_train_loss} "
+#                 f"best_valid_auc: {best_valid_auc} "
+#             )
 
             
-    fold = fold+1
-    
-    # break
+#     fold = fold+1
 
 # ======================================== nn模型训练 =====================================
 
@@ -693,47 +692,47 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     X_valid, y_valid = df_train.iloc[idx_valid], y.iloc[idx_valid]    
         
     # ======================================
-    # train_pool = Pool(X_train, y_train,cat_features=cat_cols)
-    # val_pool = Pool(X_valid, y_valid,cat_features=cat_cols)
+    train_pool = Pool(X_train, y_train,cat_features=cat_cols)
+    val_pool = Pool(X_valid, y_valid,cat_features=cat_cols)
     
 #     train_pool = Pool(X_train, y_train)
 #     val_pool = Pool(X_valid, y_valid)
 
-#     clf = CatBoostClassifier(
-#         eval_metric='AUC',
-#         task_type='GPU',
-#         learning_rate=0.03, # 0.03
-#         iterations=n_est, # n_est
-# #         early_stopping_rounds = 500,
-#     )
-#     # clf = CatBoostClassifier(
-#     #     eval_metric='AUC',
-#     #     task_type='GPU',
-#     #     learning_rate=0.05, # 0.03
-#     #     # iterations=n_est, # n_est iterations与n_estimators二者只能有一
-#     #     grow_policy = 'Lossguide',
-#     #     max_depth = 10,
-#     #     n_estimators = 2000,   
-#     #     reg_lambda = 10,
-#     #     num_leaves = 64,
-#     #     early_stopping_rounds = 100,
-#     # )
+    clf = CatBoostClassifier(
+        eval_metric='AUC',
+        task_type='GPU',
+        learning_rate=0.03, # 0.03
+        iterations=n_est, # n_est
+#         early_stopping_rounds = 500,
+    )
+    # clf = CatBoostClassifier(
+    #     eval_metric='AUC',
+    #     task_type='GPU',
+    #     learning_rate=0.05, # 0.03
+    #     # iterations=n_est, # n_est iterations与n_estimators二者只能有一
+    #     grow_policy = 'Lossguide',
+    #     max_depth = 10,
+    #     n_estimators = 2000,   
+    #     reg_lambda = 10,
+    #     num_leaves = 64,
+    #     early_stopping_rounds = 100,
+    # )
 
-#     random_seed=3107
-#     clf.fit(
-#         train_pool, 
-#         eval_set=val_pool,
-#         verbose=300,
-# #         # 保证调试的时候不需要重新训练
-# #         save_snapshot = True, 
-# #         snapshot_file = '/kaggle/working/catboost.cbsnapshot',
-# #         snapshot_interval = 10
-#     )
-#     clf.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/catboost_fold{fold}.cbm')
-#     fitted_models_cat.append(clf)
-#     y_pred_valid = clf.predict_proba(X_valid)[:,1]
-#     auc_score = roc_auc_score(y_valid, y_pred_valid)
-#     cv_scores_cat.append(auc_score)
+    random_seed=3107
+    clf.fit(
+        train_pool, 
+        eval_set=val_pool,
+        verbose=300,
+#         # 保证调试的时候不需要重新训练
+#         save_snapshot = True, 
+#         snapshot_file = '/kaggle/working/catboost.cbsnapshot',
+#         snapshot_interval = 10
+    )
+    clf.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/catboost_fold{fold}.cbm')
+    fitted_models_cat.append(clf)
+    y_pred_valid = clf.predict_proba(X_valid)[:,1]
+    auc_score = roc_auc_score(y_valid, y_pred_valid)
+    cv_scores_cat.append(auc_score)
     # ==================================
     
     # ==================================
