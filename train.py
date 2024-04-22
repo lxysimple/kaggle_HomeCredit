@@ -165,8 +165,6 @@ for i in range(len(cat_cols)):
 from sklearn.metrics import mean_squared_error as MSE 
 from sklearn.linear_model import Ridge
 
-model_1 = Ridge(alpha=1.0)
-model_1.fit(X_train, y_train)
 
 fold = 1
 for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环5次
