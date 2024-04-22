@@ -176,8 +176,8 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     X_train, y_train = df_train.iloc[idx_train].values, y.iloc[idx_train].values 
     X_valid, y_valid = df_train.iloc[idx_valid].values, y.iloc[idx_valid].values
 
-    # model_1 = Ridge(alpha=1.0)
-    model_1 = ElasticNet(random_state=0)
+    # model_1 = Ridge(alpha=1.0) # 0.80
+    model_1 = ElasticNet(random_state=0) # 0.74
     model_1.fit(X_train, y_train)
 
     
