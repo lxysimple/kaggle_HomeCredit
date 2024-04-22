@@ -162,9 +162,31 @@ for i in range(len(cat_cols)):
 
 # ======================================== 其他模型 =====================================
 
+from sklearn.metrics import mean_squared_error as MSE 
+from sklearn.linear_model import Ridge
+
+model_1 = Ridge(alpha=1.0)
+model_1.fit(X_train, y_train)
+
+fold = 1
+for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环5次
+
+    # from IPython import embed
+    # embed()
+
+    # X_train(≈40000,386), y_train(≈40000)
+    X_train, y_train = df_train.iloc[idx_train].values, y.iloc[idx_train].values 
+    X_valid, y_valid = df_train.iloc[idx_valid].values, y.iloc[idx_valid].values
+
+    model_1 = Ridge(alpha=1.0)
+    model_1.fit(X_train, y_train)
+
+    valid_pred = model_1.predict(X_valid) 
+    valid_auc = roc_auc_score(y_valid, valid_pred)
+    print('valid_auc: ', valid_auc)
+
+    fold = fold + 1  
 # ======================================== 其他模型 =====================================
-
-
 
 
 # ======================================== nn模型 =====================================
