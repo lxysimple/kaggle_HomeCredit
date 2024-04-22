@@ -139,25 +139,25 @@ for i in range(len(cat_cols)):
 # ======================================== 清理数据 =====================================
 
 # ======================================== print =====================================
-""" 查看分类器的映射字典 """
+# """ 查看分类器的映射字典 """
 
-print(label_encoders[0].classes_)
-print(label_encoders[1].classes_)
-print(label_encoders[2].classes_)
-print(label_encoders[3].classes_)
-print(label_encoders[5].classes_)
+# print(label_encoders[0].classes_)
+# print(label_encoders[1].classes_)
+# print(label_encoders[2].classes_)
+# print(label_encoders[3].classes_)
+# print(label_encoders[5].classes_)
 
 
-""" 看一下数值列数据清理和非数值列打标签后大体是啥样 """
+# """ 看一下数值列数据清理和非数值列打标签后大体是啥样 """
 
-print('np.max(df_train[cat_cols]): ', np.max(df_train[cat_cols]))
-print('np.min(df_train[cat_cols]): ', np.min(df_train[cat_cols]))
+# print('np.max(df_train[cat_cols]): ', np.max(df_train[cat_cols]))
+# print('np.min(df_train[cat_cols]): ', np.min(df_train[cat_cols]))
 
-print('np.max(df_train[non_cat_cols]): ', np.max(df_train[non_cat_cols]))
-print('np.min(df_train[non_cat_cols]): ', np.min(df_train[non_cat_cols]))
+# print('np.max(df_train[non_cat_cols]): ', np.max(df_train[non_cat_cols]))
+# print('np.min(df_train[non_cat_cols]): ', np.min(df_train[non_cat_cols]))
 
-print('np.max(df_train): ', np.max(df_train))
-print('np.min(df_train): ', np.min(df_train))
+# print('np.max(df_train): ', np.max(df_train))
+# print('np.min(df_train): ', np.min(df_train))
 # ======================================== print =====================================
 
 # ======================================== nn模型 =====================================
