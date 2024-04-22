@@ -431,16 +431,16 @@ class Model2(nn.Module):
 
         x = torch.cat([x, x3], 1)
 
-        x4 = self.dense4(x)
-        x4 = self.batch_norm4(x4)
-        # x = F.relu(x)
-        # x = self.PReLU(x)
-        x4 = self.LeakyReLU(x4)
-        x4 = self.dropout4(x4)
-        # x4 = self.attention4(x4)
+        # x4 = self.dense4(x)
+        # x4 = self.batch_norm4(x4)
+        # # x = F.relu(x)
+        # # x = self.PReLU(x)
+        # x4 = self.LeakyReLU(x4)
+        # x4 = self.dropout4(x4)
+        # # x4 = self.attention4(x4)
         
 
-        x = torch.cat([x, x4], 1)
+        # x = torch.cat([x, x4], 1)
 
         # # my code
         # x41 = self.dense41(x)
@@ -477,9 +477,10 @@ class Model2(nn.Module):
         #     # x_pre = x_i
 
         
-        x = torch.cat([x3, x4], 1)
+        # x = torch.cat([x3, x4], 1)
+        x = torch.cat([x2, x3], 1)
         
-        x = self.attention4(x)
+        # x = self.attention4(x)
 
         # x51 = self.dense51(x)
         # x51 = self.batch_norm51(x51)
