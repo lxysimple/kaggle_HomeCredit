@@ -741,7 +741,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
         max_depth=10,  # 10
         learning_rate=0.05, 
         objective='binary:logistic', # 最小化的目标函数，利用它优化模型
-        metric= "auc", # 利用它选best model
+        eval_metric= "auc", # 利用它选best model
         device= 'gpu',
         grow_policy = 'lossguide',
         early_stopping_rounds=100, 
@@ -751,6 +751,22 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
         reg_lambda = 10, # L2正则化10
         max_leaves = 64, # 64
     )
+    # bst = XGBClassifier(
+    #     n_estimators=2000, # 2000颗树
+    #     max_depth=10,  # 10
+    #     learning_rate=0.05, 
+    #     objective='binary:logistic', # 最小化的目标函数，利用它优化模型
+    #     metric= "auc", # 利用它选best model
+    #     device= 'gpu',
+    #     grow_policy = 'lossguide',
+    #     early_stopping_rounds=100, 
+    #     enable_categorical=True, # 使用分类转换算法
+    #     tree_method="hist", # 使用直方图算法加速
+    #     reg_alpha = 0.1, # L1正则化0.1
+    #     reg_lambda = 10, # L2正则化10
+    #     max_leaves = 64, # 64
+    # )
+
     bst.fit(
         X_train, 
         y_train, 
