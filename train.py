@@ -281,8 +281,8 @@ class Model3(nn.Module):
 class Attention(nn.Module):
     def __init__(self, in_features, hidden_dim):
         super(Attention, self).__init__()
-        self.linear1 = nn.Linear(in_features, hidden_dim//2, bias=False)
-        self.linear2 = nn.Linear(hidden_dim//2, in_features, bias=False)
+        self.linear1 = nn.Linear(in_features, hidden_dim*4, bias=False)
+        self.linear2 = nn.Linear(hidden_dim*4, in_features, bias=False)
         self.LeakyReLU = nn.LeakyReLU(negative_slope=0.01, inplace=True)
         self.sigmoid = nn.Sigmoid()    
     def forward(self, x):
@@ -375,7 +375,7 @@ class Model2(nn.Module):
         self.attention1 = Attention(hidden_size, hidden_size)
         self.attention2 = Attention(hidden_size, hidden_size)
         self.attention3 = Attention(hidden_size, hidden_size)
-        self.attention4 = Attention(hidden_size, hidden_size)
+        self.attention4 = Attention(2*hidden_size, 2*hidden_size)
 
         self.dense6 = nn.Linear(2*hidden_size, len(target_cols))
         # ================================
@@ -407,7 +407,7 @@ class Model2(nn.Module):
         # x = self.PReLU(x)
         x1 = self.LeakyReLU(x1)
         x1 = self.dropout1(x1)
-        x1 = self.attention1(x1)
+        # x1 = self.attention1(x1)
 
         x = torch.cat([x, x1], 1)
 
@@ -417,7 +417,7 @@ class Model2(nn.Module):
         # x = self.PReLU(x)
         x2 = self.LeakyReLU(x2)
         x2 = self.dropout2(x2)
-        x2 = self.attention2(x2)
+        # x2 = self.attention2(x2)
 
         x = torch.cat([x, x2], 1)
 
@@ -427,7 +427,7 @@ class Model2(nn.Module):
         # x = self.PReLU(x)
         x3 = self.LeakyReLU(x3)
         x3 = self.dropout3(x3)
-        x3 = self.attention3(x3)
+        # x3 = self.attention3(x3)
 
         x = torch.cat([x, x3], 1)
 
@@ -437,7 +437,7 @@ class Model2(nn.Module):
         # x = self.PReLU(x)
         x4 = self.LeakyReLU(x4)
         x4 = self.dropout4(x4)
-        x4 = self.attention4(x4)
+        # x4 = self.attention4(x4)
         
 
         x = torch.cat([x, x4], 1)
@@ -478,6 +478,8 @@ class Model2(nn.Module):
 
         
         x = torch.cat([x3, x4], 1)
+        
+        x = self.attention4(x)
 
         # x51 = self.dense51(x)
         # x51 = self.batch_norm51(x51)
