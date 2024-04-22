@@ -588,82 +588,87 @@ def train_fn(model, optimizer, scheduler, loss_fn, dataloader, device):
 
 # ======================================== nn模型训练 =====================================
 
-# from torch.utils.data import DataLoader
-# import torch
-# import time
-# import torch.nn.functional as F
+from torch.utils.data import DataLoader
+import torch
+import time
+import torch.nn.functional as F
 
 
 
-# fold = 1
-# for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环5次
+fold = 1
+for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环5次
 
-#     # from IPython import embed
-#     # embed()
+    # from IPython import embed
+    # embed()
 
-#     # X_train(≈40000,386), y_train(≈40000)
-#     X_train, y_train = df_train.iloc[idx_train].values, y.iloc[idx_train].values 
-#     X_valid, y_valid = df_train.iloc[idx_valid].values, y.iloc[idx_valid].values
+    # X_train(≈40000,386), y_train(≈40000)
+    X_train, y_train = df_train.iloc[idx_train].values, y.iloc[idx_train].values 
+    X_valid, y_valid = df_train.iloc[idx_valid].values, y.iloc[idx_valid].values
 
 
     
-#     # 定义dataset与dataloader
-#     train_set = MarketDataset(X_train, y_train)
-#     # batch_size=15000
-#     train_loader = DataLoader(train_set, batch_size=15000, shuffle=True, num_workers=7)
-#     valid_set = MarketDataset(X_valid, y_valid)
-#     valid_loader = DataLoader(valid_set, batch_size=15000, shuffle=False, num_workers=7)
+    # 定义dataset与dataloader
+    train_set = MarketDataset(X_train, y_train)
+    # batch_size=15000
+    train_loader = DataLoader(train_set, batch_size=15000, shuffle=True, num_workers=7)
+    valid_set = MarketDataset(X_valid, y_valid)
+    valid_loader = DataLoader(valid_set, batch_size=15000, shuffle=False, num_workers=7)
 
-#     # print(valid_set[0])
+    # print(valid_set[0])
 
     
-#     print(f'Fold{fold}:') 
-#     torch.cuda.empty_cache()
-#     device = torch.device("cuda")
+    print(f'Fold{fold}:') 
+    torch.cuda.empty_cache()
+    device = torch.device("cuda")
 
-#     model = Model2()
-#     # model.load_state_dict(torch.load('/home/xyli/kaggle/kaggle_HomeCredit/best_nn_fold1.pt'))
-#     model = model.cuda()
-#     model = DataParallel(model)
+    model = Model2()
+    # model.load_state_dict(torch.load('/home/xyli/kaggle/kaggle_HomeCredit/best_nn_fold1.pt'))
+    model = model.cuda()
+    model = DataParallel(model)
 
-#     # lr = 1e-3 weight_decay=1e-5
-#     optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
-#     # adam的优化版本
-#     # optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1e-5)
-#     scheduler = None
+    # lr = 1e-3 weight_decay=1e-5
+    optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
+    # adam的优化版本
+    # optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1e-5)
+    scheduler = None
 
-#     # scheduler = torch.optim.lr_scheduler.MultiStepLR(
-#     #     optimizer, 
-#     #     milestones=[20,40], 
-#     #     gamma=0.1,
-#     #     last_epoch=-1
-#     # )
+    # scheduler = torch.optim.lr_scheduler.MultiStepLR(
+    #     optimizer, 
+    #     milestones=[20,40], 
+    #     gamma=0.1,
+    #     last_epoch=-1
+    # )
 
-# #     loss_fn = nn.BCEWithLogitsLoss()
-#     loss_fn = SmoothBCEwLogits(smoothing=0.005) # 0.005
+#     loss_fn = nn.BCEWithLogitsLoss()
+    loss_fn = SmoothBCEwLogits(smoothing=0.005) # 0.005
 
-#     best_train_loss = 999.0
-#     best_valid_auc = -1
-#     for epoch in range(60):
-#         start_time = time.time()
-#         train_loss = train_fn(model, optimizer, scheduler, loss_fn, train_loader, device)
-#         valid_pred = inference_fn(model, valid_loader, device)
-#         valid_auc = roc_auc_score(y_valid, valid_pred)
-#         print(
-#             f"FOLD{fold} EPOCH:{epoch:3} train_loss={train_loss:.5f} "
-#             f"roc_auc_score={valid_auc:.5f} "
-#             f"time: {(time.time() - start_time) / 60:.2f}min "
-#             f"lr: {optimizer.param_groups[0]['lr']}"
-#         )
-#         if train_loss < best_train_loss and valid_auc > best_valid_auc:
-#             best_train_loss = train_loss
-#             best_valid_auc = valid_auc
-#             torch.save(model.module.state_dict(), f"./best_nn_fold{fold}.pt") 
+    best_train_loss = 999.0
+    best_valid_auc = -1
+    for epoch in range(60):
+        start_time = time.time()
+        train_loss = train_fn(model, optimizer, scheduler, loss_fn, train_loader, device)
+        valid_pred = inference_fn(model, valid_loader, device)
+        valid_auc = roc_auc_score(y_valid, valid_pred)
+        print(
+            f"FOLD{fold} EPOCH:{epoch:3} train_loss={train_loss:.5f} "
+            f"roc_auc_score={valid_auc:.5f} "
+            f"time: {(time.time() - start_time) / 60:.2f}min "
+            f"lr: {optimizer.param_groups[0]['lr']}"
+        )
+        if train_loss < best_train_loss and valid_auc > best_valid_auc:
+            best_train_loss = train_loss
+            best_valid_auc = valid_auc
+            torch.save(model.module.state_dict(), f"./best_nn_fold{fold}.pt") 
+            print(
+                f"best_nn_fold{fold}.pt "
+                f"best_train_loss: {best_train_loss} "
+                f"best_valid_auc: {best_valid_auc} "
+            )
 
             
-#     fold = fold+1
+    fold = fold+1
     
-#     break
+    # break
 
 # ======================================== nn模型训练 =====================================
 
@@ -732,45 +737,45 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     # ==================================
     
     # ==================================
-    # 一些列是很多单词，将这些单词变为唯一标号，该列就能进行多类别分类了
-    X_train[cat_cols] = X_train[cat_cols].astype("category") 
-    X_valid[cat_cols] = X_valid[cat_cols].astype("category")
+    # # 一些列是很多单词，将这些单词变为唯一标号，该列就能进行多类别分类了
+    # X_train[cat_cols] = X_train[cat_cols].astype("category") 
+    # X_valid[cat_cols] = X_valid[cat_cols].astype("category")
     
+    # # bst = XGBClassifier(
+    # #     n_estimators=2000, # 2000颗树
+    # #     max_depth=10,  # 10
+    # #     learning_rate=0.05, 
+    # #     objective='binary:logistic', # 最小化的目标函数，利用它优化模型
+    # #     eval_metric= "auc", # 利用它选best model
+    # #     device= 'gpu',
+    # #     grow_policy = 'lossguide',
+    # #     early_stopping_rounds=100, 
+    # #     enable_categorical=True, # 使用分类转换算法
+    # #     tree_method="hist", # 使用直方图算法加速
+    # #     reg_alpha = 0.1, # L1正则化0.1
+    # #     reg_lambda = 10, # L2正则化10
+    # #     max_leaves = 64, # 64
+    # # )
     # bst = XGBClassifier(
-    #     n_estimators=2000, # 2000颗树
-    #     max_depth=10,  # 10
-    #     learning_rate=0.05, 
-    #     objective='binary:logistic', # 最小化的目标函数，利用它优化模型
+    #     n_estimators = n_est,
+    #     learning_rate=0.03, 
     #     eval_metric= "auc", # 利用它选best model
     #     device= 'gpu',
     #     grow_policy = 'lossguide',
-    #     early_stopping_rounds=100, 
     #     enable_categorical=True, # 使用分类转换算法
-    #     tree_method="hist", # 使用直方图算法加速
-    #     reg_alpha = 0.1, # L1正则化0.1
-    #     reg_lambda = 10, # L2正则化10
-    #     max_leaves = 64, # 64
     # )
-    bst = XGBClassifier(
-        n_estimators = n_est,
-        learning_rate=0.03, 
-        eval_metric= "auc", # 利用它选best model
-        device= 'gpu',
-        grow_policy = 'lossguide',
-        enable_categorical=True, # 使用分类转换算法
-    )
 
-    bst.fit(
-        X_train, 
-        y_train, 
-        eval_set=[(X_valid, y_valid)],
-        verbose=300,
-    )
-    fitted_models_xgb.append(bst)
-    y_pred_valid = bst.predict_proba(X_valid)[:,1]
-    auc_score = roc_auc_score(y_valid, y_pred_valid)
-    cv_scores_xgb.append(auc_score)
-    print(f'fold:{fold},auc_score:{auc_score}')
+    # bst.fit(
+    #     X_train, 
+    #     y_train, 
+    #     eval_set=[(X_valid, y_valid)],
+    #     verbose=300,
+    # )
+    # fitted_models_xgb.append(bst)
+    # y_pred_valid = bst.predict_proba(X_valid)[:,1]
+    # auc_score = roc_auc_score(y_valid, y_pred_valid)
+    # cv_scores_xgb.append(auc_score)
+    # print(f'fold:{fold},auc_score:{auc_score}')
     # ===============================
     
     # ===============================
