@@ -743,6 +743,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
         objective='binary:logistic', # 最小化的目标函数，利用它优化模型
         metric= "auc", # 利用它选best model
         device= 'gpu',
+        grow_policy = 'lossguide',
         early_stopping_rounds=100, 
         enable_categorical=True, # 使用分类转换算法
         tree_method="hist", # 使用直方图算法加速
