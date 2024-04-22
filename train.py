@@ -99,43 +99,43 @@ df_train[cat_cols] = df_train[cat_cols].astype(str)
 # df_train = copy.deepcopy(df_train_copy)
 
 # ======================================== 清理数据 =====================================
-"""
-对cat_cols列外的所有列进行数据清理，即把nan和inf换成该列的均值
-"""
+# """
+# 对cat_cols列外的所有列进行数据清理，即把nan和inf换成该列的均值
+# """
 
-# 找到除cat_cols列外的所有列
-non_cat_cols = df_train.columns.difference(cat_cols) 
-print('df_train.shape: ', df_train.shape)
-print('df_train[cat_cols].shape: ', df_train[cat_cols].shape)
-print('df_train[non_cat_cols].shape: ', df_train[non_cat_cols].shape)
-# 求1列均值时，遇到nan/inf会自动忽略
-mean_values = df_train[non_cat_cols].mean()# 找到所有列的均值
-# 如果该列都是nan/inf，均值为inf，则令均值为0
-mean_values = mean_values.replace([np.inf, -np.inf], 0)
+# # 找到除cat_cols列外的所有列
+# non_cat_cols = df_train.columns.difference(cat_cols) 
+# print('df_train.shape: ', df_train.shape)
+# print('df_train[cat_cols].shape: ', df_train[cat_cols].shape)
+# print('df_train[non_cat_cols].shape: ', df_train[non_cat_cols].shape)
+# # 求1列均值时，遇到nan/inf会自动忽略
+# mean_values = df_train[non_cat_cols].mean()# 找到所有列的均值
+# # 如果该列都是nan/inf，均值为inf，则令均值为0
+# mean_values = mean_values.replace([np.inf, -np.inf], 0)
 
-for column in non_cat_cols:   
-    # 将nan换成该列的均值，或者0
-    df_train[column] = df_train[column].fillna(mean_values[column])
-    # 将+-无穷值替换为该列均值
-    df_train[column].replace([np.inf,-np.inf], mean_values[column], inplace=True)
+# for column in non_cat_cols:   
+#     # 将nan换成该列的均值，或者0
+#     df_train[column] = df_train[column].fillna(mean_values[column])
+#     # 将+-无穷值替换为该列均值
+#     df_train[column].replace([np.inf,-np.inf], mean_values[column], inplace=True)
     
-# print('df_train: ',df_train[non_cat_cols])
+# # print('df_train: ',df_train[non_cat_cols])
     
 
 
-"""
-对cat_cols列进行编码，保存113个编码器
-"""
-print('len(cat_cols): ', len(cat_cols))
-# 定义113个编码器
-label_encoders = [LabelEncoder() for i in range(df_train.shape[1])]
+# """
+# 对cat_cols列进行编码，保存113个编码器
+# """
+# print('len(cat_cols): ', len(cat_cols))
+# # 定义113个编码器
+# label_encoders = [LabelEncoder() for i in range(df_train.shape[1])]
 
-# print(df_train[cat_cols])
+# # print(df_train[cat_cols])
 
-# 对每列进行一个编码
-for i in range(len(cat_cols)):
-    df_encoded = label_encoders[i].fit_transform(df_train[cat_cols[i]])
-    df_train[cat_cols[i]] = df_encoded
+# # 对每列进行一个编码
+# for i in range(len(cat_cols)):
+#     df_encoded = label_encoders[i].fit_transform(df_train[cat_cols[i]])
+#     df_train[cat_cols[i]] = df_encoded
 # ======================================== 清理数据 =====================================
 
 # ======================================== print =====================================
@@ -691,76 +691,76 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     # train_pool = Pool(X_train, y_train,cat_features=cat_cols)
     # val_pool = Pool(X_valid, y_valid,cat_features=cat_cols)
     
-    train_pool = Pool(X_train, y_train)
-    val_pool = Pool(X_valid, y_valid)
+#     train_pool = Pool(X_train, y_train)
+#     val_pool = Pool(X_valid, y_valid)
 
-    clf = CatBoostClassifier(
-        eval_metric='AUC',
-        task_type='GPU',
-        learning_rate=0.03, # 0.03
-        iterations=n_est, # n_est
-#         early_stopping_rounds = 500,
-    )
-    # clf = CatBoostClassifier(
-    #     eval_metric='AUC',
-    #     task_type='GPU',
-    #     learning_rate=0.05, # 0.03
-    #     # iterations=n_est, # n_est iterations与n_estimators二者只能有一
-    #     grow_policy = 'Lossguide',
-    #     max_depth = 10,
-    #     n_estimators = 2000,   
-    #     reg_lambda = 10,
-    #     num_leaves = 64,
-    #     early_stopping_rounds = 100,
-    # )
+#     clf = CatBoostClassifier(
+#         eval_metric='AUC',
+#         task_type='GPU',
+#         learning_rate=0.03, # 0.03
+#         iterations=n_est, # n_est
+# #         early_stopping_rounds = 500,
+#     )
+#     # clf = CatBoostClassifier(
+#     #     eval_metric='AUC',
+#     #     task_type='GPU',
+#     #     learning_rate=0.05, # 0.03
+#     #     # iterations=n_est, # n_est iterations与n_estimators二者只能有一
+#     #     grow_policy = 'Lossguide',
+#     #     max_depth = 10,
+#     #     n_estimators = 2000,   
+#     #     reg_lambda = 10,
+#     #     num_leaves = 64,
+#     #     early_stopping_rounds = 100,
+#     # )
 
-    random_seed=3107
-    clf.fit(
-        train_pool, 
-        eval_set=val_pool,
-        verbose=300,
-#         # 保证调试的时候不需要重新训练
-#         save_snapshot = True, 
-#         snapshot_file = '/kaggle/working/catboost.cbsnapshot',
-#         snapshot_interval = 10
-    )
-    clf.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/catboost_fold{fold}.cbm')
-    fitted_models_cat.append(clf)
-    y_pred_valid = clf.predict_proba(X_valid)[:,1]
-    auc_score = roc_auc_score(y_valid, y_pred_valid)
-    cv_scores_cat.append(auc_score)
+#     random_seed=3107
+#     clf.fit(
+#         train_pool, 
+#         eval_set=val_pool,
+#         verbose=300,
+# #         # 保证调试的时候不需要重新训练
+# #         save_snapshot = True, 
+# #         snapshot_file = '/kaggle/working/catboost.cbsnapshot',
+# #         snapshot_interval = 10
+#     )
+#     clf.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/catboost_fold{fold}.cbm')
+#     fitted_models_cat.append(clf)
+#     y_pred_valid = clf.predict_proba(X_valid)[:,1]
+#     auc_score = roc_auc_score(y_valid, y_pred_valid)
+#     cv_scores_cat.append(auc_score)
     # ==================================
     
     # ==================================
     # 一些列是很多单词，将这些单词变为唯一标号，该列就能进行多类别分类了
-#     X_train[cat_cols] = X_train[cat_cols].astype("category") 
-#     X_valid[cat_cols] = X_valid[cat_cols].astype("category")
+    X_train[cat_cols] = X_train[cat_cols].astype("category") 
+    X_valid[cat_cols] = X_valid[cat_cols].astype("category")
     
-#     bst = XGBClassifier(
-#         n_estimators=2000, # 2000颗树
-#         max_depth=10,  # 10
-#         learning_rate=0.05, 
-#         objective='binary:logistic', # 最小化的目标函数，利用它优化模型
-#         metric= "auc", # 利用它选best model
-#         device= 'gpu',
-#         early_stopping_rounds=100, 
-#         enable_categorical=True, # 使用分类转换算法
-#         tree_method="hist", # 使用直方图算法加速
-#         reg_alpha = 0.1, # L1正则化0.1
-#         reg_lambda = 10, # L2正则化10
-#         max_leaves = 64, # 64
-#     )
-#     bst.fit(
-#         X_train, 
-#         y_train, 
-#         eval_set=[(X_valid, y_valid)],
-#         verbose=300,
-#     )
-#     fitted_models_xgb.append(bst)
-#     y_pred_valid = bst.predict_proba(X_valid)[:,1]
-#     auc_score = roc_auc_score(y_valid, y_pred_valid)
-#     cv_scores_xgb.append(auc_score)
-#     print(f'fold:{fold},auc_score:{auc_score}')
+    bst = XGBClassifier(
+        n_estimators=2000, # 2000颗树
+        max_depth=10,  # 10
+        learning_rate=0.05, 
+        objective='binary:logistic', # 最小化的目标函数，利用它优化模型
+        metric= "auc", # 利用它选best model
+        device= 'gpu',
+        early_stopping_rounds=100, 
+        enable_categorical=True, # 使用分类转换算法
+        tree_method="hist", # 使用直方图算法加速
+        reg_alpha = 0.1, # L1正则化0.1
+        reg_lambda = 10, # L2正则化10
+        max_leaves = 64, # 64
+    )
+    bst.fit(
+        X_train, 
+        y_train, 
+        eval_set=[(X_valid, y_valid)],
+        verbose=300,
+    )
+    fitted_models_xgb.append(bst)
+    y_pred_valid = bst.predict_proba(X_valid)[:,1]
+    auc_score = roc_auc_score(y_valid, y_pred_valid)
+    cv_scores_xgb.append(auc_score)
+    print(f'fold:{fold},auc_score:{auc_score}')
     # ===============================
     
     # ===============================
