@@ -118,7 +118,7 @@ print('df_train[non_cat_cols].shape: ', df_train[non_cat_cols].shape)
 # 求1列均值时，遇到nan/inf会自动忽略
 mean_values = df_train[non_cat_cols].mean()# 找到所有列的均值
 # 如果该列都是nan/inf，均值为inf，则令均值为0
-mean_values = mean_values.replace([np.inf, -np.inf], 0)
+mean_values = mean_values.replace([np.inf, -np.inf, np.nan], 0)
 
 for column in non_cat_cols:   
     # 将nan换成该列的均值，或者0
