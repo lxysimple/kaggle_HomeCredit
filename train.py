@@ -106,43 +106,43 @@ df_train[cat_cols] = df_train[cat_cols].astype(str)
 # df_train = copy.deepcopy(df_train_copy)
 
 # ======================================== 清理数据 =====================================
-# """
-# 对cat_cols列外的所有列进行数据清理，即把nan和inf换成该列的均值
-# """
+"""
+对cat_cols列外的所有列进行数据清理，即把nan和inf换成该列的均值
+"""
 
-# # 找到除cat_cols列外的所有列
-# non_cat_cols = df_train.columns.difference(cat_cols) 
-# print('df_train.shape: ', df_train.shape)
-# print('df_train[cat_cols].shape: ', df_train[cat_cols].shape)
-# print('df_train[non_cat_cols].shape: ', df_train[non_cat_cols].shape)
-# # 求1列均值时，遇到nan/inf会自动忽略
-# mean_values = df_train[non_cat_cols].mean()# 找到所有列的均值
-# # 如果该列都是nan/inf，均值为inf，则令均值为0
-# mean_values = mean_values.replace([np.inf, -np.inf], 0)
+# 找到除cat_cols列外的所有列
+non_cat_cols = df_train.columns.difference(cat_cols) 
+print('df_train.shape: ', df_train.shape)
+print('df_train[cat_cols].shape: ', df_train[cat_cols].shape)
+print('df_train[non_cat_cols].shape: ', df_train[non_cat_cols].shape)
+# 求1列均值时，遇到nan/inf会自动忽略
+mean_values = df_train[non_cat_cols].mean()# 找到所有列的均值
+# 如果该列都是nan/inf，均值为inf，则令均值为0
+mean_values = mean_values.replace([np.inf, -np.inf], 0)
 
-# for column in non_cat_cols:   
-#     # 将nan换成该列的均值，或者0
-#     df_train[column] = df_train[column].fillna(mean_values[column])
-#     # 将+-无穷值替换为该列均值
-#     df_train[column].replace([np.inf,-np.inf], mean_values[column], inplace=True)
+for column in non_cat_cols:   
+    # 将nan换成该列的均值，或者0
+    df_train[column] = df_train[column].fillna(mean_values[column])
+    # 将+-无穷值替换为该列均值
+    df_train[column].replace([np.inf,-np.inf], mean_values[column], inplace=True)
     
-# # print('df_train: ',df_train[non_cat_cols])
+# print('df_train: ',df_train[non_cat_cols])
     
 
 
-# """
-# 对cat_cols列进行编码，保存113个编码器
-# """
-# print('len(cat_cols): ', len(cat_cols))
-# # 定义113个编码器
-# label_encoders = [LabelEncoder() for i in range(df_train.shape[1])]
+"""
+对cat_cols列进行编码，保存113个编码器
+"""
+print('len(cat_cols): ', len(cat_cols))
+# 定义113个编码器
+label_encoders = [LabelEncoder() for i in range(df_train.shape[1])]
 
-# # print(df_train[cat_cols])
+# print(df_train[cat_cols])
 
-# # 对每列进行一个编码
-# for i in range(len(cat_cols)):
-#     df_encoded = label_encoders[i].fit_transform(df_train[cat_cols[i]])
-#     df_train[cat_cols[i]] = df_encoded
+# 对每列进行一个编码
+for i in range(len(cat_cols)):
+    df_encoded = label_encoders[i].fit_transform(df_train[cat_cols[i]])
+    df_train[cat_cols[i]] = df_encoded
 # ======================================== 清理数据 =====================================
 
 # ======================================== print =====================================
