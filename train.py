@@ -69,6 +69,12 @@ def to_pandas(df_data, cat_cols=None):
 df_train = pd.read_csv('/home/xyli/kaggle/train.csv')
 
 
+""" 确保df_train[cat_cols]中每列字典都有nan值 """
+new_row = pd.DataFrame([[np.nan] * len(df_train.columns)], columns=df_train.columns)
+# 将新行添加到DataFrame中
+df_train = pd.concat([df_train, new_row], ignore_index=True)
+
+
 _, cat_cols = to_pandas(df_train)
 
 # sample = pd.read_csv("/kaggle/input/home-credit-credit-risk-model-stability/sample_submission.csv")
@@ -589,257 +595,270 @@ def train_fn(model, optimizer, scheduler, loss_fn, dataloader, device):
 
 # ======================================== nn模型训练 =====================================
 
-# from torch.utils.data import DataLoader
-# import torch
-# import time
-# import torch.nn.functional as F
+from torch.utils.data import DataLoader
+import torch
+import time
+import torch.nn.functional as F
 
 
-
-# fold = 1
-# for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环5次
-
-#     # from IPython import embed
-#     # embed()
-
-#     # X_train(≈40000,386), y_train(≈40000)
-#     X_train, y_train = df_train.iloc[idx_train].values, y.iloc[idx_train].values 
-#     X_valid, y_valid = df_train.iloc[idx_valid].values, y.iloc[idx_valid].values
-
-
-    
-#     # 定义dataset与dataloader
-#     train_set = MarketDataset(X_train, y_train)
-#     # batch_size=15000
-#     train_loader = DataLoader(train_set, batch_size=15000, shuffle=True, num_workers=7)
-#     valid_set = MarketDataset(X_valid, y_valid)
-#     valid_loader = DataLoader(valid_set, batch_size=15000, shuffle=False, num_workers=7)
-
-#     # print(valid_set[0])
-
-    
-#     print(f'Fold{fold}:') 
-#     torch.cuda.empty_cache()
-#     device = torch.device("cuda")
-
-#     model = Model2()
-#     # model.load_state_dict(torch.load('/home/xyli/kaggle/kaggle_HomeCredit/best_nn_fold1.pt'))
-#     model = model.cuda()
-#     model = DataParallel(model)
-
-#     # lr = 1e-3 weight_decay=1e-5
-#     optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
-#     # adam的优化版本
-#     # optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1e-5)
-#     scheduler = None
-
-#     # scheduler = torch.optim.lr_scheduler.MultiStepLR(
-#     #     optimizer, 
-#     #     milestones=[20,40], 
-#     #     gamma=0.1,
-#     #     last_epoch=-1
-#     # )
-
-# #     loss_fn = nn.BCEWithLogitsLoss()
-#     loss_fn = SmoothBCEwLogits(smoothing=0.005) # 0.005
-
-#     best_train_loss = 999.0
-#     best_valid_auc = -1
-#     for epoch in range(30):
-#         start_time = time.time()
-#         train_loss = train_fn(model, optimizer, scheduler, loss_fn, train_loader, device)
-#         valid_pred = inference_fn(model, valid_loader, device)
-#         valid_auc = roc_auc_score(y_valid, valid_pred)
-#         print(
-#             f"FOLD{fold} EPOCH:{epoch:3} train_loss={train_loss:.5f} "
-#             f"roc_auc_score={valid_auc:.5f} "
-#             f"time: {(time.time() - start_time) / 60:.2f}min "
-#             f"lr: {optimizer.param_groups[0]['lr']}"
-#         )
-#         if train_loss < best_train_loss and valid_auc > best_valid_auc:
-#             best_train_loss = train_loss
-#             best_valid_auc = valid_auc
-#             torch.save(model.module.state_dict(), f"./best_nn_fold{fold}.pt") 
-#             print(
-#                 f"best_nn_fold{fold}.pt "
-#                 f"best_train_loss: {best_train_loss} "
-#                 f"best_valid_auc: {best_valid_auc} "
-#             )
-
-            
-#     fold = fold+1
-
-# ======================================== nn模型训练 =====================================
-
-# ======================================== 训练3树模型 =====================================
-# %%time
-
-fitted_models_cat = []
-fitted_models_lgb = []
-fitted_models_xgb = []
-fitted_models_rf = []
-
-cv_scores_cat = []
-cv_scores_lgb = []
-cv_scores_xgb = []
-cv_scores_rf = []
 
 fold = 1
 for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环5次
 
+    # from IPython import embed
+    # embed()
+
     # X_train(≈40000,386), y_train(≈40000)
-    X_train, y_train = df_train.iloc[idx_train], y.iloc[idx_train] 
-    X_valid, y_valid = df_train.iloc[idx_valid], y.iloc[idx_valid]    
-        
-    # ======================================
-    train_pool = Pool(X_train, y_train,cat_features=cat_cols)
-    val_pool = Pool(X_valid, y_valid,cat_features=cat_cols)
-    
-#     train_pool = Pool(X_train, y_train)
-#     val_pool = Pool(X_valid, y_valid)
+    X_train, y_train = df_train.iloc[idx_train].values, y.iloc[idx_train].values 
+    X_valid, y_valid = df_train.iloc[idx_valid].values, y.iloc[idx_valid].values
 
-    clf = CatBoostClassifier(
-        eval_metric='AUC',
-        task_type='GPU',
-        learning_rate=0.03, # 0.03
-        iterations=n_est, # n_est
-#         early_stopping_rounds = 500,
-    )
-    # clf = CatBoostClassifier(
-    #     eval_metric='AUC',
-    #     task_type='GPU',
-    #     learning_rate=0.05, # 0.03
-    #     # iterations=n_est, # n_est iterations与n_estimators二者只能有一
-    #     grow_policy = 'Lossguide',
-    #     max_depth = 10,
-    #     n_estimators = 2000,   
-    #     reg_lambda = 10,
-    #     num_leaves = 64,
-    #     early_stopping_rounds = 100,
-    # )
 
-    random_seed=3107
-    clf.fit(
-        train_pool, 
-        eval_set=val_pool,
-        verbose=300,
-#         # 保证调试的时候不需要重新训练
-#         save_snapshot = True, 
-#         snapshot_file = '/kaggle/working/catboost.cbsnapshot',
-#         snapshot_interval = 10
-    )
-    clf.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/catboost_fold{fold}.cbm')
-    fitted_models_cat.append(clf)
-    y_pred_valid = clf.predict_proba(X_valid)[:,1]
-    auc_score = roc_auc_score(y_valid, y_pred_valid)
-    cv_scores_cat.append(auc_score)
-    # ==================================
     
-    # ==================================
-    # # 一些列是很多单词，将这些单词变为唯一标号，该列就能进行多类别分类了
-    # X_train[cat_cols] = X_train[cat_cols].astype("category") 
-    # X_valid[cat_cols] = X_valid[cat_cols].astype("category")
+    # 定义dataset与dataloader
+    train_set = MarketDataset(X_train, y_train)
+    # batch_size=15000
+    train_loader = DataLoader(train_set, batch_size=15000, shuffle=True, num_workers=7)
+    valid_set = MarketDataset(X_valid, y_valid)
+    valid_loader = DataLoader(valid_set, batch_size=15000, shuffle=False, num_workers=7)
+
+    # print(valid_set[0])
+
     
-    # # bst = XGBClassifier(
-    # #     n_estimators=2000, # 2000颗树
-    # #     max_depth=10,  # 10
-    # #     learning_rate=0.05, 
-    # #     objective='binary:logistic', # 最小化的目标函数，利用它优化模型
-    # #     eval_metric= "auc", # 利用它选best model
-    # #     device= 'gpu',
-    # #     grow_policy = 'lossguide',
-    # #     early_stopping_rounds=100, 
-    # #     enable_categorical=True, # 使用分类转换算法
-    # #     tree_method="hist", # 使用直方图算法加速
-    # #     reg_alpha = 0.1, # L1正则化0.1
-    # #     reg_lambda = 10, # L2正则化10
-    # #     max_leaves = 64, # 64
-    # # )
-    # bst = XGBClassifier(
-    #     n_estimators = n_est,
-    #     learning_rate=0.03, 
-    #     eval_metric= "auc", # 利用它选best model
-    #     device= 'gpu',
-    #     grow_policy = 'lossguide',
-    #     enable_categorical=True, # 使用分类转换算法
+    print(f'Fold{fold}:') 
+    torch.cuda.empty_cache()
+    device = torch.device("cuda")
+
+    model = Model2()
+    # model.load_state_dict(torch.load('/home/xyli/kaggle/kaggle_HomeCredit/best_nn_fold1.pt'))
+    model = model.cuda()
+    model = DataParallel(model)
+
+    # lr = 1e-3 weight_decay=1e-5
+    optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
+    # adam的优化版本
+    # optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1e-5)
+    scheduler = None
+
+    # scheduler = torch.optim.lr_scheduler.MultiStepLR(
+    #     optimizer, 
+    #     milestones=[20,40], 
+    #     gamma=0.1,
+    #     last_epoch=-1
     # )
 
-    # bst.fit(
-    #     X_train, 
-    #     y_train, 
-    #     eval_set=[(X_valid, y_valid)],
-    #     verbose=300,
-    # )
-    # fitted_models_xgb.append(bst)
-    # y_pred_valid = bst.predict_proba(X_valid)[:,1]
-    # auc_score = roc_auc_score(y_valid, y_pred_valid)
-    # cv_scores_xgb.append(auc_score)
-    # print(f'fold:{fold},auc_score:{auc_score}')
-    # ===============================
-    
-    # ===============================
-    # X_train[cat_cols] = X_train[cat_cols].astype("category")
-    # X_valid[cat_cols] = X_valid[cat_cols].astype("category")
-    # params = {
-    #     "boosting_type": "gbdt",
-    #     "objective": "binary",
-    #     "metric": "auc",
-    #     "max_depth": 10,  
-    #     "learning_rate": 0.05,
-    #     "n_estimators": 2000,  
-    #     # 则每棵树在构建时会随机选择 80% 的特征进行训练，剩下的 20% 特征将不参与训练，从而增加模型的泛化能力和稳定性
-    #     "colsample_bytree": 0.8, 
-    #     "colsample_bynode": 0.8, # 控制每个节点的特征采样比例
-    #     "verbose": -1,
-    #     "random_state": 42,
-    #     "reg_alpha": 0.1,
-    #     "reg_lambda": 10,
-    #     "extra_trees":True,
-    #     'num_leaves':64,
-    #     "device": 'gpu', # gpu
-    #     'gpu_use_dp' : True # 转化float为64精度
-    # }
+#     loss_fn = nn.BCEWithLogitsLoss()
+    loss_fn = SmoothBCEwLogits(smoothing=0.005) # 0.005
 
-    # # 一次训练
-    # model = lgb.LGBMClassifier(**params)
-    # model.fit(
-    #     X_train, y_train,
-    #     eval_set = [(X_valid, y_valid)],
-    #     callbacks = [lgb.log_evaluation(200), lgb.early_stopping(100)],
-    #     # init_model = f"/home/xyli/kaggle/kaggle_HomeCredit/dataset/lgbm_fold{fold}.txt",
-    # )
-    # model2 = model
-    # model.booster_.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/lgbm_fold{fold}.txt')
-    
-    # # 二次优化
-    # params['learning_rate'] = 0.01
-    # model2 = lgb.LGBMClassifier(**params)
-    # model2.fit(
-    #     X_train, y_train,
-    #     eval_set = [(X_valid, y_valid)],
-    #     callbacks = [lgb.log_evaluation(200), lgb.early_stopping(200)],
-    #     init_model = f"/home/xyli/kaggle/kaggle_HomeCredit/dataset/lgbm_fold{fold}.txt",
-    # )
-    # model2.booster_.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/lgbm_fold{fold}.txt')
-    # fitted_models_lgb.append(model2)
-    # y_pred_valid = model2.predict_proba(X_valid)[:,1]
-    # auc_score = roc_auc_score(y_valid, y_pred_valid)
-    # cv_scores_lgb.append(auc_score)
-    # print()
-    # print("分隔符")
-    # print()
-    # ===========================
-    
+    best_train_loss = 999.0
+    best_valid_auc = -1
+    for epoch in range(30):
+        start_time = time.time()
+        train_loss = train_fn(model, optimizer, scheduler, loss_fn, train_loader, device)
+        valid_pred = inference_fn(model, valid_loader, device)
+        valid_auc = roc_auc_score(y_valid, valid_pred)
+        print(
+            f"FOLD{fold} EPOCH:{epoch:3} train_loss={train_loss:.5f} "
+            f"roc_auc_score={valid_auc:.5f} "
+            f"time: {(time.time() - start_time) / 60:.2f}min "
+            f"lr: {optimizer.param_groups[0]['lr']}"
+        )
+        with open("log.txt", "a") as f:
+            print(
+                f"FOLD{fold} EPOCH:{epoch:3} train_loss={train_loss:.5f} "
+                f"roc_auc_score={valid_auc:.5f} "
+                f"time: {(time.time() - start_time) / 60:.2f}min "
+                f"lr: {optimizer.param_groups[0]['lr']}", file=f
+            )
+
+        if train_loss < best_train_loss and valid_auc > best_valid_auc:
+            best_train_loss = train_loss
+            best_valid_auc = valid_auc
+            torch.save(model.module.state_dict(), f"./best_nn_fold{fold}.pt") 
+            print(
+                f"best_nn_fold{fold}.pt "
+                f"best_train_loss: {best_train_loss} "
+                f"best_valid_auc: {best_valid_auc} "
+            )
+            with open("log.txt", "a") as f:
+                print(
+                    f"best_nn_fold{fold}.pt "
+                    f"best_train_loss: {best_train_loss} "
+                    f"best_valid_auc: {best_valid_auc} ", file=f
+                )
+            
     fold = fold+1
 
-print("CV AUC scores: ", cv_scores_cat)
-print("Mean CV AUC score: ", np.mean(cv_scores_cat))
+# ======================================== nn模型训练 =====================================
 
-print("CV AUC scores: ", cv_scores_lgb)
-print("Mean CV AUC score: ", np.mean(cv_scores_lgb))
+# ======================================== 训练3树模型 =====================================
+# # %%time
 
-print("CV AUC scores: ", cv_scores_xgb)
-print("Mean CV AUC score: ", np.mean(cv_scores_xgb))
+# fitted_models_cat = []
+# fitted_models_lgb = []
+# fitted_models_xgb = []
+# fitted_models_rf = []
+
+# cv_scores_cat = []
+# cv_scores_lgb = []
+# cv_scores_xgb = []
+# cv_scores_rf = []
+
+# fold = 1
+# for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环5次
+
+#     # X_train(≈40000,386), y_train(≈40000)
+#     X_train, y_train = df_train.iloc[idx_train], y.iloc[idx_train] 
+#     X_valid, y_valid = df_train.iloc[idx_valid], y.iloc[idx_valid]    
+        
+#     # ======================================
+#     train_pool = Pool(X_train, y_train,cat_features=cat_cols)
+#     val_pool = Pool(X_valid, y_valid,cat_features=cat_cols)
+    
+# #     train_pool = Pool(X_train, y_train)
+# #     val_pool = Pool(X_valid, y_valid)
+
+#     clf = CatBoostClassifier(
+#         eval_metric='AUC',
+#         task_type='GPU',
+#         learning_rate=0.03, # 0.03
+#         iterations=n_est, # n_est
+# #         early_stopping_rounds = 500,
+#     )
+#     # clf = CatBoostClassifier(
+#     #     eval_metric='AUC',
+#     #     task_type='GPU',
+#     #     learning_rate=0.05, # 0.03
+#     #     # iterations=n_est, # n_est iterations与n_estimators二者只能有一
+#     #     grow_policy = 'Lossguide',
+#     #     max_depth = 10,
+#     #     n_estimators = 2000,   
+#     #     reg_lambda = 10,
+#     #     num_leaves = 64,
+#     #     early_stopping_rounds = 100,
+#     # )
+
+#     random_seed=3107
+#     clf.fit(
+#         train_pool, 
+#         eval_set=val_pool,
+#         verbose=300,
+# #         # 保证调试的时候不需要重新训练
+# #         save_snapshot = True, 
+# #         snapshot_file = '/kaggle/working/catboost.cbsnapshot',
+# #         snapshot_interval = 10
+#     )
+#     clf.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/catboost_fold{fold}.cbm')
+#     fitted_models_cat.append(clf)
+#     y_pred_valid = clf.predict_proba(X_valid)[:,1]
+#     auc_score = roc_auc_score(y_valid, y_pred_valid)
+#     cv_scores_cat.append(auc_score)
+#     # ==================================
+    
+#     # ==================================
+#     # # 一些列是很多单词，将这些单词变为唯一标号，该列就能进行多类别分类了
+#     # X_train[cat_cols] = X_train[cat_cols].astype("category") 
+#     # X_valid[cat_cols] = X_valid[cat_cols].astype("category")
+    
+#     # # bst = XGBClassifier(
+#     # #     n_estimators=2000, # 2000颗树
+#     # #     max_depth=10,  # 10
+#     # #     learning_rate=0.05, 
+#     # #     objective='binary:logistic', # 最小化的目标函数，利用它优化模型
+#     # #     eval_metric= "auc", # 利用它选best model
+#     # #     device= 'gpu',
+#     # #     grow_policy = 'lossguide',
+#     # #     early_stopping_rounds=100, 
+#     # #     enable_categorical=True, # 使用分类转换算法
+#     # #     tree_method="hist", # 使用直方图算法加速
+#     # #     reg_alpha = 0.1, # L1正则化0.1
+#     # #     reg_lambda = 10, # L2正则化10
+#     # #     max_leaves = 64, # 64
+#     # # )
+#     # bst = XGBClassifier(
+#     #     n_estimators = n_est,
+#     #     learning_rate=0.03, 
+#     #     eval_metric= "auc", # 利用它选best model
+#     #     device= 'gpu',
+#     #     grow_policy = 'lossguide',
+#     #     enable_categorical=True, # 使用分类转换算法
+#     # )
+
+#     # bst.fit(
+#     #     X_train, 
+#     #     y_train, 
+#     #     eval_set=[(X_valid, y_valid)],
+#     #     verbose=300,
+#     # )
+#     # fitted_models_xgb.append(bst)
+#     # y_pred_valid = bst.predict_proba(X_valid)[:,1]
+#     # auc_score = roc_auc_score(y_valid, y_pred_valid)
+#     # cv_scores_xgb.append(auc_score)
+#     # print(f'fold:{fold},auc_score:{auc_score}')
+#     # ===============================
+    
+#     # ===============================
+#     # X_train[cat_cols] = X_train[cat_cols].astype("category")
+#     # X_valid[cat_cols] = X_valid[cat_cols].astype("category")
+#     # params = {
+#     #     "boosting_type": "gbdt",
+#     #     "objective": "binary",
+#     #     "metric": "auc",
+#     #     "max_depth": 10,  
+#     #     "learning_rate": 0.05,
+#     #     "n_estimators": 2000,  
+#     #     # 则每棵树在构建时会随机选择 80% 的特征进行训练，剩下的 20% 特征将不参与训练，从而增加模型的泛化能力和稳定性
+#     #     "colsample_bytree": 0.8, 
+#     #     "colsample_bynode": 0.8, # 控制每个节点的特征采样比例
+#     #     "verbose": -1,
+#     #     "random_state": 42,
+#     #     "reg_alpha": 0.1,
+#     #     "reg_lambda": 10,
+#     #     "extra_trees":True,
+#     #     'num_leaves':64,
+#     #     "device": 'gpu', # gpu
+#     #     'gpu_use_dp' : True # 转化float为64精度
+#     # }
+
+#     # # 一次训练
+#     # model = lgb.LGBMClassifier(**params)
+#     # model.fit(
+#     #     X_train, y_train,
+#     #     eval_set = [(X_valid, y_valid)],
+#     #     callbacks = [lgb.log_evaluation(200), lgb.early_stopping(100)],
+#     #     # init_model = f"/home/xyli/kaggle/kaggle_HomeCredit/dataset/lgbm_fold{fold}.txt",
+#     # )
+#     # model2 = model
+#     # model.booster_.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/lgbm_fold{fold}.txt')
+    
+#     # # 二次优化
+#     # params['learning_rate'] = 0.01
+#     # model2 = lgb.LGBMClassifier(**params)
+#     # model2.fit(
+#     #     X_train, y_train,
+#     #     eval_set = [(X_valid, y_valid)],
+#     #     callbacks = [lgb.log_evaluation(200), lgb.early_stopping(200)],
+#     #     init_model = f"/home/xyli/kaggle/kaggle_HomeCredit/dataset/lgbm_fold{fold}.txt",
+#     # )
+#     # model2.booster_.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/lgbm_fold{fold}.txt')
+#     # fitted_models_lgb.append(model2)
+#     # y_pred_valid = model2.predict_proba(X_valid)[:,1]
+#     # auc_score = roc_auc_score(y_valid, y_pred_valid)
+#     # cv_scores_lgb.append(auc_score)
+#     # print()
+#     # print("分隔符")
+#     # print()
+#     # ===========================
+    
+#     fold = fold+1
+
+# print("CV AUC scores: ", cv_scores_cat)
+# print("Mean CV AUC score: ", np.mean(cv_scores_cat))
+
+# print("CV AUC scores: ", cv_scores_lgb)
+# print("Mean CV AUC score: ", np.mean(cv_scores_lgb))
+
+# print("CV AUC scores: ", cv_scores_xgb)
+# print("Mean CV AUC score: ", np.mean(cv_scores_xgb))
 
 # ======================================== 训练3树模型 =====================================
 
