@@ -634,13 +634,13 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     device = torch.device("cuda")
 
     model = Model2()
-    if fold==1 or fold==2: 
-        model.load_state_dict(torch.load(f'/home/xyli/kaggle/kaggle_HomeCredit/best_nn_fold{fold}.pt'))
+    
+    model.load_state_dict(torch.load(f'/home/xyli/kaggle/kaggle_HomeCredit/best_nn_fold{fold}.pt'))
     model = model.cuda()
     model = DataParallel(model)
 
     # lr = 1e-3 weight_decay=1e-5
-    optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
+    optimizer = torch.optim.Adam(model.parameters(), lr=1e-4, weight_decay=1e-6)
     # adam的优化版本
     # optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1e-5)
     scheduler = None
