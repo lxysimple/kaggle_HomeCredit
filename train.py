@@ -144,10 +144,11 @@ for column in non_cat_cols:
 #     df_encoded = label_encoders[i].fit_transform(df_train[cat_cols[i]])
 #     df_train[cat_cols[i]] = df_encoded
 
-# # 因为最后一行全是nan，只是为了让编码器学习nan，所以现在就可以去掉了
-# y = y[:-1]
-# df_train = df_train[:-1]
-# weeks = weeks[:-1]
+
+# 因为最后一行全是nan，只是为了让编码器学习nan，所以现在就可以去掉了
+y = y[:-1]
+df_train = df_train[:-1]
+weeks = weeks[:-1]
 # ======================================== 清理数据 =====================================
 
 # ======================================== print =====================================
