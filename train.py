@@ -638,8 +638,9 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     
     try:
         model.load_state_dict(torch.load(f'/home/xyli/kaggle/kaggle_HomeCredit/best_nn_fold{fold}.pt'))
+         print('发现可用baseline, 开始加载') 
     except:
-        print('模型加载错误，停止加载')
+        print('未发现可用模型, 从0训练')
     model = model.cuda()
     model = DataParallel(model)
 
