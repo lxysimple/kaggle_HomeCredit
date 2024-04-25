@@ -614,13 +614,13 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     # embed()
 
     # X_train(≈40000,386), y_train(≈40000)
-    X_train, y_train = df_train.iloc[idx_train].values, y.iloc[idx_train].values 
-    X_valid, y_valid = df_train.iloc[idx_valid].values, y.iloc[idx_valid].values
+    X_train, y_train = df_train[non_cat_cols].iloc[idx_train].values, y.iloc[idx_train].values 
+    X_valid, y_valid = df_train[non_cat_cols].iloc[idx_valid].values, y.iloc[idx_valid].values
 
 
     
     # 定义dataset与dataloader
-    train_set = MarketDataset(X_train[non_cat_cols], y_train)
+    train_set = MarketDataset(X_train, y_train)
     # batch_size=15000
     train_loader = DataLoader(train_set, batch_size=15000, shuffle=True, num_workers=7)
     valid_set = MarketDataset(X_valid, y_valid)
