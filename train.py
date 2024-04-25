@@ -206,7 +206,7 @@ for column in non_cat_cols:
 import torch.nn as nn
 from torch.nn.parallel import DataParallel
 
-all_feat_cols = [i for i in range(386)]
+all_feat_cols = [i for i in range(273)] # 386 386-113(cat_cols)=273
 target_cols = [i for i in range(1)]
 
 # class Attention(nn.Module):
@@ -608,7 +608,7 @@ import torch.nn.functional as F
 
 
 fold = 1
-for idx_train, idx_valid in cv.split(df_train[cat_cols], y, groups=weeks): # 5折，循环5次
+for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环5次
 
     # from IPython import embed
     # embed()
@@ -620,7 +620,7 @@ for idx_train, idx_valid in cv.split(df_train[cat_cols], y, groups=weeks): # 5�
 
     
     # 定义dataset与dataloader
-    train_set = MarketDataset(X_train, y_train)
+    train_set = MarketDataset(X_train[non_cat_cols], y_train)
     # batch_size=15000
     train_loader = DataLoader(train_set, batch_size=15000, shuffle=True, num_workers=7)
     valid_set = MarketDataset(X_valid, y_valid)
