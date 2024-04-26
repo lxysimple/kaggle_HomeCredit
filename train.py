@@ -762,7 +762,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
 #         snapshot_file = '/kaggle/working/catboost.cbsnapshot',
 #         snapshot_interval = 10
     )
-    # clf.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/catboost_dw_fold{fold}.cbm')
+    # clf.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/catboost_lg_fold{fold}.cbm')
     fitted_models_cat_lg.append(clf)
     y_pred_valid = clf.predict_proba(X_valid)[:,1]
     auc_score = roc_auc_score(y_valid, y_pred_valid)
