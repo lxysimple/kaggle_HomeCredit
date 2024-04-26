@@ -65,15 +65,15 @@ def to_pandas(df_data, cat_cols=None):
     return df_data, cat_cols
 
 
-file_path = '/home/xyli/kaggle/kaggle_HomeCredit/train2.csv'
-# 打开文件并逐行读取
-with open(file_path, 'r', encoding='utf-8') as file:
-    row_count = sum(1 for line in file)
-print("行数:", row_count)
+# file_path = '/home/xyli/kaggle/kaggle_HomeCredit/train2.csv'
+# # 打开文件并逐行读取
+# with open(file_path, 'r', encoding='utf-8') as file:
+#     row_count = sum(1 for line in file)
+# print("行数:", row_count)
 
 
 
-# df_train = pd.read_csv('/home/xyli/kaggle/train.csv', nrows=50001)
+df_train = pd.read_csv('/home/xyli/kaggle/train.csv', nrows=50001)
 # df_train = pd.read_csv('/home/xyli/kaggle/kaggle_HomeCredit/train2.csv')
 
 # """ 确保df_train[cat_cols]中每列字典都有nan值 """
