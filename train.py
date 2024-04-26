@@ -74,6 +74,7 @@ df_train = pd.read_csv('/home/xyli/kaggle/train.csv', nrows=50001)
 # # 将新行添加到DataFrame中
 # df_train = pd.concat([df_train, new_row], ignore_index=True)
 
+_, cat_cols = to_pandas(df_train)
 
 # sample = pd.read_csv("/kaggle/input/home-credit-credit-risk-model-stability/sample_submission.csv")
 device='gpu'
