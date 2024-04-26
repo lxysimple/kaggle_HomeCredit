@@ -1031,7 +1031,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
         "metric": "auc",
         "max_depth": 10,  
         "learning_rate": 0.05,
-        "n_estimators": 2000,  
+        "n_estimators": 2000,  # rf与早停无关，与n_estimators有关
         # 则每棵树在构建时会随机选择 80% 的特征进行训练，剩下的 20% 特征将不参与训练，从而增加模型的泛化能力和稳定性
         "colsample_bytree": 0.8, 
         "colsample_bynode": 0.8, # 控制每个节点的特征采样比例
