@@ -735,7 +735,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
         eval_metric='AUC',
         task_type='GPU',
         learning_rate=0.03, # 0.03
-        iterations=6000, # n_est
+        iterations=n_est, # n_est
 #         early_stopping_rounds = 500,
     )
     # clf = CatBoostClassifier(
