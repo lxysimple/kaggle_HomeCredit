@@ -76,6 +76,9 @@ df_train = pd.read_csv('/home/xyli/kaggle/kaggle_HomeCredit/train2.csv')
 
 
 _, cat_cols = to_pandas(df_train)
+print(len(cat_cols))
+print(cat_cols)
+
 
 # sample = pd.read_csv("/kaggle/input/home-credit-credit-risk-model-stability/sample_submission.csv")
 device='gpu'
