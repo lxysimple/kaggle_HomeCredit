@@ -75,19 +75,14 @@ df_train = pd.read_csv('/home/xyli/kaggle/kaggle_HomeCredit/train2.csv')
 # df_train = pd.concat([df_train, new_row], ignore_index=True)
 
 
-_, cat_cols = to_pandas(df_train)
-print(len(cat_cols))
-print(cat_cols)
-
-
 # sample = pd.read_csv("/kaggle/input/home-credit-credit-risk-model-stability/sample_submission.csv")
 device='gpu'
 #n_samples=200000
 n_est=12000 # 6000
 # DRY_RUN = True if sample.shape[0] == 10 else False   
 # if DRY_RUN:
-# if True:
-if False: 
+if True:
+# if False: 
     device= 'gpu' # 'cpu'
     df_train = df_train.iloc[:50000]
     #n_samples=10000
@@ -713,11 +708,13 @@ fitted_models_cat = []
 fitted_models_lgb = []
 fitted_models_xgb = []
 fitted_models_rf = []
+fitted_models_cat_dw = []
 
 cv_scores_cat = []
 cv_scores_lgb = []
 cv_scores_xgb = []
 cv_scores_rf = []
+cv_scores_cat_dw = []
 
 fold = 1
 for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环5次
@@ -726,14 +723,14 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     X_train, y_train = df_train.iloc[idx_train], y.iloc[idx_train] 
     X_valid, y_valid = df_train.iloc[idx_valid], y.iloc[idx_valid]    
         
-    # ======================================
-    train_pool = Pool(X_train, y_train,cat_features=cat_cols)
-    val_pool = Pool(X_valid, y_valid,cat_features=cat_cols)
-    
-#     train_pool = Pool(X_train, y_train)
-#     val_pool = Pool(X_valid, y_valid)
+
+     # ======================================
+    train_pool = Pool(X_train, y_train, cat_features=cat_cols)
+    val_pool = Pool(X_valid, y_valid, cat_features=cat_cols)
+
      
     clf = CatBoostClassifier(
+        grow_policy = 'Depthwise', 
         eval_metric='AUC',
         task_type='GPU',
         learning_rate=0.03, # 0.03
@@ -763,11 +760,60 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
 #         snapshot_file = '/kaggle/working/catboost.cbsnapshot',
 #         snapshot_interval = 10
     )
-    clf.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/catboost_fold{fold}.cbm')
-    fitted_models_cat.append(clf)
+    clf.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/catboost_dw_fold{fold}.cbm')
+    fitted_models_cat_dw.append(clf)
     y_pred_valid = clf.predict_proba(X_valid)[:,1]
     auc_score = roc_auc_score(y_valid, y_pred_valid)
-    cv_scores_cat.append(auc_score)
+    cv_scores_cat_dw.append(auc_score)
+    
+    # ==================================
+
+
+
+
+
+    # ======================================
+#     train_pool = Pool(X_train, y_train,cat_features=cat_cols)
+#     val_pool = Pool(X_valid, y_valid,cat_features=cat_cols)
+    
+# #     train_pool = Pool(X_train, y_train)
+# #     val_pool = Pool(X_valid, y_valid)
+     
+#     clf = CatBoostClassifier(
+#         eval_metric='AUC',
+#         task_type='GPU',
+#         learning_rate=0.03, # 0.03
+#         iterations=6000, # n_est
+# #         early_stopping_rounds = 500,
+#     )
+#     # clf = CatBoostClassifier(
+#     #     eval_metric='AUC',
+#     #     task_type='GPU',
+#     #     learning_rate=0.05, # 0.03
+#     #     # iterations=n_est, # n_est iterations与n_estimators二者只能有一
+#     #     grow_policy = 'Lossguide',
+#     #     max_depth = 10,
+#     #     n_estimators = 2000,   
+#     #     reg_lambda = 10,
+#     #     num_leaves = 64,
+#     #     early_stopping_rounds = 100,
+#     # )
+
+#     random_seed=3107
+#     clf.fit(
+#         train_pool, 
+#         eval_set=val_pool,
+#         verbose=300,
+# #         # 保证调试的时候不需要重新训练
+# #         save_snapshot = True, 
+# #         snapshot_file = '/kaggle/working/catboost.cbsnapshot',
+# #         snapshot_interval = 10
+#     )
+#     clf.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/catboost_fold{fold}.cbm')
+#     fitted_models_cat.append(clf)
+#     y_pred_valid = clf.predict_proba(X_valid)[:,1]
+#     auc_score = roc_auc_score(y_valid, y_pred_valid)
+#     cv_scores_cat.append(auc_score)
     
     # ==================================
     
@@ -876,6 +922,9 @@ print("Mean CV AUC score: ", np.mean(cv_scores_lgb))
 
 print("CV AUC scores: ", cv_scores_xgb)
 print("Mean CV AUC score: ", np.mean(cv_scores_xgb))
+
+print("CV AUC scores: ", cv_scores_cat_dw)
+print("Mean CV AUC score: ", np.mean(cv_scores_cat_dw))
 
 # ======================================== 训练3树模型 =====================================
 
