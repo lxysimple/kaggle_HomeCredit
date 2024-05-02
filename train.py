@@ -872,6 +872,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     fitted_models_cat.append(clf)
     y_pred_valid = clf.predict_proba(X_valid)[:,1]
     auc_score = roc_auc_score(y_valid, y_pred_valid)
+    print('auc_score: ', auc_score)
     cv_scores_cat.append(auc_score)
     
     # ==================================
@@ -941,30 +942,33 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
         'gpu_use_dp' : True # 转化float为64精度
     }
 
-    # # 一次训练
-    # model = lgb.LGBMClassifier(**params)
-    # model.fit(
-    #     X_train, y_train,
-    #     eval_set = [(X_valid, y_valid)],
-    #     callbacks = [lgb.log_evaluation(200), lgb.early_stopping(100)],
-    #     # init_model = f"/home/xyli/kaggle/kaggle_HomeCredit/dataset/lgbm_fold{fold}.txt",
-    # )
-    # model2 = model
-    # model.booster_.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/lgbm_fold{fold}.txt')
-    
-    # 二次优化
-    params['learning_rate'] = 0.01
-    model2 = lgb.LGBMClassifier(**params)
-    model2.fit(
+    # 一次训练
+    model = lgb.LGBMClassifier(**params)
+    model.fit(
         X_train, y_train,
         eval_set = [(X_valid, y_valid)],
-        callbacks = [lgb.log_evaluation(200), lgb.early_stopping(200)],
-        init_model = f"/home/xyli/kaggle/kaggle_HomeCredit/dataset8/lgbm_fold{fold}.txt",
+        callbacks = [lgb.log_evaluation(200), lgb.early_stopping(100)],
+        # init_model = f"/home/xyli/kaggle/kaggle_HomeCredit/dataset/lgbm_fold{fold}.txt",
     )
-    model2.booster_.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/lgbm_fold{fold}.txt')
+    model.booster_.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/lgbm_fold{fold}.txt')
+    model2 = model
+
+    # # 二次优化
+    # params['learning_rate'] = 0.01
+    # model2 = lgb.LGBMClassifier(**params)
+    # model2.fit(
+    #     X_train, y_train,
+    #     eval_set = [(X_valid, y_valid)],
+    #     callbacks = [lgb.log_evaluation(200), lgb.early_stopping(200)],
+    #     init_model = f"/home/xyli/kaggle/kaggle_HomeCredit/dataset8/lgbm_fold{fold}.txt",
+    # )
+    # model2.booster_.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/lgbm_fold{fold}.txt')
+    
+
     fitted_models_lgb.append(model2)
     y_pred_valid = model2.predict_proba(X_valid)[:,1]
     auc_score = roc_auc_score(y_valid, y_pred_valid)
+    print('auc_score: ', auc_score)
     cv_scores_lgb.append(auc_score)
     print()
     print("分隔符")
