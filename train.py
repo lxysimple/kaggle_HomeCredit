@@ -72,10 +72,11 @@ def to_pandas(df_data, cat_cols=None):
 # print("行数:", row_count)
 
 
-
+# df_train = pd.read_csv('/home/xyli/kaggle/kaggle_HomeCredit/train419.csv', nrows=5)
 # df_train = pd.read_csv('/home/xyli/kaggle/train.csv', nrows=50001)
 # df_train = pd.read_csv('/home/xyli/kaggle/kaggle_HomeCredit/train2.csv')
-df_train = pd.read_csv('/home/xyli/kaggle/kaggle_HomeCredit/train419.csv')
+# df_train = pd.read_csv('/home/xyli/kaggle/kaggle_HomeCredit/train419.csv')
+df_train = pd.read_csv('/home/xyli/kaggle/kaggle_HomeCredit/train389.csv')
 
 # """ 确保df_train[cat_cols]中每列字典都有nan值 """
 # new_row = pd.DataFrame([[np.nan] * len(df_train.columns)], columns=df_train.columns)
@@ -90,8 +91,8 @@ device='gpu'
 n_est=12000 # 6000
 # DRY_RUN = True if sample.shape[0] == 10 else False   
 # if DRY_RUN:
-# if True:
-if False: 
+if True:
+# if False: 
     device= 'gpu' # 'cpu'
     df_train = df_train.iloc[:50000]
     #n_samples=10000
@@ -833,48 +834,48 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
 
 
     # ======================================
-    train_pool = Pool(X_train, y_train,cat_features=cat_cols)
-    val_pool = Pool(X_valid, y_valid,cat_features=cat_cols)
+#     train_pool = Pool(X_train, y_train,cat_features=cat_cols)
+#     val_pool = Pool(X_valid, y_valid,cat_features=cat_cols)
     
-#     train_pool = Pool(X_train, y_train)
-#     val_pool = Pool(X_valid, y_valid)
+# #     train_pool = Pool(X_train, y_train)
+# #     val_pool = Pool(X_valid, y_valid)
      
-    clf = CatBoostClassifier(
-        eval_metric='AUC',
-        task_type='GPU',
-        learning_rate=0.03, # 0.03
-        iterations=12000, # n_est
-#         early_stopping_rounds = 500,
-    )
-    # clf = CatBoostClassifier(
-    #     eval_metric='AUC',
-    #     task_type='GPU',
-    #     learning_rate=0.05, # 0.03
-    #     # iterations=n_est, # n_est iterations与n_estimators二者只能有一
-    #     grow_policy = 'Lossguide',
-    #     max_depth = 10,
-    #     n_estimators = 2000,   
-    #     reg_lambda = 10,
-    #     num_leaves = 64,
-    #     early_stopping_rounds = 100,
-    # )
+#     clf = CatBoostClassifier(
+#         eval_metric='AUC',
+#         task_type='GPU',
+#         learning_rate=0.03, # 0.03
+#         iterations=12000, # n_est
+# #         early_stopping_rounds = 500,
+#     )
+#     # clf = CatBoostClassifier(
+#     #     eval_metric='AUC',
+#     #     task_type='GPU',
+#     #     learning_rate=0.05, # 0.03
+#     #     # iterations=n_est, # n_est iterations与n_estimators二者只能有一
+#     #     grow_policy = 'Lossguide',
+#     #     max_depth = 10,
+#     #     n_estimators = 2000,   
+#     #     reg_lambda = 10,
+#     #     num_leaves = 64,
+#     #     early_stopping_rounds = 100,
+#     # )
 
-    random_seed=3107
-    clf.fit(
-        train_pool, 
-        eval_set=val_pool,
-        verbose=300,
-#         # 保证调试的时候不需要重新训练
-#         save_snapshot = True, 
-#         snapshot_file = '/kaggle/working/catboost.cbsnapshot',
-#         snapshot_interval = 10
-    )
-    clf.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/catboost_fold{fold}.cbm')
-    fitted_models_cat.append(clf)
-    y_pred_valid = clf.predict_proba(X_valid)[:,1]
-    auc_score = roc_auc_score(y_valid, y_pred_valid)
-    print('auc_score: ', auc_score)
-    cv_scores_cat.append(auc_score)
+#     random_seed=3107
+#     clf.fit(
+#         train_pool, 
+#         eval_set=val_pool,
+#         verbose=300,
+# #         # 保证调试的时候不需要重新训练
+# #         save_snapshot = True, 
+# #         snapshot_file = '/kaggle/working/catboost.cbsnapshot',
+# #         snapshot_interval = 10
+#     )
+#     clf.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/catboost_fold{fold}.cbm')
+#     fitted_models_cat.append(clf)
+#     y_pred_valid = clf.predict_proba(X_valid)[:,1]
+#     auc_score = roc_auc_score(y_valid, y_pred_valid)
+#     print('auc_score: ', auc_score)
+#     cv_scores_cat.append(auc_score)
     
     # ==================================
     
@@ -921,38 +922,38 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     # ===============================
     
     # ===============================
-    X_train[cat_cols] = X_train[cat_cols].astype("category")
-    X_valid[cat_cols] = X_valid[cat_cols].astype("category")
-    params = {
-        "boosting_type": "gbdt",
-        "objective": "binary",
-        "metric": "auc",
-        "max_depth": 10,  
-        "learning_rate": 0.05,
-        "n_estimators": 2000,  
-        # 则每棵树在构建时会随机选择 80% 的特征进行训练，剩下的 20% 特征将不参与训练，从而增加模型的泛化能力和稳定性
-        "colsample_bytree": 0.8, 
-        "colsample_bynode": 0.8, # 控制每个节点的特征采样比例
-        "verbose": -1,
-        "random_state": 42,
-        "reg_alpha": 0.1,
-        "reg_lambda": 10,
-        "extra_trees":True,
-        'num_leaves':64,
-        "device": 'gpu', # gpu
-        'gpu_use_dp' : True # 转化float为64精度
-    }
+    # X_train[cat_cols] = X_train[cat_cols].astype("category")
+    # X_valid[cat_cols] = X_valid[cat_cols].astype("category")
+    # params = {
+    #     "boosting_type": "gbdt",
+    #     "objective": "binary",
+    #     "metric": "auc",
+    #     "max_depth": 10,  
+    #     "learning_rate": 0.05,
+    #     "n_estimators": 2000,  
+    #     # 则每棵树在构建时会随机选择 80% 的特征进行训练，剩下的 20% 特征将不参与训练，从而增加模型的泛化能力和稳定性
+    #     "colsample_bytree": 0.8, 
+    #     "colsample_bynode": 0.8, # 控制每个节点的特征采样比例
+    #     "verbose": -1,
+    #     "random_state": 42,
+    #     "reg_alpha": 0.1,
+    #     "reg_lambda": 10,
+    #     "extra_trees":True,
+    #     'num_leaves':64,
+    #     "device": 'gpu', # gpu
+    #     'gpu_use_dp' : True # 转化float为64精度
+    # }
 
-    # 一次训练
-    model = lgb.LGBMClassifier(**params)
-    model.fit(
-        X_train, y_train,
-        eval_set = [(X_valid, y_valid)],
-        callbacks = [lgb.log_evaluation(200), lgb.early_stopping(100)],
-        # init_model = f"/home/xyli/kaggle/kaggle_HomeCredit/dataset/lgbm_fold{fold}.txt",
-    )
-    model.booster_.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/lgbm_fold{fold}.txt')
-    model2 = model
+    # # 一次训练
+    # model = lgb.LGBMClassifier(**params)
+    # model.fit(
+    #     X_train, y_train,
+    #     eval_set = [(X_valid, y_valid)],
+    #     callbacks = [lgb.log_evaluation(200), lgb.early_stopping(100)],
+    #     # init_model = f"/home/xyli/kaggle/kaggle_HomeCredit/dataset/lgbm_fold{fold}.txt",
+    # )
+    # model.booster_.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/lgbm_fold{fold}.txt')
+    # model2 = model
 
     # # 二次优化
     # params['learning_rate'] = 0.01
@@ -966,14 +967,14 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     # model2.booster_.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/lgbm_fold{fold}.txt')
     
 
-    fitted_models_lgb.append(model2)
-    y_pred_valid = model2.predict_proba(X_valid)[:,1]
-    auc_score = roc_auc_score(y_valid, y_pred_valid)
-    print('auc_score: ', auc_score)
-    cv_scores_lgb.append(auc_score)
-    print()
-    print("分隔符")
-    print()
+    # fitted_models_lgb.append(model2)
+    # y_pred_valid = model2.predict_proba(X_valid)[:,1]
+    # auc_score = roc_auc_score(y_valid, y_pred_valid)
+    # print('auc_score: ', auc_score)
+    # cv_scores_lgb.append(auc_score)
+    # print()
+    # print("分隔符")
+    # print()
     # ===========================
 
     # ===============================
@@ -1035,38 +1036,38 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
 
 
     # ===============================
-    # X_train[cat_cols] = X_train[cat_cols].astype("category")
-    # X_valid[cat_cols] = X_valid[cat_cols].astype("category")
-    # params = {
-    #     "boosting_type": "rf",
-    #     "objective": "binary",
-    #     "metric": "auc",
-    #     "max_depth": 10,  
-    #     "learning_rate": 0.05,
-    #     "n_estimators": 2000,  # rf与早停无关，与n_estimators有关
-    #     # 则每棵树在构建时会随机选择 80% 的特征进行训练，剩下的 20% 特征将不参与训练，从而增加模型的泛化能力和稳定性
-    #     "colsample_bytree": 0.8, 
-    #     "colsample_bynode": 0.8, # 控制每个节点的特征采样比例
-    #     "verbose": -1,
-    #     "random_state": 42,
-    #     "reg_alpha": 0.1,
-    #     "reg_lambda": 10,
-    #     "extra_trees":True,
-    #     'num_leaves':64,
-    #     "device": 'gpu', # gpu
-    #     'gpu_use_dp' : True # 转化float为64精度
-    # }
+    X_train[cat_cols] = X_train[cat_cols].astype("category")
+    X_valid[cat_cols] = X_valid[cat_cols].astype("category")
+    params = {
+        "boosting_type": "rf",
+        "objective": "binary",
+        "metric": "auc",
+        "max_depth": 10,  
+        "learning_rate": 0.05,
+        "n_estimators": 2000,  # rf与早停无关，与n_estimators有关
+        # 则每棵树在构建时会随机选择 80% 的特征进行训练，剩下的 20% 特征将不参与训练，从而增加模型的泛化能力和稳定性
+        "colsample_bytree": 0.8, 
+        "colsample_bynode": 0.8, # 控制每个节点的特征采样比例
+        "verbose": -1,
+        "random_state": 42,
+        "reg_alpha": 0.1,
+        "reg_lambda": 10,
+        "extra_trees":True,
+        'num_leaves':64,
+        "device": 'gpu', # gpu
+        'gpu_use_dp' : True # 转化float为64精度
+    }
 
-    # # 一次训练
-    # model = lgb.LGBMClassifier(**params)
-    # model.fit(
-    #     X_train, y_train,
-    #     eval_set = [(X_valid, y_valid)],
-    #     callbacks = [lgb.log_evaluation(200), lgb.early_stopping(100)],
-    #     # init_model = f"/home/xyli/kaggle/kaggle_HomeCredit/dataset/lgbm_fold{fold}.txt",
-    # )
-    # model2 = model
-    # # model.booster_.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/lgbm_fold{fold}.txt')
+    # 一次训练
+    model = lgb.LGBMClassifier(**params)
+    model.fit(
+        X_train, y_train,
+        eval_set = [(X_valid, y_valid)],
+        callbacks = [lgb.log_evaluation(200), lgb.early_stopping(100)],
+        # init_model = f"/home/xyli/kaggle/kaggle_HomeCredit/dataset/lgbm_fold{fold}.txt",
+    )
+    model2 = model
+    # model.booster_.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/lgbm_fold{fold}.txt')
     
 
     # # 二次优化
@@ -1081,13 +1082,13 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     # # model2.booster_.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/lgbm_fold{fold}.txt')
     
     
-    # fitted_models_lgb_rf.append(model2)
-    # y_pred_valid = model2.predict_proba(X_valid)[:,1]
-    # auc_score = roc_auc_score(y_valid, y_pred_valid)
-    # cv_scores_lgb_rf.append(auc_score)
-    # print()
-    # print("分隔符")
-    # print()
+    fitted_models_lgb_rf.append(model2)
+    y_pred_valid = model2.predict_proba(X_valid)[:,1]
+    auc_score = roc_auc_score(y_valid, y_pred_valid)
+    cv_scores_lgb_rf.append(auc_score)
+    print()
+    print("分隔符")
+    print()
     # ===========================
 
     fold = fold+1
