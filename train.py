@@ -74,9 +74,9 @@ def to_pandas(df_data, cat_cols=None):
 
 # df_train = pd.read_csv('/home/xyli/kaggle/kaggle_HomeCredit/train419.csv', nrows=5)
 # df_train = pd.read_csv('/home/xyli/kaggle/train.csv', nrows=50001)
-df_train = pd.read_csv('/home/xyli/kaggle/kaggle_HomeCredit/traintrain832.csv')
+# df_train = pd.read_csv('/home/xyli/kaggle/kaggle_HomeCredit/traintrain832.csv')
 # df_train = pd.read_csv('/home/xyli/kaggle/kaggle_HomeCredit/train419.csv')
-# df_train = pd.read_csv('/home/xyli/kaggle/kaggle_HomeCredit/train389.csv')
+df_train = pd.read_csv('/home/xyli/kaggle/kaggle_HomeCredit/train389.csv')
 
 # """ 确保df_train[cat_cols]中每列字典都有nan值 """
 # new_row = pd.DataFrame([[np.nan] * len(df_train.columns)], columns=df_train.columns)
