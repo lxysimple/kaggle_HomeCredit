@@ -151,13 +151,14 @@ mean_values = df_train[non_cat_cols].mean()# 找到所有列的均值
 mean_values = mean_values.replace([np.inf, -np.inf, np.nan], 0)
 
 for column in non_cat_cols:   
-    # # 将nan换成该列的均值，或者0
-    # df_train[column] = df_train[column].fillna(mean_values[column])
-    
-    # 将nan换成0
-    df_train[column] = df_train[column].fillna(0)
-    # 将+-无穷值替换为0
-    df_train[column].replace([np.inf,-np.inf], 0, inplace=True)
+    # 将nan换成该列的均值，或者0
+    df_train[column] = df_train[column].fillna(mean_values[column])
+    df_train[column].replace([np.inf,-np.inf], mean_values[column], inplace=True)
+
+    # # 将nan换成0
+    # df_train[column] = df_train[column].fillna(0)
+    # # 将+-无穷值替换为0
+    # df_train[column].replace([np.inf,-np.inf], 0, inplace=True)
     
 # print('df_train: ',df_train[non_cat_cols])
     
