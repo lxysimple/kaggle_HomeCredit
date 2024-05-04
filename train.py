@@ -1108,7 +1108,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     X_valid[cat_cols] = X_valid[cat_cols].astype("category")
     model = lgb.LGBMClassifier()
     model = lgb.Booster(model_file=f"/home/xyli/kaggle/kaggle_HomeCredit/lgbm_dart_fold{fold}.txt")
-    y_pred_valid = model.predict_proba(X_valid)[:,1]
+    y_pred_valid = model.predict(X_valid)
     auc_score = roc_auc_score(y_valid, y_pred_valid)
     print('auc_score: ', auc_score)
     # ===========================
