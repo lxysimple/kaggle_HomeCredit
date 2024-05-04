@@ -141,26 +141,26 @@ for column in non_cat_cols:
     
 
 
-# """
-# 对cat_cols列进行编码，保存113个编码器
-# """
-# print('len(cat_cols): ', len(cat_cols))
-# # 定义113个编码器
-# label_encoders = [LabelEncoder() for i in range(df_train.shape[1])]
+"""
+对cat_cols列进行编码，保存113个编码器
+"""
+print('len(cat_cols): ', len(cat_cols))
+# 定义113个编码器
+label_encoders = [LabelEncoder() for i in range(df_train.shape[1])]
 
-# # print(df_train[cat_cols])
+# print(df_train[cat_cols])
 
-# # 对每列进行一个编码
-# for i in range(len(cat_cols)):
-#     df_encoded = label_encoders[i].fit_transform(df_train[cat_cols[i]])
-#     df_train[cat_cols[i]] = df_encoded
+# 对每列进行一个编码
+for i in range(len(cat_cols)):
+    df_encoded = label_encoders[i].fit_transform(df_train[cat_cols[i]])
+    df_train[cat_cols[i]] = df_encoded
 
 
 
-# # 因为最后一行全是nan，只是为了让编码器学习nan，所以现在就可以去掉了
-# y = y[:-1]
-# df_train = df_train[:-1]
-# weeks = weeks[:-1]
+# 因为最后一行全是nan，只是为了让编码器学习nan，所以现在就可以去掉了
+y = y[:-1]
+df_train = df_train[:-1]
+weeks = weeks[:-1]
 # ======================================== 清理数据 =====================================
 
 # ======================================== print =====================================
@@ -627,9 +627,11 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     # embed()
 
     # X_train(≈40000,386), y_train(≈40000)
-    X_train, y_train = df_train[non_cat_cols].iloc[idx_train].values, y.iloc[idx_train].values 
-    X_valid, y_valid = df_train[non_cat_cols].iloc[idx_valid].values, y.iloc[idx_valid].values
+    # X_train, y_train = df_train[non_cat_cols].iloc[idx_train].values, y.iloc[idx_train].values 
+    # X_valid, y_valid = df_train[non_cat_cols].iloc[idx_valid].values, y.iloc[idx_valid].values
 
+    X_train, y_train = df_train.iloc[idx_train].values, y.iloc[idx_train].values 
+    X_valid, y_valid = df_train.iloc[idx_valid].values, y.iloc[idx_valid].values
 
     
     # 定义dataset与dataloader
