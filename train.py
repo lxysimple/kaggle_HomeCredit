@@ -1097,7 +1097,8 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     val_pool = Pool(X_valid, y_valid, cat_features=cat_cols)
 
     clf = CatBoostClassifier()
-    clf.load_model(f"/home/xyli/kaggle/kaggle_HomeCredit/catboost_dw_fold{fold}.cbm")
+    # clf.load_model(f"/home/xyli/kaggle/kaggle_HomeCredit/catboost_dw_fold{fold}.cbm")
+    clf.load_model(f"/home/xyli/kaggle/kaggle_HomeCredit/catboost_lg_fold{fold}.cbm")
     y_pred_valid = clf.predict_proba(X_valid)[:,1]
     auc_score = roc_auc_score(y_valid, y_pred_valid)
     print('catboost_dw auc_score: ', auc_score)
