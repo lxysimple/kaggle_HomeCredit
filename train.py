@@ -1093,24 +1093,24 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
 
     # ===========================
 
-    train_pool = Pool(X_train, y_train, cat_features=cat_cols)
-    val_pool = Pool(X_valid, y_valid, cat_features=cat_cols)
+    # train_pool = Pool(X_train, y_train, cat_features=cat_cols)
+    # val_pool = Pool(X_valid, y_valid, cat_features=cat_cols)
+    # clf = CatBoostClassifier()
+    # # clf.load_model(f"/home/xyli/kaggle/kaggle_HomeCredit/catboost_dw_fold{fold}.cbm")
+    # clf.load_model(f"/home/xyli/kaggle/kaggle_HomeCredit/catboost_lg_fold{fold}.cbm")
+    # y_pred_valid = clf.predict_proba(X_valid)[:,1]
+    # auc_score = roc_auc_score(y_valid, y_pred_valid)
+    # print('auc_score: ', auc_score)
 
-    clf = CatBoostClassifier()
-    # clf.load_model(f"/home/xyli/kaggle/kaggle_HomeCredit/catboost_dw_fold{fold}.cbm")
-    clf.load_model(f"/home/xyli/kaggle/kaggle_HomeCredit/catboost_lg_fold{fold}.cbm")
-    y_pred_valid = clf.predict_proba(X_valid)[:,1]
+
+
+    X_train[cat_cols] = X_train[cat_cols].astype("category")
+    X_valid[cat_cols] = X_valid[cat_cols].astype("category")
+    model = lgb.LGBMClassifier()
+    model = lgb.Booster(model_file=f"/home/xyli/kaggle/kaggle_HomeCredit/lgbm_dart_fold{fold}.txt")
+    y_pred_valid = model.predict_proba(X_valid)[:,1]
     auc_score = roc_auc_score(y_valid, y_pred_valid)
-    print('catboost_dw auc_score: ', auc_score)
-
-
-
-    # X_train[cat_cols] = X_train[cat_cols].astype("category")
-    # X_valid[cat_cols] = X_valid[cat_cols].astype("category")
-
-    # model = lgb.LGBMClassifier()
-    # model = lgb.Booster(model_file=f"/kaggle/input/hc-lgbm-829/lgbm_fold{fold}.txt")
-
+    print('auc_score: ', auc_score)
     # ===========================
 
 
