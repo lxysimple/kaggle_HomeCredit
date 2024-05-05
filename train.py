@@ -242,7 +242,7 @@ weeks = weeks[:-1]
 import torch.nn as nn
 from torch.nn.parallel import DataParallel
 
-all_feat_cols = [i for i in range(667)] # 386 386-113(cat_cols)=273 829 667
+all_feat_cols = [i for i in range(662)] # 386 386-113(cat_cols)=273 829 667
 target_cols = [i for i in range(1)]
 
 # class Attention(nn.Module):
