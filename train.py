@@ -242,7 +242,7 @@ weeks = weeks[:-1]
 import torch.nn as nn
 from torch.nn.parallel import DataParallel
 
-all_feat_cols = [i for i in range(829)] # 386 386-113(cat_cols)=273 829 662
+all_feat_cols = [i for i in range(273)] # 386 386-113(cat_cols)=273 829 662
 target_cols = [i for i in range(1)]
 
 # class Attention(nn.Module):
@@ -646,19 +646,19 @@ import torch.nn.functional as F
 fold = 1
 for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环5次
 
-    if fold <=3:
-        fold = fold + 1
-        continue
+    # if fold <=3:
+    #     fold = fold + 1
+    #     continue
 
     # from IPython import embed
     # embed()
 
     # X_train(≈40000,386), y_train(≈40000)
-    # X_train, y_train = df_train[non_cat_cols].iloc[idx_train].values, y.iloc[idx_train].values 
-    # X_valid, y_valid = df_train[non_cat_cols].iloc[idx_valid].values, y.iloc[idx_valid].values
+    X_train, y_train = df_train[non_cat_cols].iloc[idx_train].values, y.iloc[idx_train].values 
+    X_valid, y_valid = df_train[non_cat_cols].iloc[idx_valid].values, y.iloc[idx_valid].values
 
-    X_train, y_train = df_train.iloc[idx_train].values, y.iloc[idx_train].values 
-    X_valid, y_valid = df_train.iloc[idx_valid].values, y.iloc[idx_valid].values
+    # X_train, y_train = df_train.iloc[idx_train].values, y.iloc[idx_train].values 
+    # X_valid, y_valid = df_train.iloc[idx_valid].values, y.iloc[idx_valid].values
 
     
     # 定义dataset与dataloader
