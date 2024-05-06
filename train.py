@@ -1303,7 +1303,6 @@ def inference_fn(model, dataloader, device):
 
     for data in dataloader:
         features = data['features'].to(device)
-        print(features)
         with torch.no_grad():
             outputs = model(features)
         
@@ -1378,7 +1377,9 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
         train_loss = train_fn(model, optimizer, None, loss_fn, train_loader, device = torch.device("cuda"))
         valid_pred = inference_fn(model, valid_loader, device = torch.device("cuda"))
 
-        print('valid_pred: ', valid_pred)
+        from IPython import embed
+        embed()
+        # print('valid_pred: ', valid_pred)
         # print('y_valid.tolist(): ', y_valid.tolist())
         valid_auc = roc_auc_score(y_valid.tolist(), valid_pred)
         print(
