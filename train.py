@@ -1377,7 +1377,10 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     for epoch in range(20):
         train_loss = train_fn(model, optimizer, None, loss_fn, train_loader, device = torch.device("cuda"))
         valid_pred = inference_fn(model, valid_loader, device = torch.device("cuda"))
-        valid_auc = roc_auc_score(y_valid, valid_pred)
+
+        print('valid_pred: ', valid_pred)
+        print('y_valid.tolist(): ', y_valid.tolist())
+        valid_auc = roc_auc_score(y_valid.tolist(), valid_pred)
         print(
             f"EPOCH:{epoch:3} train_loss={train_loss:.5f} "
             f"roc_auc_score={valid_auc:.5f} "
