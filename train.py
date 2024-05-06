@@ -1362,9 +1362,9 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     
 
     train_set = MarketDataset(train_preds, y_train)
-    train_loader = DataLoader(train_set, batch_size=1000, shuffle=True, num_workers=1, drop_last=True)
+    train_loader = DataLoader(train_set, batch_size=15000, shuffle=True, num_workers=1, drop_last=True)
     valid_set = MarketDataset(valid_preds, y_valid)
-    valid_loader = DataLoader(valid_set, batch_size=1000, shuffle=False, num_workers=1, drop_last=True)
+    valid_loader = DataLoader(valid_set, batch_size=15000, shuffle=False, num_workers=1, drop_last=True)
 
 
     model = Model_ensemble()
