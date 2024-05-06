@@ -1303,7 +1303,7 @@ def inference_fn(model, dataloader, device):
 
     for data in dataloader:
         features = data['features'].to(device)
-
+        print(features)
         with torch.no_grad():
             outputs = model(features)
         
