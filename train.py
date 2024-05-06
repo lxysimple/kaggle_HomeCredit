@@ -1373,7 +1373,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
 
     best_train_loss = 999.0
     best_valid_auc = -1
-    for epoch in range(20):
+    for epoch in range(40):
         train_loss = train_fn(model, optimizer, None, loss_fn, train_loader, device = torch.device("cuda"))
         valid_pred = inference_fn(model, valid_loader, device = torch.device("cuda"))
 
