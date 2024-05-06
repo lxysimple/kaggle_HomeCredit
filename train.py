@@ -1337,6 +1337,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     X_train, y_train = df_train.iloc[idx_train], y.iloc[idx_train] 
     X_valid, y_valid = df_train.iloc[idx_valid], y.iloc[idx_valid] 
 
+    # valid_preds:[模型1=[b1,b2,...bn], ...模型20=[...]]
     valid_preds = model.predict_proba(X_valid) 
     naked_preds = np.mean(valid_preds, axis=0)
     naked_score = roc_auc_score(y_valid, naked_preds)
@@ -1357,7 +1358,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     valid_pred = [item[0] for sublist in valid_pred for item in sublist] 
     valid_auc = roc_auc_score(y_valid.tolist(), valid_pred)
     print("valid_auc: ", valid_auc)
-    
+
     continue
 
 
