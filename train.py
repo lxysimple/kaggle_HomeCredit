@@ -1198,19 +1198,19 @@ fitted_models_lgb2 = []
 
 for fold in range(1,6):
     clf = CatBoostClassifier() 
-    clf.load_model(f"/kaggle/input/hc-catboost-829/catboost_fold{fold}.cbm")
+    clf.load_model(f"/home/xyli/kaggle/kaggle_HomeCredit/dataset9/catboost_fold{fold}.cbm")
     fitted_models_cat1.append(clf)
     
     model = lgb.LGBMClassifier()
-    model = lgb.Booster(model_file=f"/kaggle/input/hc-lgbm-829/lgbm_fold{fold}.txt")
+    model = lgb.Booster(model_file=f"/home/xyli/kaggle/kaggle_HomeCredit/dataset8/lgbm_fold{fold}.txt")
     fitted_models_lgb1.append(model)
     
     clf2 = CatBoostClassifier()
-    clf2.load_model(f"/kaggle/input/hc-catboost/catboost_fold{fold}.cbm")
+    clf2.load_model(f"/home/xyli/kaggle/kaggle_HomeCredit/dataset5/catboost_fold{fold}.cbm")
     fitted_models_cat2.append(clf2) 
     
     model2 = lgb.LGBMClassifier()
-    model2 = lgb.Booster(model_file=f"/kaggle/input/hc-lgbm2/lgbm_fold{fold}.txt")
+    model2 = lgb.Booster(model_file=f"/home/xyli/kaggle/kaggle_HomeCredit/dataset4/lgbm_fold{fold}.txt")
     fitted_models_lgb2.append(model2)
     
 class VotingModel(BaseEstimator, RegressorMixin):
