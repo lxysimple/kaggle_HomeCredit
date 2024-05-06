@@ -1352,7 +1352,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     model_ensemble = Model_ensemble()
     model_ensemble.load_state_dict(torch.load(f'/home/xyli/kaggle/kaggle_HomeCredit/best_Model_ensemble.pt'))
     model_ensemble = model_ensemble.cuda()
-    valid_pred = inference_fn(model, valid_loader, device = torch.device("cuda"))
+    valid_pred = inference_fn(model_ensemble, valid_loader, device = torch.device("cuda"))
     # 将多个batch(包含多个向量的列表)合并为1个向量
     valid_pred = [item[0] for sublist in valid_pred for item in sublist] 
     valid_auc = roc_auc_score(y_valid.tolist(), valid_pred)
