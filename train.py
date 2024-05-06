@@ -1358,7 +1358,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     valid_preds = torch.tensor(valid_preds)
     y_valid = torch.tensor(y_valid.values) # 保持索引都从0开始
     valid_preds = torch.tensor(valid_preds).T
-    
+
 
     train_set = MarketDataset(train_preds, y_train)
     train_loader = DataLoader(train_set, batch_size=15000, shuffle=True, num_workers=1)
@@ -1366,8 +1366,23 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     valid_loader = DataLoader(valid_set, batch_size=15000, shuffle=False, num_workers=1)
 
 
+
+
+
+    model = Model_ensemble()
+    model.load_state_dict(torch.load(f'/home/xyli/kaggle/kaggle_HomeCredit/best_Model_ensemble.pt'))
+    model = model.cuda()
+    valid_pred = inference_fn(model, valid_loader, device = torch.device("cuda"))
+    # 将多个batch(包含多个向量的列表)合并为1个向量
+    valid_pred = [item[0] for sublist in valid_pred for item in sublist] 
+    valid_auc = roc_auc_score(y_valid.tolist(), valid_pred)
+    print("valid_auc: ", valid_auc)
+    continue
+
+
     model = Model_ensemble()
     model = model.cuda()
+
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-1, weight_decay=1e-3)
     loss_fn = nn.MSELoss() # 创建MSE损失函数对象
 
