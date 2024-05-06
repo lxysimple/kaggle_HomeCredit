@@ -1190,6 +1190,8 @@ print("Mean CV AUC score: ", np.mean(cv_scores_lgb_rf))
 # ======================================== 训练线性模型 =====================================
 """ 加载训练的模型 """
 
+from torch.utils.data import DataLoader
+
 fitted_models_cat1 = []
 fitted_models_lgb1 = []
 fitted_models_xgb1 = []
