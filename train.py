@@ -1368,11 +1368,11 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
 
     model = Model_ensemble()
     model = model.cuda()
-    optimizer = torch.optim.Adam(model.parameters(), lr=1e-1, weight_decay=1e-3)
+    optimizer = torch.optim.Adam(model.parameters(), lr=1e-2, weight_decay=1e-4)
     loss_fn = nn.MSELoss() # 创建MSE损失函数对象
 
     best_train_loss = 999.0
-    best_valid_auc = 999.0
+    best_valid_auc = -1
     for epoch in range(20):
         train_loss = train_fn(model, optimizer, None, loss_fn, train_loader, device = torch.device("cuda"))
         valid_pred = inference_fn(model, valid_loader, device = torch.device("cuda"))
