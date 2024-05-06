@@ -1339,8 +1339,8 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     X_valid, y_valid = df_train.iloc[idx_valid], y.iloc[idx_valid] 
 
 
-    from IPython import embed
-    embed()
+    # from IPython import embed
+    # embed()
 
     train_preds = model.predict_proba(X_train)
     train_preds = torch.tensor(train_preds)
