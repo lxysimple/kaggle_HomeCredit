@@ -1185,209 +1185,203 @@ print("Mean CV AUC score: ", np.mean(cv_scores_lgb_rf))
 
 
 # ======================================== 训练线性模型 =====================================
-# """ 加载训练的模型 """
+""" 加载训练的模型 """
 
-# fitted_models_cat1 = []
-# fitted_models_lgb1 = []
-# fitted_models_xgb1 = []
-# fitted_models_nn = []
+fitted_models_cat1 = []
+fitted_models_lgb1 = []
+fitted_models_xgb1 = []
+fitted_models_nn = []
 
-# fitted_models_cat2 = []
-# fitted_models_lgb2 = []
+fitted_models_cat2 = []
+fitted_models_lgb2 = []
 
 
-# for fold in range(1,6):
-#     clf = CatBoostClassifier() 
-#     clf.load_model(f"/kaggle/input/hc-catboost-829/catboost_fold{fold}.cbm")
-#     fitted_models_cat1.append(clf)
+for fold in range(1,6):
+    clf = CatBoostClassifier() 
+    clf.load_model(f"/kaggle/input/hc-catboost-829/catboost_fold{fold}.cbm")
+    fitted_models_cat1.append(clf)
     
-#     model = lgb.LGBMClassifier()
-#     model = lgb.Booster(model_file=f"/kaggle/input/hc-lgbm-829/lgbm_fold{fold}.txt")
-#     fitted_models_lgb1.append(model)
+    model = lgb.LGBMClassifier()
+    model = lgb.Booster(model_file=f"/kaggle/input/hc-lgbm-829/lgbm_fold{fold}.txt")
+    fitted_models_lgb1.append(model)
     
-#     clf2 = CatBoostClassifier()
-#     clf2.load_model(f"/kaggle/input/hc-catboost/catboost_fold{fold}.cbm")
-#     fitted_models_cat2.append(clf2) 
+    clf2 = CatBoostClassifier()
+    clf2.load_model(f"/kaggle/input/hc-catboost/catboost_fold{fold}.cbm")
+    fitted_models_cat2.append(clf2) 
     
-#     model2 = lgb.LGBMClassifier()
-#     model2 = lgb.Booster(model_file=f"/kaggle/input/hc-lgbm2/lgbm_fold{fold}.txt")
-#     fitted_models_lgb2.append(model2)
+    model2 = lgb.LGBMClassifier()
+    model2 = lgb.Booster(model_file=f"/kaggle/input/hc-lgbm2/lgbm_fold{fold}.txt")
+    fitted_models_lgb2.append(model2)
     
-# class VotingModel(BaseEstimator, RegressorMixin):
-#     def __init__(self, estimators):
-#         super().__init__()
-#         self.estimators = estimators
+class VotingModel(BaseEstimator, RegressorMixin):
+    def __init__(self, estimators):
+        super().__init__()
+        self.estimators = estimators
         
-#     def fit(self, X, y=None):
-#         return self
+    def fit(self, X, y=None):
+        return self
 
-#     def predict_proba(self, X):
+    def predict_proba(self, X):
         
-#         y_preds = []
+        y_preds = []
         
-#         y_preds += [estimator.predict_proba(X)[:, 1] for estimator in self.estimators[0:5]]
-#         y_preds += [estimator.predict_proba(X[df_train_386])[:, 1] for estimator in self.estimators[5:10]]
+        y_preds += [estimator.predict_proba(X)[:, 1] for estimator in self.estimators[0:5]]
+        y_preds += [estimator.predict_proba(X[df_train_386])[:, 1] for estimator in self.estimators[5:10]]
         
-#         X[cat_cols_829] = X[cat_cols_829].astype("category")
-#         y_preds += [estimator.predict(X) for estimator in self.estimators[10:15]]
-#         y_preds += [estimator.predict(X[df_train_386]) for estimator in self.estimators[15:20]]
+        X[cat_cols_829] = X[cat_cols_829].astype("category")
+        y_preds += [estimator.predict(X) for estimator in self.estimators[10:15]]
+        y_preds += [estimator.predict(X[df_train_386]) for estimator in self.estimators[15:20]]
         
         
-#         return y_preds
+        return y_preds
 
-# model = VotingModel(fitted_models_cat1 + fitted_models_cat2 + fitted_models_lgb1 + fitted_models_lgb2)
-
-
+model = VotingModel(fitted_models_cat1 + fitted_models_cat2 + fitted_models_lgb1 + fitted_models_lgb2)
 
 
-
-
-
-
-
-
-
-# class MarketDataset:
-#     def __init__(self, features, label):
+class MarketDataset:
+    def __init__(self, features, label):
         
-#         self.features = features
-#         self.label = label
+        self.features = features
+        self.label = label
 
-#     def __len__(self):
-#         return len(self.label)
+    def __len__(self):
+        return len(self.label)
 
-#     def __getitem__(self, idx):
+    def __getitem__(self, idx):
         
-#         return {
-#             'features': torch.tensor(self.features[idx], dtype=torch.float),
-#             'label': torch.tensor(self.label[idx], dtype=torch.float)
-#         }
+        return {
+            'features': torch.tensor(self.features[idx], dtype=torch.float),
+            'label': torch.tensor(self.label[idx], dtype=torch.float)
+        }
 
-# class Model_ensemble(nn.Module):
-#     def __init__(self):
-#         super(Model_ensemble, self).__init__()
-#         self.dense1 = nn.Linear(20, 1)
+class Model_ensemble(nn.Module):
+    def __init__(self):
+        super(Model_ensemble, self).__init__()
+        self.dense1 = nn.Linear(20, 1)
         
-#     def forward(self, x):
-#         x = self.dense1(x)
+    def forward(self, x):
+        x = self.dense1(x)
         
-#         return x
+        return x
 
 
-# def train_fn(model, optimizer, scheduler, loss_fn, dataloader, device):
-#     model.train()
-#     final_loss = 0
+def train_fn(model, optimizer, scheduler, loss_fn, dataloader, device):
+    model.train()
+    final_loss = 0
 
-#     for data in dataloader:
-#         optimizer.zero_grad()
-#         features = data['features'].to(device)
-#         label = data['label'].to(device)
+    for data in dataloader:
+        optimizer.zero_grad()
+        features = data['features'].to(device)
+        label = data['label'].to(device)
         
-# #         print(features.shape)
-# #         print(label.shape)
-#         outputs = model(features)
+#         print(features.shape)
+#         print(label.shape)
+        outputs = model(features)
         
-#         loss = loss_fn(outputs, label)
-#         loss.requires_grad_(True)   #加入此句就行了
-#         loss.backward()
-#         optimizer.step()
+        loss = loss_fn(outputs, label)
+        loss.requires_grad_(True)   #加入此句就行了
+        loss.backward()
+        optimizer.step()
 
-#         final_loss += loss.item()
+        final_loss += loss.item()
 
-#     if scheduler:
-#         scheduler.step()
-#     final_loss /= len(dataloader)
+    if scheduler:
+        scheduler.step()
+    final_loss /= len(dataloader)
 
-#     return final_loss
+    return final_loss
 
-# def inference_fn(model, dataloader, device):
-#     model.eval()
-#     preds = []
+def inference_fn(model, dataloader, device):
+    model.eval()
+    preds = []
 
-#     for data in dataloader:
-#         features = data['features'].to(device)
+    for data in dataloader:
+        features = data['features'].to(device)
 
-#         with torch.no_grad():
-#             outputs = model(features)
+        with torch.no_grad():
+            outputs = model(features)
         
-#         preds.append(outputs.detach().cpu().numpy())
-# #         preds.append(outputs.sigmoid().detach().cpu().numpy())
+        preds.append(outputs.detach().cpu().numpy())
+#         preds.append(outputs.sigmoid().detach().cpu().numpy())
 
-#     preds = np.concatenate(preds).reshape(-1, 1)
-#     return preds
+    preds = np.concatenate(preds).reshape(-1, 1)
+    return preds
 
-# def mse_fun(y_valid, valid_pred):
-#     # 将列表转换为PyTorch张量
-#     y_valid = torch.tensor(y_valid)
-#     valid_pred = torch.tensor(valid_pred)
+def mse_fun(y_valid, valid_pred):
+    # 将列表转换为PyTorch张量
+    y_valid = torch.tensor(y_valid)
+    valid_pred = torch.tensor(valid_pred)
     
-#     # 计算差值
-#     diff = y_valid - valid_pred
+    # 计算差值
+    diff = y_valid - valid_pred
 
-#     # 计算差值的平方
-#     squared_diff = diff ** 2
+    # 计算差值的平方
+    squared_diff = diff ** 2
 
-#     # 计算均方误差
-#     mse = torch.mean(squared_diff)
+    # 计算均方误差
+    mse = torch.mean(squared_diff)
     
-#     return mse
+    return mse
 
 
 
 
 
-# for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环5次
+for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环5次
 
-#     X_train, y_train = df_train.iloc[idx_train], y.iloc[idx_train] 
-#     X_valid, y_valid = df_train.iloc[idx_valid], y.iloc[idx_valid] 
+    X_train, y_train = df_train.iloc[idx_train], y.iloc[idx_train] 
+    X_valid, y_valid = df_train.iloc[idx_valid], y.iloc[idx_valid] 
 
-#     train_preds = model.predict_proba(X_train)
-#     train_preds = torch.tensor(train_preds)
-#     # 这样每一行是20个模型各预测的结果概率 行数=batchsize
-#     train_preds = torch.tensor(train_preds).T
+    train_preds = model.predict_proba(X_train)
+    train_preds = torch.tensor(train_preds)
+    # 这样每一行是20个模型各预测的结果概率 行数=batchsize
+    train_preds = torch.tensor(train_preds).T
 
 
-#     valid_preds = model.predict_proba(X_valid)
-#     valid_preds = torch.tensor(valid_preds)
-#     valid_preds = torch.tensor(valid_preds).T
+    valid_preds = model.predict_proba(X_valid)
+    naked_preds = np.mean(valid_preds, axis=0)
+    naked_score = roc_auc_score(y_valid, naked_preds)
+
+    valid_preds = torch.tensor(valid_preds)
+    valid_preds = torch.tensor(valid_preds).T
     
 
-#     train_set = MarketDataset(train_preds, y_train)
-#     train_loader = DataLoader(train_set, batch_size=15000, shuffle=True, num_workers=7)
-#     valid_set = MarketDataset(valid_preds, y_valid)
-#     valid_loader = DataLoader(valid_set, batch_size=15000, shuffle=False, num_workers=7)
+    train_set = MarketDataset(train_preds, y_train)
+    train_loader = DataLoader(train_set, batch_size=15000, shuffle=True, num_workers=7)
+    valid_set = MarketDataset(valid_preds, y_valid)
+    valid_loader = DataLoader(valid_set, batch_size=15000, shuffle=False, num_workers=7)
 
 
-#     model = Model_ensemble()
-#     model = model.cuda()
-#     optimizer = torch.optim.Adam(model.parameters(), lr=1e-1, weight_decay=1e-3)
-#     loss_fn = nn.MSELoss() # 创建MSE损失函数对象
+    model = Model_ensemble()
+    model = model.cuda()
+    optimizer = torch.optim.Adam(model.parameters(), lr=1e-1, weight_decay=1e-3)
+    loss_fn = nn.MSELoss() # 创建MSE损失函数对象
 
-#     best_train_loss = 999.0
-#     best_valid_auc = 999.0
-#     for epoch in range(20):
-#         train_loss = train_fn(model, optimizer, None, loss_fn, train_loader, device = torch.device("cuda"))
-#         valid_pred = inference_fn(model, valid_loader, device = torch.device("cuda"))
+    best_train_loss = 999.0
+    best_valid_auc = 999.0
+    for epoch in range(20):
+        train_loss = train_fn(model, optimizer, None, loss_fn, train_loader, device = torch.device("cuda"))
+        valid_pred = inference_fn(model, valid_loader, device = torch.device("cuda"))
         
-#         valid_auc = mse_fun(y_valid, valid_pred)
-#         print(
-#             f"EPOCH:{epoch:3} train_loss={train_loss:.5f} "
-#             f"roc_auc_score={valid_auc:.5f} "
-#             f"lr: {optimizer.param_groups[0]['lr']}"
-#         )
+        valid_auc = roc_auc_score(y_valid, valid_pred)
+        print(
+            f"EPOCH:{epoch:3} train_loss={train_loss:.5f} "
+            f"roc_auc_score={valid_auc:.5f} "
+            f"lr: {optimizer.param_groups[0]['lr']}"
+        )
 
-#         if train_loss < best_train_loss and valid_auc < best_valid_auc:
-#             best_train_loss = train_loss
-#             best_valid_auc = valid_auc
-#             torch.save(model.state_dict(), f"./best_Model_ensemble.pt") 
-#             print(
-#                 f"best_Model_ensemble.pt "
-#                 f"best_train_loss: {best_train_loss} "
-#                 f"best_valid_auc: {best_valid_auc} "
-#             )
+        if train_loss < best_train_loss and valid_auc < best_valid_auc:
+            best_train_loss = train_loss
+            best_valid_auc = valid_auc
+            torch.save(model.state_dict(), f"./best_Model_ensemble.pt") 
+            print(
+                f"best_Model_ensemble.pt "
+                f"best_train_loss: {best_train_loss} "
+                f"best_valid_auc: {best_valid_auc} "
+            )
 
 
 
-#     break # 只用5/4的数据做该线性模型的训练样本，这样比较简单
+    break # 只用5/4的数据做该线性模型的训练样本，这样比较简单
 
 # ======================================== 训练线性模型 =====================================
