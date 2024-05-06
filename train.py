@@ -1310,7 +1310,7 @@ def inference_fn(model, dataloader, device):
         preds.append(outputs.detach().cpu().numpy())
         # preds.append(outputs.sigmoid().detach().cpu().numpy())
 
-    preds = np.concatenate(preds).reshape(-1, 1)
+    # preds = np.concatenate(preds).reshape(-1, 1)
     return preds
 
 def mse_fun(y_valid, valid_pred):
