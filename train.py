@@ -150,6 +150,8 @@ print('len(non_cat_cols_829): ', len(non_cat_cols_829))
 cat_cols = cat_cols_386
 non_cat_cols = non_cat_cols_386
 
+df_train[cat_cols] = df_train[cat_cols].astype(str)
+
 # print('df_train.shape: ', df_train.shape)
 # print('df_train[cat_cols].shape: ', df_train[cat_cols].shape)
 # print('df_train[non_cat_cols].shape: ', df_train[non_cat_cols].shape)
