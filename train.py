@@ -1357,6 +1357,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     valid_pred = [item[0] for sublist in valid_pred for item in sublist] 
     valid_auc = roc_auc_score(y_valid.tolist(), valid_pred)
     print("valid_auc: ", valid_auc)
+    
     continue
 
 
