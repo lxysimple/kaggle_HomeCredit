@@ -1361,9 +1361,9 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     
 
     train_set = MarketDataset(train_preds, y_train)
-    train_loader = DataLoader(train_set, batch_size=1500, shuffle=True, num_workers=1, drop_last=True)
+    train_loader = DataLoader(train_set, batch_size=1500, shuffle=True, num_workers=1)
     valid_set = MarketDataset(valid_preds, y_valid)
-    valid_loader = DataLoader(valid_set, batch_size=1500, shuffle=False, num_workers=1, drop_last=True)
+    valid_loader = DataLoader(valid_set, batch_size=1500, shuffle=False, num_workers=1)
 
 
     model = Model_ensemble()
@@ -1381,6 +1381,9 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
         embed()
         # print('valid_pred: ', valid_pred)
         # print('y_valid.tolist(): ', y_valid.tolist())
+
+        # 将多个batch(包含多个向量的列表)合并为1个向量
+        valid_pred = [item[0] for sublist in valid_pred for item in sublist] 
         valid_auc = roc_auc_score(y_valid.tolist(), valid_pred)
         print(
             f"EPOCH:{epoch:3} train_loss={train_loss:.5f} "
