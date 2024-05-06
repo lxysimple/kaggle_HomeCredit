@@ -1342,12 +1342,12 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     naked_score = roc_auc_score(y_valid, naked_preds)
     print('naked_score: ', naked_score)
 
-    valid_set = MarketDataset(valid_preds, y_valid)
-    valid_loader = DataLoader(valid_set, batch_size=15000, shuffle=False, num_workers=1)
-
     valid_preds = torch.tensor(valid_preds)
     y_valid = torch.tensor(y_valid.values) # 保持索引都从0开始
     valid_preds = torch.tensor(valid_preds).T
+
+    valid_set = MarketDataset(valid_preds, y_valid)
+    valid_loader = DataLoader(valid_set, batch_size=15000, shuffle=False, num_workers=1)
 
     model_ensemble = Model_ensemble()
     model_ensemble.load_state_dict(torch.load(f'/home/xyli/kaggle/kaggle_HomeCredit/best_Model_ensemble.pt'))
