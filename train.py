@@ -1342,7 +1342,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     train_preds = torch.tensor(train_preds)
     # 这样每一行是20个模型各预测的结果概率 行数=batchsize
     train_preds = torch.tensor(train_preds).T
-    print('train_preds: ', train_preds)
+    print('train_preds.shape: ', train_preds.shape)
 
 
     valid_preds = model.predict_proba(X_valid)
