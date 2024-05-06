@@ -1302,7 +1302,7 @@ def inference_fn(model, dataloader, device):
             outputs = model(features)
         
         preds.append(outputs.detach().cpu().numpy())
-#         preds.append(outputs.sigmoid().detach().cpu().numpy())
+        # preds.append(outputs.sigmoid().detach().cpu().numpy())
 
     preds = np.concatenate(preds).reshape(-1, 1)
     return preds
@@ -1341,6 +1341,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     valid_preds = model.predict_proba(X_valid)
     naked_preds = np.mean(valid_preds, axis=0)
     naked_score = roc_auc_score(y_valid, naked_preds)
+    print('naked_score: ', naked_score)
 
     valid_preds = torch.tensor(valid_preds)
     valid_preds = torch.tensor(valid_preds).T
@@ -1362,7 +1363,6 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     for epoch in range(20):
         train_loss = train_fn(model, optimizer, None, loss_fn, train_loader, device = torch.device("cuda"))
         valid_pred = inference_fn(model, valid_loader, device = torch.device("cuda"))
-        
         valid_auc = roc_auc_score(y_valid, valid_pred)
         print(
             f"EPOCH:{epoch:3} train_loss={train_loss:.5f} "
@@ -1380,6 +1380,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
                 f"best_valid_auc: {best_valid_auc} "
             )
 
+    
 
 
     break # 只用5/4的数据做该线性模型的训练样本，这样比较简单
