@@ -1344,8 +1344,10 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
 
     train_preds = model.predict_proba(X_train)
     train_preds = torch.tensor(train_preds)
+    y_train = torch.tensor(y_train.values) # 保持索引都从0开始
     # 这样每一行是20个模型各预测的结果概率 行数=batchsize
     train_preds = torch.tensor(train_preds).T
+    
     print('train_preds.shape: ', train_preds.shape)
 
 
@@ -1355,6 +1357,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     print('naked_score: ', naked_score)
 
     valid_preds = torch.tensor(valid_preds)
+    y_valid = torch.tensor(y_valid.values) # 保持索引都从0开始
     valid_preds = torch.tensor(valid_preds).T
     
 
