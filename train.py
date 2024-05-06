@@ -1227,7 +1227,8 @@ class VotingModel(BaseEstimator, RegressorMixin):
     def predict_proba(self, X):
         
         y_preds = []
-        
+
+        X[cat_cols_829] = X[cat_cols_829].astype("str")
         y_preds += [estimator.predict_proba(X)[:, 1] for estimator in self.estimators[0:5]]
         y_preds += [estimator.predict_proba(X[df_train_386])[:, 1] for estimator in self.estimators[5:10]]
         
