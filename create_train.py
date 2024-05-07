@@ -216,7 +216,7 @@ def reduce_mem_usage(df):
 
 
 
-ROOT            = Path("/kaggle/input/home-credit-credit-risk-model-stability")
+ROOT            = Path("/home/xyli/kaggle")
 
 TRAIN_DIR       = ROOT / "parquet_files" / "train"
 TEST_DIR        = ROOT / "parquet_files" / "test"
