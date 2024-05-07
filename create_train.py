@@ -336,17 +336,17 @@ df_train=df_train[uses]
 
 print("train data shape:\t", df_train.shape)
 
-expr_list = Aggregator.get_exprs(df_train)
+# expr_list = Aggregator.get_exprs(df_train)
 
-drop_nums = 0
-# 将包含最大值列的 DataFrame 作为新列连接到原始 DataFrame 上
-for expr in expr_list:
-    try:
-        df_train = df_train.with_columns(expr)
-    except:
-        drop_nums = drop_nums + 1
+# drop_nums = 0
+# # 将包含最大值列的 DataFrame 作为新列连接到原始 DataFrame 上
+# for expr in expr_list:
+#     try:
+#         df_train = df_train.with_columns(expr)
+#     except:
+#         drop_nums = drop_nums + 1
         
-print(f'共忽略{drop_nums}列')
-print("train data shape:\t", df_train.shape)
+# print(f'共忽略{drop_nums}列')
+# print("train data shape:\t", df_train.shape)
 
 df_train.to_csv('/home/xyli/kaggle/kaggle_HomeCredit/train389FE.csv', index=False)
