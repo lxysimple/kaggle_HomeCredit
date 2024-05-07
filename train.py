@@ -330,7 +330,7 @@ data_store = {
 
 df_train = feature_eng(**data_store)
 
-df_train = df_train[:50000]
+
 
 print("train data shape:\t", df_train.shape)
 del data_store
@@ -416,7 +416,7 @@ df_train=df_train[uses]
 
 print("train data shape:\t", df_train.shape)
 
-
+df_train = df_train[:50000]
 # ======================================== 读入df_train =====================================
 
 
