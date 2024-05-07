@@ -76,7 +76,7 @@ def to_pandas(df_data, cat_cols=None):
 # df_train = pd.read_csv('/home/xyli/kaggle/train.csv', nrows=50001)
 # df_train = pd.read_csv('/home/xyli/kaggle/kaggle_HomeCredit/train832.csv')
 # df_train = pd.read_csv('/home/xyli/kaggle/kaggle_HomeCredit/train832.csv', nrows=50000)
-df_train = pl.read_csv('/home/xyli/kaggle/kaggle_HomeCredit/train389FE.csv')
+df_train = pl.read_csv('/home/xyli/kaggle/kaggle_HomeCredit/train389FE.csv' nrows=50000)
 # df_train = pd.read_csv('/home/xyli/kaggle/kaggle_HomeCredit/train419.csv')
 # df_train = pd.read_csv('/home/xyli/kaggle/kaggle_HomeCredit/train389.csv')
 
@@ -87,10 +87,10 @@ df_train = pl.read_csv('/home/xyli/kaggle/kaggle_HomeCredit/train389FE.csv')
 
 _, cat_cols = to_pandas(df_train)
 
-print('cat_cols: ', cat_cols)
-print('df_train.columns: ', list(df_train.columns))
-import sys
-sys.exit() 
+# print('cat_cols: ', cat_cols)
+# print('df_train.columns: ', list(df_train.columns))
+# import sys
+# sys.exit() 
 
 # sample = pd.read_csv("/kaggle/input/home-credit-credit-risk-model-stability/sample_submission.csv")
 device='gpu'
