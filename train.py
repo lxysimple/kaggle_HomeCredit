@@ -149,11 +149,11 @@ class Aggregator:
 
         # my code
         expr_count = [pl.count(col).alias(f"count_{col}") for col in cols]
-        expr_median = [pl.median(col).alias(f"median_{col}") for col in cols]
+        # expr_median = [pl.median(col).alias(f"median_{col}") for col in cols]
 
 #         return  expr_max +expr_last+expr_mean
         return  expr_max + expr_min + expr_last + expr_first + expr_mean \
-        + expr_count + expr_median
+        + expr_count 
     
     def str_expr(df):
         cols = [col for col in df.columns if col[-1] in ("M",)]
