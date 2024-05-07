@@ -124,12 +124,10 @@ class Aggregator:
 
         # my code
         expr_count = [pl.count(col).alias(f"count_{col}") for col in cols]
-        # expr_median = [pl.median(col).alias(f"median_{col}") for col in cols]
-        # expr_quantile = [pl.quantile(0.5, col).alias(f"quantile_{col}") for col in cols]
         expr_std = [pl.std(col).alias(f"std_{col}") for col in cols]
         expr_sum = [pl.sum(col).alias(f"sum_{col}") for col in cols]
         expr_var = [pl.var(col).alias(f"var_{col}") for col in cols]
-        # expr_product = [pl.product(col).alias(f"product_{col}") for col in cols]
+
 
 #         return expr_max +expr_last+expr_mean
         # return expr_max + expr_min + expr_last + expr_first + expr_mean
@@ -147,10 +145,6 @@ class Aggregator:
         
         expr_mean = [pl.mean(col).alias(f"mean_{col}") for col in cols]
 
-        # my code
-        # expr_count = [pl.count(col).alias(f"count_{col}") for col in cols]
-        # expr_median = [pl.median(col).alias(f"median_{col}") for col in cols]
-
 #         return  expr_max +expr_last+expr_mean
         return  expr_max + expr_min + expr_last + expr_first + expr_mean  
     
@@ -161,10 +155,6 @@ class Aggregator:
         expr_last = [pl.last(col).alias(f"last_{col}") for col in cols]
         expr_first = [pl.first(col).alias(f"first_{col}") for col in cols] # 原本是忽略的
         expr_count = [pl.count(col).alias(f"count_{col}") for col in cols]  # 原本是忽略的
-
-
-        # my code
-        # expr_median = [pl.median(col).alias(f"median_{col}") for col in cols]
 
 #         return  expr_max +expr_last#+expr_count
         return  expr_max + expr_min + expr_last + expr_first + expr_count  
@@ -178,12 +168,9 @@ class Aggregator:
 
         # my code
         expr_count = [pl.count(col).alias(f"count_{col}") for col in cols]
-        # expr_median = [pl.median(col).alias(f"median_{col}") for col in cols]
-        # expr_quantile = [pl.quantile(0.5, col).alias(f"quantile_{col}") for col in cols]
         expr_std = [pl.std(col).alias(f"std_{col}") for col in cols]
         expr_sum = [pl.sum(col).alias(f"sum_{col}") for col in cols]
         expr_var = [pl.var(col).alias(f"var_{col}") for col in cols]
-        # expr_product = [pl.product(col).alias(f"product_{col}") for col in cols]
 
 #         return  expr_max +expr_last
         return  expr_max + expr_min + expr_last + expr_first \
@@ -199,7 +186,6 @@ class Aggregator:
 
         # my code
         expr_count = [pl.count(col).alias(f"count_{col}") for col in cols]
-        # expr_median = [pl.median(col).alias(f"median_{col}") for col in cols]
 
 #         return  expr_max +expr_last
         return  expr_max + expr_min + expr_last + expr_first \
