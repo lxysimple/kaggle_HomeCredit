@@ -75,7 +75,8 @@ def to_pandas(df_data, cat_cols=None):
 # df_train = pd.read_csv('/home/xyli/kaggle/kaggle_HomeCredit/train419.csv', nrows=5)
 # df_train = pd.read_csv('/home/xyli/kaggle/train.csv', nrows=50001)
 # df_train = pd.read_csv('/home/xyli/kaggle/kaggle_HomeCredit/train832.csv')
-df_train = pd.read_csv('/home/xyli/kaggle/kaggle_HomeCredit/train832.csv', nrows=50000)
+# df_train = pd.read_csv('/home/xyli/kaggle/kaggle_HomeCredit/train832.csv', nrows=50000)
+df_train = pd.read_csv('/home/xyli/kaggle/kaggle_HomeCredit/trainFE389.csv')
 # df_train = pd.read_csv('/home/xyli/kaggle/kaggle_HomeCredit/train419.csv')
 # df_train = pd.read_csv('/home/xyli/kaggle/kaggle_HomeCredit/train389.csv')
 
