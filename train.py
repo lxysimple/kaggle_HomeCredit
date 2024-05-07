@@ -404,7 +404,7 @@ def to_pandas(df_data, cat_cols=None):
 # # 将新行添加到DataFrame中
 # df_train = pd.concat([df_train, new_row], ignore_index=True)
 
-_, cat_cols = to_pandas(df_train)
+# _, cat_cols = to_pandas(df_train)
 
 # print('cat_cols: ', cat_cols)
 # print('df_train.columns: ', list(df_train.columns))
