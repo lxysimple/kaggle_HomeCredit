@@ -129,13 +129,13 @@ class Aggregator:
         expr_std = [pl.std(col).alias(f"std_{col}") for col in cols]
         expr_sum = [pl.sum(col).alias(f"sum_{col}") for col in cols]
         expr_var = [pl.var(col).alias(f"var_{col}") for col in cols]
-        expr_product = [pl.product(col).alias(f"product_{col}") for col in cols]
+        # expr_product = [pl.product(col).alias(f"product_{col}") for col in cols]
 
 #         return expr_max +expr_last+expr_mean
         # return expr_max + expr_min + expr_last + expr_first + expr_mean
         return expr_max + expr_min + expr_last + expr_first + expr_mean \
         + expr_count + expr_median + expr_std \
-        + expr_sum + expr_var + expr_product
+        + expr_sum + expr_var 
     
     def date_expr(df):
         cols = [col for col in df.columns if col[-1] in ("D")]
@@ -185,12 +185,12 @@ class Aggregator:
         expr_std = [pl.std(col).alias(f"std_{col}") for col in cols]
         expr_sum = [pl.sum(col).alias(f"sum_{col}") for col in cols]
         expr_var = [pl.var(col).alias(f"var_{col}") for col in cols]
-        expr_product = [pl.product(col).alias(f"product_{col}") for col in cols]
+        # expr_product = [pl.product(col).alias(f"product_{col}") for col in cols]
 
 #         return  expr_max +expr_last
         return  expr_max + expr_min + expr_last + expr_first \
         + expr_count + expr_median + expr_std \
-        + expr_sum + expr_var + expr_product
+        + expr_sum + expr_var 
     
     def count_expr(df):
         cols = [col for col in df.columns if "num_group" in col]
