@@ -15,8 +15,6 @@ import matplotlib.pyplot as plt
 import warnings
 warnings.filterwarnings('ignore')
 
-ROOT = '/kaggle/input/home-credit-credit-risk-model-stability'
-
 from sklearn.model_selection import TimeSeriesSplit, GroupKFold, StratifiedGroupKFold
 from sklearn.base import BaseEstimator, RegressorMixin
 from sklearn.metrics import roc_auc_score
@@ -351,4 +349,4 @@ for expr in expr_list:
 print(f'共忽略{drop_nums}列')
 print("train data shape:\t", df_train.shape)
 
-df_train.to_csv('/kaggle/working/train_FE.csv', index=False)
+df_train.to_csv('/kaggle/working/train389FE.csv', index=False)
