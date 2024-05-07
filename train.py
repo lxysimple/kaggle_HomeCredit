@@ -298,9 +298,7 @@ df_train, cat_cols = to_pandas(df_train)
 df_train = reduce_mem_usage(df_train)
 print("train data shape:\t", df_train.shape)
 
-
-# ===================================================================
-""" 可理解为相关性处理，去掉相关性大致相同的列 """
+""" 可理解为相关性处理，去掉相关性大致相同的列 """ 
 
 nums=df_train.select_dtypes(exclude='category').columns
 from itertools import combinations, permutations
