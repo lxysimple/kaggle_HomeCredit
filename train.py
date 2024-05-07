@@ -403,7 +403,6 @@ df_train=df_train[uses]
 print("train data shape:\t", df_train.shape)
 
 
-_, cat_cols = to_pandas(df_train)
 print('cat_cols: ', cat_cols)
 print('df_train.columns: ', list(df_train.columns))
 df_train.to_csv('/home/xyli/kaggle/kaggle_HomeCredit/train389FE.csv', index=False)
