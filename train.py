@@ -402,7 +402,13 @@ df_train=df_train[uses]
 
 print("train data shape:\t", df_train.shape)
 
-df_train = df_train[:50000]
+
+_, cat_cols = to_pandas(df_train)
+print('cat_cols: ', cat_cols)
+print('df_train.columns: ', list(df_train.columns))
+df_train.to_csv('/home/xyli/kaggle/kaggle_HomeCredit/train389FE.csv', index=False)
+import sys
+sys.exit() 
 # ======================================== 读入df_train =====================================
 
 
@@ -434,12 +440,7 @@ def to_pandas(df_data, cat_cols=None):
 # # 将新行添加到DataFrame中
 # df_train = pd.concat([df_train, new_row], ignore_index=True)
 
-# _, cat_cols = to_pandas(df_train)
 
-# print('cat_cols: ', cat_cols)
-# print('df_train.columns: ', list(df_train.columns))
-# import sys
-# sys.exit() 
 
 # sample = pd.read_csv("/kaggle/input/home-credit-credit-risk-model-stability/sample_submission.csv")
 device='gpu'
@@ -475,7 +476,7 @@ df_train[cat_cols] = df_train[cat_cols].astype(str)
 non_cat_cols = df_train.columns.difference(cat_cols) 
 
 
-
+print()
 
 
 
