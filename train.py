@@ -125,7 +125,7 @@ class Aggregator:
         # my code
         expr_count = [pl.count(col).alias(f"count_{col}") for col in cols]
         expr_median = [pl.median(col).alias(f"median_{col}") for col in cols]
-        expr_quantile = [pl.quantile(0.5, col).alias(f"quantile_{col}") for col in cols]
+        # expr_quantile = [pl.quantile(0.5, col).alias(f"quantile_{col}") for col in cols]
         expr_std = [pl.std(col).alias(f"std_{col}") for col in cols]
         expr_sum = [pl.sum(col).alias(f"sum_{col}") for col in cols]
         expr_var = [pl.var(col).alias(f"var_{col}") for col in cols]
@@ -134,7 +134,7 @@ class Aggregator:
 #         return expr_max +expr_last+expr_mean
         # return expr_max + expr_min + expr_last + expr_first + expr_mean
         return expr_max + expr_min + expr_last + expr_first + expr_mean \
-        + expr_count + expr_median + expr_quantile + expr_std \
+        + expr_count + expr_median + expr_std \
         + expr_sum + expr_var + expr_product
     
     def date_expr(df):
@@ -150,16 +150,10 @@ class Aggregator:
         # my code
         expr_count = [pl.count(col).alias(f"count_{col}") for col in cols]
         expr_median = [pl.median(col).alias(f"median_{col}") for col in cols]
-        expr_quantile = [pl.quantile(0.5, col).alias(f"quantile_{col}") for col in cols]
-        expr_std = [pl.std(col).alias(f"std_{col}") for col in cols]
-        expr_sum = [pl.sum(col).alias(f"sum_{col}") for col in cols]
-        expr_var = [pl.var(col).alias(f"var_{col}") for col in cols]
-        expr_product = [pl.product(col).alias(f"product_{col}") for col in cols]
 
 #         return  expr_max +expr_last+expr_mean
         return  expr_max + expr_min + expr_last + expr_first + expr_mean \
-        + expr_count + expr_median + expr_quantile + expr_std \
-        + expr_sum + expr_var + expr_product
+        + expr_count + expr_median
     
     def str_expr(df):
         cols = [col for col in df.columns if col[-1] in ("M",)]
@@ -171,18 +165,11 @@ class Aggregator:
 
 
         # my code
-        # expr_count = [pl.count(col).alias(f"count_{col}") for col in cols]
         expr_median = [pl.median(col).alias(f"median_{col}") for col in cols]
-        expr_quantile = [pl.quantile(0.5, col).alias(f"quantile_{col}") for col in cols]
-        expr_std = [pl.std(col).alias(f"std_{col}") for col in cols]
-        expr_sum = [pl.sum(col).alias(f"sum_{col}") for col in cols]
-        expr_var = [pl.var(col).alias(f"var_{col}") for col in cols]
-        expr_product = [pl.product(col).alias(f"product_{col}") for col in cols]
 
 #         return  expr_max +expr_last#+expr_count
         return  expr_max + expr_min + expr_last + expr_first + expr_count \
-        + expr_median + expr_quantile + expr_std \
-        + expr_sum + expr_var + expr_product
+        + expr_median 
 
     def other_expr(df):
         cols = [col for col in df.columns if col[-1] in ("T", "L")]
@@ -194,7 +181,7 @@ class Aggregator:
         # my code
         expr_count = [pl.count(col).alias(f"count_{col}") for col in cols]
         expr_median = [pl.median(col).alias(f"median_{col}") for col in cols]
-        expr_quantile = [pl.quantile(0.5, col).alias(f"quantile_{col}") for col in cols]
+        # expr_quantile = [pl.quantile(0.5, col).alias(f"quantile_{col}") for col in cols]
         expr_std = [pl.std(col).alias(f"std_{col}") for col in cols]
         expr_sum = [pl.sum(col).alias(f"sum_{col}") for col in cols]
         expr_var = [pl.var(col).alias(f"var_{col}") for col in cols]
@@ -202,7 +189,7 @@ class Aggregator:
 
 #         return  expr_max +expr_last
         return  expr_max + expr_min + expr_last + expr_first \
-        + expr_count + expr_median + expr_quantile + expr_std \
+        + expr_count + expr_median + expr_std \
         + expr_sum + expr_var + expr_product
     
     def count_expr(df):
@@ -215,16 +202,10 @@ class Aggregator:
         # my code
         expr_count = [pl.count(col).alias(f"count_{col}") for col in cols]
         expr_median = [pl.median(col).alias(f"median_{col}") for col in cols]
-        expr_quantile = [pl.quantile(0.5, col).alias(f"quantile_{col}") for col in cols]
-        expr_std = [pl.std(col).alias(f"std_{col}") for col in cols]
-        expr_sum = [pl.sum(col).alias(f"sum_{col}") for col in cols]
-        expr_var = [pl.var(col).alias(f"var_{col}") for col in cols]
-        expr_product = [pl.product(col).alias(f"product_{col}") for col in cols]
 
 #         return  expr_max +expr_last
         return  expr_max + expr_min + expr_last + expr_first \
-        + expr_count + expr_median + expr_quantile + expr_std \
-        + expr_sum + expr_var + expr_product       
+        + expr_count + expr_median    
     
     def get_exprs(df):
         exprs = Aggregator.num_expr(df) + \
