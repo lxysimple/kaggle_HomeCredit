@@ -127,14 +127,14 @@ non_cat_cols = df_train.columns.difference(cat_cols)
 
 # ======================================== 特征列分类 =====================================
 
-# # 386个
-# df_train_FE386 =
-# # 113个
-# cat_cols_FE386 = 
-# # 273个
-# non_cat_cols_FE386 = [i for i in df_train_FE386 if i not in cat_cols_FE386]
-# print('len(cat_cols_FE386) : ', len(cat_cols_FE386))
-# print('len(non_cat_cols_FE386): ', len(non_cat_cols_FE386))
+# 386个
+df_train_FE386 =
+# 113个
+cat_cols_FE386 = 
+# 273个
+non_cat_cols_FE386 = [i for i in df_train_FE386 if i not in cat_cols_FE386]
+print('len(cat_cols_FE386) : ', len(cat_cols_FE386))
+print('len(non_cat_cols_FE386): ', len(non_cat_cols_FE386))
 
 
 
@@ -165,8 +165,8 @@ print('len(non_cat_cols_829): ', len(non_cat_cols_829))
 """
 
 
-cat_cols = cat_cols_386
-non_cat_cols = non_cat_cols_386
+cat_cols = cat_cols_FE386
+non_cat_cols = non_cat_cols_FE386
 
 df_train[cat_cols] = df_train[cat_cols].astype(str)
 
