@@ -474,6 +474,12 @@ df_train[cat_cols] = df_train[cat_cols].astype(str)
 # 找到除cat_cols列外的所有列
 non_cat_cols = df_train.columns.difference(cat_cols) 
 
+
+
+
+
+
+
 # ======================================== 特征列分类 =====================================
 
 # 386个
