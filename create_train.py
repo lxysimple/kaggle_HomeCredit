@@ -349,4 +349,4 @@ for expr in expr_list:
 print(f'共忽略{drop_nums}列')
 print("train data shape:\t", df_train.shape)
 
-df_train.to_csv('/kaggle/working/train389FE.csv', index=False)
+df_train.to_csv('/home/xyli/kaggle/kaggle_HomeCredit/train389FE.csv', index=False)
