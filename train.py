@@ -131,7 +131,7 @@ class Aggregator:
 
         # 0.755666 排列顺序
         return expr_max + expr_min + expr_last + expr_first + expr_mean \
-         +  expr_std + expr_sum + expr_var
+         +  expr_std  + expr_var + expr_sum
     
     def date_expr(df):
 
@@ -175,7 +175,7 @@ class Aggregator:
 
         # 0.755666 排列顺序
         return  expr_max + expr_min + expr_last + expr_first + expr_mean\
-        + expr_std + expr_sum + expr_var
+        + expr_std  + expr_var + expr_sum
 
          
 
