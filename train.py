@@ -127,9 +127,11 @@ class Aggregator:
         expr_sum = [pl.sum(col).alias(f"sum_{col}") for col in cols]
         expr_var = [pl.var(col).alias(f"var_{col}") for col in cols]
 
+        expr_product = [pl.product(col).alias(f"product_{col}") for col in cols]
+
 
         return expr_max + expr_min + expr_last + expr_first + expr_mean \
-         +  expr_sum + expr_std + expr_var
+         +  expr_sum + expr_std + expr_var + expr_product
     
     def date_expr(df):
 
@@ -165,8 +167,10 @@ class Aggregator:
         expr_sum = [pl.sum(col).alias(f"sum_{col}") for col in cols]
         expr_var = [pl.var(col).alias(f"var_{col}") for col in cols]
 
+        expr_product = [pl.product(col).alias(f"product_{col}") for col in cols]
+
         return  expr_max + expr_min + expr_last + expr_first \
-        + expr_sum + expr_std + expr_var
+        + expr_sum + expr_std + expr_var + expr_product
     
     def count_expr(df):
 
