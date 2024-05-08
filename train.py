@@ -147,7 +147,7 @@ class Aggregator:
         
         expr_mean = [pl.mean(col).alias(f"mean_{col}") for col in cols]
 
-        return  expr_min + expr_mean + expr_max +  + expr_last + expr_first 
+        return  expr_min + expr_mean + expr_max + expr_last + expr_first 
         # return  expr_min  + expr_mean + expr_max + expr_last  +  expr_first
     
     def str_expr(df):
