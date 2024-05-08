@@ -130,8 +130,11 @@ class Aggregator:
         # expr_product = [pl.product(col).alias(f"product_{col}") for col in cols]
 
 
-        return expr_max + expr_min + expr_last + expr_first + expr_mean \
-         +  expr_std + expr_sum + expr_var 
+        # return expr_max + expr_min + expr_last + expr_first + expr_mean \
+        #  +  expr_std + expr_sum + expr_var 
+        
+        return expr_min + expr_mean + expr_max + expr_std + expr_sum + expr_var\
+         + expr_first + expr_last 
     
     def date_expr(df):
 
@@ -144,7 +147,8 @@ class Aggregator:
         
         expr_mean = [pl.mean(col).alias(f"mean_{col}") for col in cols]
 
-        return  expr_max + expr_min + expr_last + expr_first + expr_mean  
+        # return  expr_min + expr_mean + expr_max +  + expr_last + expr_first 
+        return  expr_min + expr_mean + expr_max + expr_first + expr_last  
     
     def str_expr(df):
 
@@ -154,7 +158,8 @@ class Aggregator:
         expr_last = [pl.last(col).alias(f"last_{col}") for col in cols]
         expr_first = [pl.first(col).alias(f"first_{col}") for col in cols] # 原本是忽略的
 
-        return  expr_max + expr_min + expr_last + expr_first   
+        # return  expr_max + expr_min + expr_last + expr_first   
+        return  expr_min + expr_max + expr_first + expr_last
 
     def other_expr(df):
         cols = [col for col in df.columns if col[-1] in ("T", "L")]
@@ -169,8 +174,12 @@ class Aggregator:
 
         # expr_product = [pl.product(col).alias(f"product_{col}") for col in cols]
 
-        return  expr_max + expr_min + expr_last + expr_first \
-        + expr_std + expr_sum + expr_var 
+        # return  expr_max + expr_min + expr_last + expr_first \
+        # + expr_std + expr_sum + expr_var 
+        return  expr_min + expr_max + + expr_std + expr_sum + expr_var \
+        + expr_first + expr_last
+         
+
     
     def count_expr(df):
 
@@ -180,7 +189,8 @@ class Aggregator:
         expr_last = [pl.last(col).alias(f"last_{col}") for col in cols]
         expr_first = [pl.first(col).alias(f"first_{col}") for col in cols] # 原本是忽略的
 
-        return  expr_max + expr_min + expr_last + expr_first \
+        # return  expr_max + expr_min + expr_last + expr_first 
+        return  expr_min + expr_max  + expr_first + expr_last
              
     
     def get_exprs(df):
