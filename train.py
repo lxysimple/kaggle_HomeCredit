@@ -477,9 +477,10 @@ df_train[cat_cols] = df_train[cat_cols].astype(str)
 non_cat_cols = df_train.columns.difference(cat_cols) 
 
 
-print()
-
-
+print('cat_cols:')
+print(cat_cols)
+print('df_train.columns')
+print(list(df_train.columns))
 
 
 # ======================================== 特征列分类 =====================================
