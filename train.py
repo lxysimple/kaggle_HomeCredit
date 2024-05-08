@@ -136,7 +136,6 @@ class Aggregator:
          + expr_var  + expr_sum
     
     def date_expr(df):
-        """ 感觉无法再添加统计特征了 """
 
         cols = [col for col in df.columns if col[-1] in ("D")]
         expr_max = [pl.max(col).alias(f"max_{col}") for col in cols]
@@ -151,7 +150,6 @@ class Aggregator:
         return  expr_max + expr_min + expr_last + expr_first + expr_mean  
     
     def str_expr(df):
-        """ 感觉无法再添加统计特征了 """
 
         cols = [col for col in df.columns if col[-1] in ("M",)]
         expr_max = [pl.max(col).alias(f"max_{col}") for col in cols]
@@ -182,7 +180,6 @@ class Aggregator:
          + expr_var + expr_sum
     
     def count_expr(df):
-        """ 感觉无法再添加统计特征了 """
 
         cols = [col for col in df.columns if "num_group" in col]
         expr_max = [pl.max(col).alias(f"max_{col}") for col in cols] 
