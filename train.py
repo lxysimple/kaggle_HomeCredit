@@ -130,8 +130,8 @@ class Aggregator:
         # expr_product = [pl.product(col).alias(f"product_{col}") for col in cols]
 
         # 0.754300 排列顺序
-        return expr_max + expr_min + expr_last + expr_first + expr_mean 
-        #  +  expr_std  +expr_sum +  expr_var
+        return expr_max + expr_min + expr_last + expr_first + expr_mean\
+         +  expr_std  
     
     def date_expr(df):
 
@@ -146,6 +146,7 @@ class Aggregator:
 
         # 0.754300 排列顺序
         return  expr_max + expr_min  +  expr_last + expr_first + expr_mean
+    
 
     
     def str_expr(df):
@@ -181,8 +182,8 @@ class Aggregator:
         # expr_product = [pl.product(col).alias(f"product_{col}") for col in cols]
 
         # 0.754300 排列顺序
-        return  expr_max + expr_min + expr_last + expr_first 
-        # + expr_std  + expr_sum + expr_var
+        return  expr_max + expr_min + expr_last + expr_first\
+         + expr_std + expr_mean 
 
          
 
