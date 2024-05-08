@@ -130,11 +130,8 @@ class Aggregator:
         # expr_product = [pl.product(col).alias(f"product_{col}") for col in cols]
 
 
-        # return expr_max + expr_min + expr_last + expr_first + expr_mean \
-        #  +  expr_std + expr_sum + expr_var 
         return expr_max + expr_min + expr_last + expr_first + expr_mean \
          +  expr_std + expr_sum + expr_var
-        # return  expr_max + expr_min + expr_last + expr_first + expr_mean + expr_std  + expr_sum + expr_var
     
     def date_expr(df):
 
@@ -148,7 +145,7 @@ class Aggregator:
         expr_mean = [pl.mean(col).alias(f"mean_{col}") for col in cols]
 
         return  expr_max  + expr_mean + expr_min  +  expr_last + expr_first 
-        # return  expr_min  + expr_mean + expr_max + expr_last  +  expr_first
+
     
     def str_expr(df):
 
@@ -173,11 +170,10 @@ class Aggregator:
         expr_var = [pl.var(col).alias(f"var_{col}") for col in cols]
 
         # expr_product = [pl.product(col).alias(f"product_{col}") for col in cols]
+
         return  expr_max + expr_min + expr_last + expr_first \
         + expr_std + expr_sum + expr_var
-        # return  expr_max  + expr_min + expr_last + expr_first + expr_mean + expr_std + expr_sum + expr_var
-        # return  expr_min  + expr_max + expr_std + expr_sum + expr_var \
-        # + expr_last  + expr_first
+
          
 
     
