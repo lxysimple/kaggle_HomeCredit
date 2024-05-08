@@ -529,8 +529,8 @@ print('len(non_cat_cols_829): ', len(non_cat_cols_829))
 """
 
 
-# cat_cols = cat_cols_FE386
-# non_cat_cols = non_cat_cols_FE386
+cat_cols = cat_cols_FE386
+non_cat_cols = non_cat_cols_FE386
 
 df_train[cat_cols] = df_train[cat_cols].astype(str)
 
