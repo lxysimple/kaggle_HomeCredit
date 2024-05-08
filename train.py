@@ -123,14 +123,11 @@ class Aggregator:
         expr_mean = [pl.mean(col).alias(f"mean_{col}") for col in cols]
 
         # my code
-        # expr_count = [pl.count(col).alias(f"count_{col}") for col in cols]
         expr_std = [pl.std(col).alias(f"std_{col}") for col in cols]
         expr_sum = [pl.sum(col).alias(f"sum_{col}") for col in cols]
         expr_var = [pl.var(col).alias(f"var_{col}") for col in cols]
 
 
-#         return expr_max +expr_last+expr_mean
-        # return expr_max + expr_min + expr_last + expr_first + expr_mean
         return expr_max + expr_min + expr_last + expr_first + expr_mean \
          + expr_std \
          + expr_var  + expr_sum
@@ -146,7 +143,6 @@ class Aggregator:
         
         expr_mean = [pl.mean(col).alias(f"mean_{col}") for col in cols]
 
-#         return  expr_max +expr_last+expr_mean
         return  expr_max + expr_min + expr_last + expr_first + expr_mean  
     
     def str_expr(df):
@@ -156,9 +152,7 @@ class Aggregator:
         expr_min = [pl.min(col).alias(f"min_{col}") for col in cols] # 原本是忽略的 
         expr_last = [pl.last(col).alias(f"last_{col}") for col in cols]
         expr_first = [pl.first(col).alias(f"first_{col}") for col in cols] # 原本是忽略的
-        # expr_count = [pl.count(col).alias(f"count_{col}") for col in cols]  # 原本是忽略的
 
-#         return  expr_max +expr_last#+expr_count
         return  expr_max + expr_min + expr_last + expr_first   
 
     def other_expr(df):
@@ -168,13 +162,10 @@ class Aggregator:
         expr_last = [pl.last(col).alias(f"last_{col}") for col in cols]
         expr_first = [pl.first(col).alias(f"first_{col}") for col in cols] # 原本是忽略的
 
-        # my code
-        # expr_count = [pl.count(col).alias(f"count_{col}") for col in cols]
         expr_std = [pl.std(col).alias(f"std_{col}") for col in cols]
         expr_sum = [pl.sum(col).alias(f"sum_{col}") for col in cols]
         expr_var = [pl.var(col).alias(f"var_{col}") for col in cols]
 
-#         return  expr_max +expr_last
         return  expr_max + expr_min + expr_last + expr_first \
       + expr_std \
          + expr_var + expr_sum
@@ -187,10 +178,6 @@ class Aggregator:
         expr_last = [pl.last(col).alias(f"last_{col}") for col in cols]
         expr_first = [pl.first(col).alias(f"first_{col}") for col in cols] # 原本是忽略的
 
-        # my code
-        # expr_count = [pl.count(col).alias(f"count_{col}") for col in cols]
-
-#         return  expr_max +expr_last
         return  expr_max + expr_min + expr_last + expr_first \
              
     
