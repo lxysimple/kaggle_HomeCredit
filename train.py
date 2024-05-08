@@ -457,8 +457,6 @@ except:
     print("这个代码已经执行过1次了！")
 cv = StratifiedGroupKFold(n_splits=5, shuffle=False)
 
-df_train[cat_cols] = df_train[cat_cols].astype(str)
-# df_test[cat_cols] = df_test[cat_cols].astype(str)
 
 
 # df_train = copy.deepcopy(df_train_copy)
