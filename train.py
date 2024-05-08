@@ -125,7 +125,7 @@ class Aggregator:
         # my code
         expr_count = [pl.count(col).alias(f"count_{col}") for col in cols]
         expr_std = [pl.std(col).alias(f"std_{col}") for col in cols]
-        # expr_sum = [pl.sum(col).alias(f"sum_{col}") for col in cols]
+        expr_sum = [pl.sum(col).alias(f"sum_{col}") for col in cols]
         expr_var = [pl.var(col).alias(f"var_{col}") for col in cols]
 
 
@@ -133,7 +133,7 @@ class Aggregator:
         # return expr_max + expr_min + expr_last + expr_first + expr_mean
         return expr_max + expr_min + expr_last + expr_first + expr_mean \
         + expr_count + expr_std \
-         + expr_var 
+         + expr_var  + expr_sum
     
     def date_expr(df):
         """ 感觉无法再添加统计特征了 """
@@ -173,17 +173,17 @@ class Aggregator:
         # my code
         expr_count = [pl.count(col).alias(f"count_{col}") for col in cols]
         expr_std = [pl.std(col).alias(f"std_{col}") for col in cols]
-        # expr_sum = [pl.sum(col).alias(f"sum_{col}") for col in cols]
+        expr_sum = [pl.sum(col).alias(f"sum_{col}") for col in cols]
         expr_var = [pl.var(col).alias(f"var_{col}") for col in cols]
 
 #         return  expr_max +expr_last
         return  expr_max + expr_min + expr_last + expr_first \
         + expr_count  + expr_std \
-         + expr_var 
+         + expr_var + expr_sum
     
     def count_expr(df):
         """ 感觉无法再添加统计特征了 """
-        
+
         cols = [col for col in df.columns if "num_group" in col]
         expr_max = [pl.max(col).alias(f"max_{col}") for col in cols] 
         expr_min = [pl.min(col).alias(f"min_{col}") for col in cols] # 原本是忽略的
