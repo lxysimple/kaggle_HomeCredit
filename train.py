@@ -176,7 +176,7 @@ class Aggregator:
 
         # return  expr_max + expr_min + expr_last + expr_first \
         # + expr_std + expr_sum + expr_var 
-        return  expr_min + expr_max + + expr_std + expr_sum + expr_var \
+        return  expr_min + expr_max + expr_std + expr_sum + expr_var \
         + expr_first + expr_last
          
 
