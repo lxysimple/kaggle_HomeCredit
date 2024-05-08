@@ -395,11 +395,11 @@ df_train=df_train[uses]
 print("train data shape:\t", df_train.shape)
 
 
-# print('cat_cols: ', cat_cols)
-# print('df_train.columns: ', list(df_train.columns))
-# df_train.to_csv('/home/xyli/kaggle/kaggle_HomeCredit/train389FE.csv', index=False)
-# import sys
-# sys.exit() 
+print('cat_cols: ', cat_cols)
+print('df_train.columns: ', list(df_train.columns))
+df_train.to_csv('/home/xyli/kaggle/kaggle_HomeCredit/train389FE.csv', index=False)
+import sys
+sys.exit() 
 
 df_train = df_train[:50000]
 # ======================================== 读入df_train =====================================
