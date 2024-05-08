@@ -131,7 +131,7 @@ class Aggregator:
 
         # 0.755666 排列顺序
         return expr_max + expr_min + expr_last + expr_first + expr_mean \
-         +  expr_std  + expr_var + expr_sum
+         +  expr_std  +expr_sum +  expr_var
     
     def date_expr(df):
 
@@ -155,9 +155,10 @@ class Aggregator:
         expr_min = [pl.min(col).alias(f"min_{col}") for col in cols] # 原本是忽略的 
         expr_last = [pl.last(col).alias(f"last_{col}") for col in cols]
         expr_first = [pl.first(col).alias(f"first_{col}") for col in cols] # 原本是忽略的
+        expr_count = [pl.count(col).alias(f"count_{col}") for col in cols]
 
         # 0.755666 排列顺序
-        return  expr_max + expr_min + expr_last + expr_first   
+        return  expr_max + expr_min + expr_last + expr_first + expr_count 
 
     def other_expr(df):
         cols = [col for col in df.columns if col[-1] in ("T", "L")]
@@ -174,8 +175,8 @@ class Aggregator:
         # expr_product = [pl.product(col).alias(f"product_{col}") for col in cols]
 
         # 0.755666 排列顺序
-        return  expr_max + expr_min + expr_last + expr_first + expr_mean\
-        + expr_std  + expr_var + expr_sum
+        return  expr_max + expr_min + expr_last + expr_first + expr_sum\
+        + expr_std  + expr_var
 
          
 
