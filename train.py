@@ -161,9 +161,9 @@ class Aggregator:
         expr_mean = [pl.mean(col).alias(f"mean_{col}") for col in cols]
 
         # 0.754300 排列顺序
-        # return  expr_max + expr_min + expr_last + expr_first + expr_count 
+        return  expr_max + expr_min + expr_last + expr_first + expr_count \
+        + expr_mean
 
-        return  expr_max + expr_min + expr_last + expr_first + expr_count + expr_mean
 
     def other_expr(df):
         cols = [col for col in df.columns if col[-1] in ("T", "L")]
