@@ -166,8 +166,10 @@ class Aggregator:
         expr_min = [pl.min(col).alias(f"min_{col}") for col in cols] # 原本是忽略的
         expr_last = [pl.last(col).alias(f"last_{col}") for col in cols]
         expr_first = [pl.first(col).alias(f"first_{col}") for col in cols] # 原本是忽略的
-        expr_mean = [pl.mean(col).alias(f"mean_{col}") for col in cols]
+        
 
+        # my code 
+        expr_mean = [pl.mean(col).alias(f"mean_{col}") for col in cols]
         expr_std = [pl.std(col).alias(f"std_{col}") for col in cols]
         expr_sum = [pl.sum(col).alias(f"sum_{col}") for col in cols]
         expr_var = [pl.var(col).alias(f"var_{col}") for col in cols]
