@@ -101,8 +101,8 @@ class Pipeline:
         for col in df.columns:
             if (col not in ["target", "case_id", "WEEK_NUM"]) & (df[col].dtype == pl.String):
                 freq = df[col].n_unique()
-#                 if (freq == 1) | (freq > 200):
-                if freq > 200:
+                if (freq == 1) | (freq > 200):
+                # if freq > 200:
 #                 if (freq == 1) | (freq > 400):
 #                 if (freq == 1):
                     df = df.drop(col)
