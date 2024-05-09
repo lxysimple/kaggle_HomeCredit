@@ -300,6 +300,8 @@ ROOT            = Path("/home/xyli/kaggle")
 TRAIN_DIR       = ROOT / "parquet_files" / "train"
 TEST_DIR        = ROOT / "parquet_files" / "test"
 
+print('开始读取数据!')
+
 data_store = {
     "df_base": read_file(TRAIN_DIR / "train_base.parquet"),
     "depth_0": [
@@ -327,7 +329,7 @@ data_store = {
 }
 
 
-print('开始读取数据!')
+
 df_train = feature_eng(**data_store)
 
 
