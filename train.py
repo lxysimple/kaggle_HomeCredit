@@ -132,7 +132,7 @@ class Aggregator:
         # 0.754300 排列顺序
         # return expr_max + expr_min + expr_last + expr_first + expr_mean
 
-        return expr_mean
+        return expr_mean + expr_max + expr_min
     
     def date_expr(df):
 
@@ -148,7 +148,7 @@ class Aggregator:
         # 0.754300 排列顺序
         # return  expr_max + expr_min  +  expr_last + expr_first + expr_mean
 
-        return expr_mean
+        return expr_mean + expr_max + expr_min
 
 
 
@@ -168,7 +168,7 @@ class Aggregator:
         # 0.754300 排列顺序
         # return  expr_max + expr_min + expr_last + expr_first + expr_count
 
-        return expr_mean
+        return expr_mean + expr_max + expr_min
 
 
     def other_expr(df):
@@ -190,7 +190,7 @@ class Aggregator:
         # 0.754300 排列顺序
         # return  expr_max + expr_min + expr_last + expr_first
 
-        return expr_mean
+        return expr_mean + expr_max + expr_min
 
          
 
@@ -210,7 +210,7 @@ class Aggregator:
         # 0.755666 排列顺序
         # return  expr_max + expr_min + expr_last + expr_first + expr_count
 
-        return expr_mean
+        return expr_mean + expr_max + expr_min
              
     
     def get_exprs(df):
