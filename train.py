@@ -216,8 +216,8 @@ class Aggregator:
 def read_file(path, depth=None):
     df = pl.read_parquet(path)
     df = df.pipe(Pipeline.set_table_dtypes)
-    # if depth in [1,2]:
-    #     df = df.group_by("case_id").agg(Aggregator.get_exprs(df)) 
+    if depth in [1,2]:
+        df = df.group_by("case_id").agg(Aggregator.get_exprs(df)) 
     return df
 
 def read_files(regex_path, depth=None):
@@ -226,8 +226,8 @@ def read_files(regex_path, depth=None):
     for path in glob(str(regex_path)):
         df = pl.read_parquet(path)
         df = df.pipe(Pipeline.set_table_dtypes)
-        # if depth in [1, 2]:
-        #     df = df.group_by("case_id").agg(Aggregator.get_exprs(df))
+        if depth in [1, 2]:
+            df = df.group_by("case_id").agg(Aggregator.get_exprs(df))
         chunks.append(df)
     
     df = pl.concat(chunks, how="vertical_relaxed")
