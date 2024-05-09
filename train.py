@@ -327,7 +327,7 @@ data_store = {
         read_file(TRAIN_DIR / "train_person_2.parquet", 2)
     ]
 }
-
+print('读取数据完毕！')
 
 
 df_train = feature_eng(**data_store)
