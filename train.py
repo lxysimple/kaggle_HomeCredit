@@ -206,7 +206,8 @@ class Aggregator:
 
     
     def count_expr(df):
-
+        
+        # 其他一个case_id对应多条信息的，由于不知道具体是啥意思，所以统计特征用mean是比较好的感觉
         cols = [col for col in df.columns if "num_group" in col]
         expr_max = [pl.max(col).alias(f"max_{col}") for col in cols] 
         expr_min = [pl.min(col).alias(f"min_{col}") for col in cols] # 原本是忽略的
@@ -220,7 +221,9 @@ class Aggregator:
         # 0.755666 排列顺序
         # return  expr_max + expr_min + expr_last + expr_first + expr_count
 
-        return expr_mean + expr_max + expr_min 
+        # return expr_mean + expr_max + expr_min
+        
+        return expr_mean 
              
     
     def get_exprs(df):
