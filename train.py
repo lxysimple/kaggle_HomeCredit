@@ -520,7 +520,7 @@ print('cat_cols:')
 print('len(cat_cols):',len(cat_cols))
 print(cat_cols)
 print('df_train.columns')
-print(len(list(df_train.columns)), len(list(df_train.columns)))
+print("len(list(df_train.columns)): ", len(list(df_train.columns)))
 print(list(df_train.columns))
 
 
