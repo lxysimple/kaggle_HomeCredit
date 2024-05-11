@@ -113,7 +113,10 @@ class Pipeline:
 class Aggregator:
     #Please add or subtract features yourself, be aware that too many features will take up too much space.
     def num_expr(df):
+        # P是逾期天数，A是借贷数目
+        # 感觉1个均值即可
         cols = [col for col in df.columns if col[-1] in ("P", "A")]
+        
         expr_max = [pl.max(col).alias(f"max_{col}") for col in cols]
         expr_min = [pl.min(col).alias(f"min_{col}") for col in cols] # 原本是忽略的
         
@@ -132,10 +135,13 @@ class Aggregator:
         # 0.754300 排列顺序
         # return expr_max + expr_min + expr_last + expr_first + expr_mean
 
-        return expr_mean + expr_max + expr_min
+        # return expr_mean + expr_max + expr_min
+
+        return expr_mean
     
     def date_expr(df):
-
+        # D是借贷日期
+        # 感觉1个均值就行
         cols = [col for col in df.columns if col[-1] in ("D")]
         expr_max = [pl.max(col).alias(f"max_{col}") for col in cols]
         expr_min = [pl.min(col).alias(f"min_{col}") for col in cols] # 原本是忽略的
@@ -148,13 +154,14 @@ class Aggregator:
         # 0.754300 排列顺序
         # return  expr_max + expr_min  +  expr_last + expr_first + expr_mean
 
-        return expr_mean + expr_max + expr_min
+        # return expr_mean + expr_max + expr_min
 
-
+        return expr_mean
 
     
     def str_expr(df):
-
+        # M是地址编号
+        # 1个人最多也就几个地址吧，感觉取2个就可以了
         cols = [col for col in df.columns if col[-1] in ("M",)]
         expr_max = [pl.max(col).alias(f"max_{col}") for col in cols]
         expr_min = [pl.min(col).alias(f"min_{col}") for col in cols] # 原本是忽略的 
@@ -172,6 +179,8 @@ class Aggregator:
 
 
     def other_expr(df):
+        # T、L代表各种杂七杂八的信息
+        # 这一块可做特征工程提分，但粗略的来说1个均值更合适
         cols = [col for col in df.columns if col[-1] in ("T", "L")]
         expr_max = [pl.max(col).alias(f"max_{col}") for col in cols]
         expr_min = [pl.min(col).alias(f"min_{col}") for col in cols] # 原本是忽略的
@@ -190,8 +199,9 @@ class Aggregator:
         # 0.754300 排列顺序
         # return  expr_max + expr_min + expr_last + expr_first
 
-        return expr_mean + expr_max + expr_min
+        # return expr_mean + expr_max + expr_min
 
+        return expr_mean
          
 
     
