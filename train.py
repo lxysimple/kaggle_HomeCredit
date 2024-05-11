@@ -453,7 +453,7 @@ print("train data shape:\t", df_train.shape)
 # import sys
 # sys.exit() 
 
-df_train = df_train[:50000]
+# df_train = df_train[:50000]
 # ======================================== 读入df_train =====================================
 
 
