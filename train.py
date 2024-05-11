@@ -83,6 +83,7 @@ class Pipeline:
     def handle_dates(df):
         for col in df.columns:
             if col[-1] in ("D",):
+                # 可能默认替换表达式中第1个列名吧
                 df = df.with_columns(pl.col(col) - pl.col("date_decision"))  #!!?
                 df = df.with_columns(pl.col(col).dt.total_days()) # t - t-1
         df = df.drop("date_decision", "MONTH")
@@ -222,7 +223,7 @@ class Aggregator:
         # return  expr_max + expr_min + expr_last + expr_first + expr_count
 
         # return expr_mean + expr_max + expr_min
-        
+
         return expr_mean 
              
     
