@@ -1333,48 +1333,48 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
 
 
     # ======================================
-    train_pool = Pool(X_train, y_train,cat_features=cat_cols)
-    val_pool = Pool(X_valid, y_valid,cat_features=cat_cols)
+#     train_pool = Pool(X_train, y_train,cat_features=cat_cols)
+#     val_pool = Pool(X_valid, y_valid,cat_features=cat_cols)
     
-#     train_pool = Pool(X_train, y_train)
-#     val_pool = Pool(X_valid, y_valid)
+# #     train_pool = Pool(X_train, y_train)
+# #     val_pool = Pool(X_valid, y_valid)
      
-    clf = CatBoostClassifier(
-        eval_metric='AUC',
-        task_type='GPU',
-        learning_rate=0.03, # 0.03
-        iterations=6000, # n_est
-#         early_stopping_rounds = 500,
-    )
-    # clf = CatBoostClassifier(
-    #     eval_metric='AUC',
-    #     task_type='GPU',
-    #     learning_rate=0.05, # 0.03
-    #     # iterations=n_est, # n_est iterations与n_estimators二者只能有一
-    #     grow_policy = 'Lossguide',
-    #     max_depth = 10,
-    #     n_estimators = 2000,   
-    #     reg_lambda = 10,
-    #     num_leaves = 64,
-    #     early_stopping_rounds = 100,
-    # )
+#     clf = CatBoostClassifier(
+#         eval_metric='AUC',
+#         task_type='GPU',
+#         learning_rate=0.03, # 0.03
+#         iterations=6000, # n_est
+# #         early_stopping_rounds = 500,
+#     )
+#     # clf = CatBoostClassifier(
+#     #     eval_metric='AUC',
+#     #     task_type='GPU',
+#     #     learning_rate=0.05, # 0.03
+#     #     # iterations=n_est, # n_est iterations与n_estimators二者只能有一
+#     #     grow_policy = 'Lossguide',
+#     #     max_depth = 10,
+#     #     n_estimators = 2000,   
+#     #     reg_lambda = 10,
+#     #     num_leaves = 64,
+#     #     early_stopping_rounds = 100,
+#     # )
 
-    random_seed=3107
-    clf.fit(
-        train_pool, 
-        eval_set=val_pool,
-        verbose=300,
-#         # 保证调试的时候不需要重新训练
-#         save_snapshot = True, 
-#         snapshot_file = '/kaggle/working/catboost.cbsnapshot',
-#         snapshot_interval = 10
-    )
-    clf.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/catboost_fold{fold}.cbm')
-    fitted_models_cat.append(clf)
-    y_pred_valid = clf.predict_proba(X_valid)[:,1]
-    auc_score = roc_auc_score(y_valid, y_pred_valid)
-    print('auc_score: ', auc_score)
-    cv_scores_cat.append(auc_score)
+#     random_seed=3107
+#     clf.fit(
+#         train_pool, 
+#         eval_set=val_pool,
+#         verbose=300,
+# #         # 保证调试的时候不需要重新训练
+# #         save_snapshot = True, 
+# #         snapshot_file = '/kaggle/working/catboost.cbsnapshot',
+# #         snapshot_interval = 10
+#     )
+#     clf.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/catboost_fold{fold}.cbm')
+#     fitted_models_cat.append(clf)
+#     y_pred_valid = clf.predict_proba(X_valid)[:,1]
+#     auc_score = roc_auc_score(y_valid, y_pred_valid)
+#     print('auc_score: ', auc_score)
+#     cv_scores_cat.append(auc_score)
     
     # ==================================
     
