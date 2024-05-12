@@ -66,18 +66,32 @@ from functools import lru_cache
 
 class Pipeline:
 
-    def set_table_dtypes(df):
+    # def set_table_dtypes2(df):
+    #     for col in df.columns:
+    #         if col in ["case_id", "WEEK_NUM", "num_group1", "num_group2"]:
+    #             df = df.with_columns(pl.col(col).cast(pl.Int64))
+    #         elif col in ["date_decision"]:
+    #             df = df.with_columns(pl.col(col).cast(pl.Date))
+    #         elif col[-1] in ("P", "A"):
+    #             df = df.with_columns(pl.col(col).cast(pl.Float64))
+    #         elif col[-1] in ("M",):
+    #             df = df.with_columns(pl.col(col).cast(pl.String))
+    #         elif col[-1] in ("D",):
+    #             df = df.with_columns(pl.col(col).cast(pl.Date))
+    #     return df
+    
+    def set_table_dtypes(df:pl.LazyFrame) -> pl.LazyFrame:
         for col in df.columns:
-            if col in ["case_id", "WEEK_NUM", "num_group1", "num_group2"]:
-                df = df.with_columns(pl.col(col).cast(pl.Int64))
-            elif col in ["date_decision"]:
-                df = df.with_columns(pl.col(col).cast(pl.Date))
-            elif col[-1] in ("P", "A"):
-                df = df.with_columns(pl.col(col).cast(pl.Float64))
-            elif col[-1] in ("M",):
-                df = df.with_columns(pl.col(col).cast(pl.String))
-            elif col[-1] in ("D",):
-                df = df.with_columns(pl.col(col).cast(pl.Date))
+            if col == 'case_id':
+                df = df.with_columns(pl.col(col).cast(pl.UInt32).alias(col))
+            elif col in ['WEEK_NUM', 'num_group1', 'num_group2']:
+                df = df.with_columns(pl.col(col).cast(pl.UInt16).alias(col))
+            elif col == 'date_decision' or col[-1] == 'D':
+                df = df.with_columns(pl.col(col).cast(pl.Date).alias(col))
+            elif col[-1] in ['P', 'A']:
+                df = df.with_columns(pl.col(col).cast(pl.Float64).alias(col))
+            elif col[-1] in ('M',):
+                    df = df.with_columns(pl.col(col).cast(pl.String));
         return df
 
 
