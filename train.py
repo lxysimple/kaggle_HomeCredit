@@ -557,9 +557,11 @@ except:
     print("这个代码已经执行过1次了！")
 
 # 具备分层和分组功能
-# cv = StratifiedGroupKFold(n_splits=5, shuffle=False)
-cv = StratifiedGroupKFold(n_splits=5, shuffle=True)
+cv = StratifiedGroupKFold(n_splits=5, shuffle=False)
+# cv = StratifiedGroupKFold(n_splits=5, shuffle=True)
 
+# 随机打乱DataFrame的行
+df_train = df_train.sample(frac=1).reset_index(drop=True)
 
 
 # 找到除cat_cols列外的所有列
