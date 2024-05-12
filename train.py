@@ -552,7 +552,7 @@ y = df_train["target"]
 weeks = df_train["week_num"]
 try:
     # df_train= df_train.drop(columns=["target", "case_id", "WEEK_NUM"])
-    df_train= df_train.drop(columns=["target", "case_id", "week_num"])
+    df_train= df_train.drop(columns=["target", "case_id"])
 except:
     print("这个代码已经执行过1次了！")
 
