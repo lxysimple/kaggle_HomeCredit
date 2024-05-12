@@ -584,7 +584,7 @@ def reduce_group(grps):
     # print('Use these',use)
     return use
 
-def group_columns_by_correlation(matrix, threshold=0.8):
+def group_columns_by_correlation(matrix, threshold=0.95):
     # 计算列之间的相关性
     correlation_matrix = matrix.corr()
 
@@ -610,7 +610,7 @@ for k,v in nans_groups.items():
             Vs = nans_groups[k] # 是按照每列nunique的个数来分组的
             #cross_features=list(combinations(Vs, 2))
             #make_corr(Vs)
-            grps= group_columns_by_correlation(df_train[Vs], threshold=0.8)
+            grps= group_columns_by_correlation(df_train[Vs], threshold=0.95)
             use=reduce_group(grps)
             uses=uses+use
             #make_corr(use)
