@@ -472,7 +472,9 @@ print('读取数据完毕！')
 
 
 # df_train = feature_eng(**data_store)
-df_train:pl.LazyFrame = SchemaGen.join_dataframes(**data_store).pipe(filter_cols).pipe(handle_dates).pipe(Utility.reduce_memory_usage, 'df_train')
+df_train:pl.LazyFrame = SchemaGen.join_dataframes(**data_store)
+
+# .pipe(filter_cols).pipe(handle_dates).pipe(Utility.reduce_memory_usage, 'df_train')
 
 
 # print("train data shape:\t", df_train.shape)
@@ -480,8 +482,8 @@ df_train:pl.LazyFrame = SchemaGen.join_dataframes(**data_store).pipe(filter_cols
 del data_store
 gc.collect()
 
-# df_train = df_train.pipe(Pipeline.filter_cols)
-# df_train = df_train.pipe(Pipeline.handle_dates)
+df_train = df_train.pipe(Pipeline.filter_cols)
+df_train = df_train.pipe(Pipeline.handle_dates)
 print("train data shape:\t", df_train.shape)
 
 df_train, cat_cols = to_pandas(df_train)
