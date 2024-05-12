@@ -557,8 +557,8 @@ except:
     print("这个代码已经执行过1次了！")
 
 # 具备分层和分组功能
-cv = StratifiedGroupKFold(n_splits=5, shuffle=False)
-
+# cv = StratifiedGroupKFold(n_splits=5, shuffle=False)
+cv = StratifiedGroupKFold(n_splits=5, shuffle=True)
 
 
 
