@@ -170,7 +170,9 @@ class Aggregator:
         # return expr_mean + expr_max + expr_min
 
         # return expr_mean # Mean AUC=0.741610
-        return expr_max + expr_mean + expr_var 
+        # return expr_max + expr_mean + expr_var # notebookv8
+        return expr_max +expr_last+expr_mean # 829+386 
+    
     
     def date_expr(df):
         # D是借贷日期
@@ -191,7 +193,8 @@ class Aggregator:
         # return expr_mean + expr_max + expr_min
 
         # return expr_mean # Mean AUC=0.741610
-        return expr_max + expr_mean + expr_var 
+        # return expr_max + expr_mean + expr_var # notebookv8
+        return  expr_max +expr_last+expr_mean # 829+386
 
     
     def str_expr(df):
@@ -212,7 +215,8 @@ class Aggregator:
         # return  expr_max + expr_min + expr_last + expr_first + expr_count
 
         # return expr_last + expr_first # Mean AUC=0.741610
-        return expr_max
+        # return expr_max # notebookv8
+        return  expr_max +expr_last # 829+386
 
     def other_expr(df):
         # T、L代表各种杂七杂八的信息
@@ -238,8 +242,8 @@ class Aggregator:
         # return expr_mean + expr_max + expr_min
 
         # return expr_mean # Mean AUC=0.741610
-        return expr_max
-         
+        # return expr_max # notebookv8
+        return  expr_max +expr_last # 829+386
 
     
     def count_expr(df):
@@ -262,7 +266,8 @@ class Aggregator:
         # return expr_mean + expr_max + expr_min
 
         # return expr_mean # Mean AUC=0.741610
-        return  expr_max
+        # return  expr_max # notebookv8
+        return  expr_max +expr_last # 829+386
              
     
     def get_exprs(df):
@@ -890,24 +895,10 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
 
     # ===========================
 
-    # # train_pool = Pool(X_train, y_train, cat_features=cat_cols)
-    # # val_pool = Pool(X_valid, y_valid, cat_features=cat_cols)
-    # # clf = CatBoostClassifier()
-    # # # clf.load_model(f"/home/xyli/kaggle/kaggle_HomeCredit/catboost_dw_fold{fold}.cbm")
-    # # clf.load_model(f"/home/xyli/kaggle/kaggle_HomeCredit/catboost_lg_fold{fold}.cbm")
-    # # y_pred_valid = clf.predict_proba(X_valid)[:,1]
-    # # auc_score = roc_auc_score(y_valid, y_pred_valid)
-    # # print('auc_score: ', auc_score)
 
 
 
-    # X_train[cat_cols] = X_train[cat_cols].astype("category")
-    # X_valid[cat_cols] = X_valid[cat_cols].astype("category")
-    # model = lgb.LGBMClassifier()
-    # model = lgb.Booster(model_file=f"/home/xyli/kaggle/kaggle_HomeCredit/lgbm_dart_fold{fold}.txt")
-    # y_pred_valid = model.predict(X_valid)
-    # auc_score = roc_auc_score(y_valid, y_pred_valid)
-    # print('auc_score: ', auc_score)
+
     # ===========================
 
 
@@ -935,3 +926,64 @@ print("CV AUC scores: ", cv_scores_lgb_rf)
 print("Mean CV AUC score: ", np.mean(cv_scores_lgb_rf))
 
 # ======================================== 训练3树模型 =====================================
+fitted_models_cat1 = []
+fitted_models_lgb1 = []
+
+fitted_models_cat2 = []
+fitted_models_lgb2 = []
+
+for fold in range(1,6):
+    clf = CatBoostClassifier() 
+    clf.load_model(f"/home/xyli/kaggle/kaggle_HomeCredit/dataset9/catboost_fold{fold}.cbm")
+    fitted_models_cat1.append(clf)
+    
+    model = lgb.LGBMClassifier()
+    model = lgb.Booster(model_file=f"/home/xyli/kaggle/kaggle_HomeCredit/dataset8/lgbm_fold{fold}.txt")
+    fitted_models_lgb1.append(model)
+    
+    clf2 = CatBoostClassifier()
+    clf2.load_model(f"/home/xyli/kaggle/kaggle_HomeCredit/dataset5/catboost_fold{fold}.cbm")
+    fitted_models_cat2.append(clf2) 
+    
+    model2 = lgb.LGBMClassifier()
+    model2 = lgb.Booster(model_file=f"/home/xyli/kaggle/kaggle_HomeCredit/dataset4/lgbm_fold{fold}.txt")
+    fitted_models_lgb2.append(model2)
+
+class VotingModel(BaseEstimator, RegressorMixin):
+    def __init__(self, estimators):
+        super().__init__()
+        self.estimators = estimators
+        
+    def fit(self, X, y=None):
+        return self
+
+    def predict_proba(self, X):
+        
+        y_preds = []
+
+        X[cat_cols_829] = X[cat_cols_829].astype("str")
+        y_preds += [estimator.predict_proba(X)[:, 1] for estimator in self.estimators[0:5]]
+        y_preds += [estimator.predict_proba(X[df_train_386])[:, 1] for estimator in self.estimators[5:10]]
+        
+        X[cat_cols_829] = X[cat_cols_829].astype("category")
+        y_preds += [estimator.predict(X) for estimator in self.estimators[10:15]]
+        y_preds += [estimator.predict(X[df_train_386]) for estimator in self.estimators[15:20]]
+        
+        
+        return y_preds
+
+model = VotingModel(fitted_models_cat1 + fitted_models_cat2 + fitted_models_lgb1 + fitted_models_lgb2)
+
+
+fold = 1
+for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环5次
+
+    # X_train(≈40000,386), y_train(≈40000)
+    X_train, y_train = df_train.iloc[idx_train], y.iloc[idx_train] 
+    X_valid, y_valid = df_train.iloc[idx_valid], y.iloc[idx_valid]    
+    
+    valid_preds = model.predict_proba(X_valid) 
+    naked_score = roc_auc_score(y_valid, naked_preds)
+    print('fold:{fold} naked_score: ', naked_score)
+
+    fold = fold+1
