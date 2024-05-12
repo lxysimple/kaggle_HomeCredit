@@ -419,6 +419,7 @@ class SchemaGen:
         for path in glob(str(glob_path)):
             # 增加low_memory=True + rechunk=True 将会导致一些数据被局部打乱
             # 导致一些高质量数据被分配在5w个中
+            # 使得数据分布更加均匀
             df: pl.LazyFrame = pl.scan_parquet(path, low_memory=True, rechunk=True).pipe(SchemaGen.change_dtypes)
             print(f'File {Path(path).stem} loaded into memory.')
             
