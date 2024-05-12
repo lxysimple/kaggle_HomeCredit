@@ -317,46 +317,7 @@ def to_pandas(df_data, cat_cols=None):
     return df_data, cat_cols
 
 
-def reduce_mem_usage(df:pl.DataFrame, name) -> pl.DataFrame:
-    # print(f'Memory usage of dataframe \'{name}\' is {round(df.estimated_size("mb"), 2)} MB.')
-
-    int_types = [pl.Int8, pl.Int16, pl.Int32, pl.Int64, pl.UInt8, pl.UInt16, pl.UInt32, pl.UInt64]
-    float_types = [pl.Float32, pl.Float64]
-
-    for col in df.columns:
-        col_type = df[col].dtype
-        if (col_type in int_types + float_types):
-            c_min = df[col].min()
-            c_max = df[col].max()
-
-            if c_min is not None and c_max is not None:
-                if col_type in int_types:
-                    if c_min >= 0:
-                        if c_min >= np.iinfo(np.uint8).min and c_max <= np.iinfo(np.uint8).max:
-                            df = df.with_columns(df[col].cast(pl.UInt8))
-                        elif c_min >= np.iinfo(np.uint16).min and c_max <= np.iinfo(np.uint16).max:
-                            df = df.with_columns(df[col].cast(pl.UInt16))
-                        elif c_min >= np.iinfo(np.uint32).min and c_max <= np.iinfo(np.uint32).max:
-                            df = df.with_columns(df[col].cast(pl.UInt32))
-                        elif c_min >= np.iinfo(np.uint64).min and c_max <= np.iinfo(np.uint64).max:
-                            df = df.with_columns(df[col].cast(pl.UInt64))
-                    else:
-                        if c_min >= np.iinfo(np.int8).min and c_max <= np.iinfo(np.int8).max:
-                            df = df.with_columns(df[col].cast(pl.Int8))
-                        elif c_min >= np.iinfo(np.int16).min and c_max <= np.iinfo(np.int16).max:
-                            df = df.with_columns(df[col].cast(pl.Int16))
-                        elif c_min >= np.iinfo(np.int32).min and c_max <= np.iinfo(np.int32).max:
-                            df = df.with_columns(df[col].cast(pl.Int32))
-                        elif c_min >= np.iinfo(np.int64).min and c_max <= np.iinfo(np.int64).max:
-                            df = df.with_columns(df[col].cast(pl.Int64))
-                elif col_type in float_types:
-                    if c_min > np.finfo(np.float32).min and c_max < np.finfo(np.float32).max:
-                        df = df.with_columns(df[col].cast(pl.Float32))
-
-    # print(f'Memory usage of dataframe \'{name}\' became {round(df.estimated_size("mb"), 4)} MB.')
-
-    return df
-def reduce_mem_usage2(df):
+def reduce_mem_usage(df):
     """ iterate through all the columns of a dataframe and modify the data type
         to reduce memory usage.        
     """
