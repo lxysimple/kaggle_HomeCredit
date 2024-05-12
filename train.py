@@ -461,7 +461,7 @@ class Utility:
 
      
     @staticmethod
-    def find_index(lst:list, item:Any) -> int | None:
+    def find_index(lst:list, item:any) -> int | None:
         try:
             return lst.index(item)
         except ValueError:
