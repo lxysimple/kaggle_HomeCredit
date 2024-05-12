@@ -385,8 +385,8 @@ data_store = {
     "depth_2": [
         read_file(TRAIN_DIR / "train_credit_bureau_b_2.parquet", 2),
         read_files(TRAIN_DIR / "train_credit_bureau_a_2_*.parquet", 2),
-        read_file(TRAIN_DIR / "train_applprev_2.parquet", 2),
-        read_file(TRAIN_DIR / "train_person_2.parquet", 2)
+        # read_file(TRAIN_DIR / "train_applprev_2.parquet", 2),
+        # read_file(TRAIN_DIR / "train_person_2.parquet", 2)
     ]
 }
 print('读取数据完毕！')
