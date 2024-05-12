@@ -80,27 +80,27 @@ class Pipeline:
                 df = df.with_columns(pl.col(col).cast(pl.Date))
         return df
 
-    def handle_dates(df):
-        for col in df.columns:
-            if col[-1] in ("D",):
-                # 可能默认替换表达式中第1个列名吧
-                df = df.with_columns(pl.col(col) - pl.col("date_decision"))  #!!?
-                df = df.with_columns(pl.col(col).dt.total_days()) # t - t-1
-        df = df.drop("date_decision", "MONTH")
-        return df
+    # def handle_dates(df):
+    #     for col in df.columns:
+    #         if col[-1] in ("D",):
+    #             # 可能默认替换表达式中第1个列名吧
+    #             df = df.with_columns(pl.col(col) - pl.col("date_decision"))  #!!?
+    #             df = df.with_columns(pl.col(col).dt.total_days()) # t - t-1
+    #     df = df.drop("date_decision", "MONTH")
+    #     return df
 
-    # def handle_dates(df:pl.DataFrame) -> pl.DataFrame:
-    #     for col in df.columns:  
-    #         if col.endswith('D'):
-    #             df = df.with_columns(pl.col(col) - pl.col('date_decision'))
-    #             df = df.with_columns(pl.col(col).dt.total_days().cast(pl.Int32))
+    def handle_dates(df:pl.DataFrame) -> pl.DataFrame:
+        for col in df.columns:  
+            if col.endswith('D'):
+                df = df.with_columns(pl.col(col) - pl.col('date_decision'))
+                df = df.with_columns(pl.col(col).dt.total_days().cast(pl.Int32))
 
-    #     df = df.with_columns([pl.col('date_decision').dt.year().alias('year').cast(pl.Int16), pl.col('date_decision').dt.month().alias('month').cast(pl.UInt8), pl.col('date_decision').dt.weekday().alias('week_num').cast(pl.UInt8)])
+        df = df.with_columns([pl.col('date_decision').dt.year().alias('year').cast(pl.Int16), pl.col('date_decision').dt.month().alias('month').cast(pl.UInt8), pl.col('date_decision').dt.weekday().alias('week_num').cast(pl.UInt8)])
 
-    #     # return df.drop('date_decision', 'MONTH', 'WEEK_NUM')
-    #     return df.drop('date_decision', 'MONTH')
+        # return df.drop('date_decision', 'MONTH', 'WEEK_NUM')
+        return df.drop('date_decision', 'MONTH')
 
-    def filter_cols(df):
+    def filter_cols2(df):
         for col in df.columns:
             if col not in ["target", "case_id", "WEEK_NUM"]:
                 isnull = df[col].is_null().mean()
@@ -121,12 +121,12 @@ class Pipeline:
         
         return df
     
-    def filter_cols2(df:pd.DataFrame) -> pd.DataFrame:
+    def filter_cols(df:pd.DataFrame) -> pd.DataFrame:
         for col in df.columns:
             if col not in ['case_id', 'year', 'month', 'week_num', 'target']:
                 null_pct = df[col].is_null().mean()
 
-                if null_pct > 0.7:
+                if null_pct > 0.95:
                     df = df.drop(col)
 
         for col in df.columns:
