@@ -353,7 +353,7 @@ def reduce_mem_usage(df:pl.DataFrame, name) -> pl.DataFrame:
                     if c_min > np.finfo(np.float32).min and c_max < np.finfo(np.float32).max:
                         df = df.with_columns(df[col].cast(pl.Float32))
 
-    print(f'Memory usage of dataframe \'{name}\' became {round(df.estimated_size("mb"), 4)} MB.')
+    # print(f'Memory usage of dataframe \'{name}\' became {round(df.estimated_size("mb"), 4)} MB.')
 
     return df
 def reduce_mem_usage2(df):
