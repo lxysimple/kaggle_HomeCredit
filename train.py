@@ -166,7 +166,7 @@ class Aggregator:
         # return expr_mean + expr_max + expr_min
 
         # return expr_mean # Mean AUC=0.741610
-        return expr_max + expr_min + expr_mean + expr_var 
+        return expr_max + expr_mean + expr_var 
     
     def date_expr(df):
         # D是借贷日期
@@ -179,6 +179,7 @@ class Aggregator:
         expr_first = [pl.first(col).alias(f"first_{col}") for col in cols] # 原本是忽略的
         
         expr_mean = [pl.mean(col).alias(f"mean_{col}") for col in cols]
+        expr_var = [pl.var(col).alias(f"var_{col}") for col in cols]
 
         # 0.754300 排列顺序
         # return  expr_max + expr_min  +  expr_last + expr_first + expr_mean
@@ -186,7 +187,7 @@ class Aggregator:
         # return expr_mean + expr_max + expr_min
 
         # return expr_mean # Mean AUC=0.741610
-        return expr_max + expr_min + expr_mean + expr_var 
+        return expr_max + expr_mean + expr_var 
 
     
     def str_expr(df):
@@ -207,7 +208,7 @@ class Aggregator:
         # return  expr_max + expr_min + expr_last + expr_first + expr_count
 
         # return expr_last + expr_first # Mean AUC=0.741610
-        return expr_min + expr_max + expr_mode
+        return expr_max
 
     def other_expr(df):
         # T、L代表各种杂七杂八的信息
@@ -233,7 +234,7 @@ class Aggregator:
         # return expr_mean + expr_max + expr_min
 
         # return expr_mean # Mean AUC=0.741610
-        return expr_min + expr_max
+        return expr_max
          
 
     
@@ -256,7 +257,7 @@ class Aggregator:
         # return expr_mean + expr_max + expr_min
 
         # return expr_mean # Mean AUC=0.741610
-        return expr_min + expr_max
+        return  expr_max
              
     
     def get_exprs(df):
