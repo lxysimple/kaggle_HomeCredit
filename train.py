@@ -166,7 +166,7 @@ class Aggregator:
         # return expr_mean + expr_max + expr_min
 
         # return expr_mean # Mean AUC=0.741610
-        return expr_max, expr_min, expr_mean, expr_var 
+        return expr_max + expr_min + expr_mean + expr_var 
     
     def date_expr(df):
         # D是借贷日期
