@@ -306,7 +306,7 @@ def feature_eng(df_base, depth_0, depth_1, depth_2):
     # for i, df in enumerate(depth_0):
     #     df_base = df_base.join(df, how="left", on="case_id", suffix=f"_{i}")
 
-    # df_base = df_base.pipe(Pipeline.handle_dates)
+    df_base = df_base.pipe(Pipeline.handle_dates)
     return df_base
 
 def to_pandas(df_data, cat_cols=None):
@@ -400,9 +400,7 @@ df_train = feature_eng(**data_store)
 print("train data shape:\t", df_train.shape)
 del data_store
 gc.collect()
-
 df_train = df_train.pipe(Pipeline.filter_cols)
-df_train = df_train.pipe(Pipeline.handle_dates)
 print("train data shape:\t", df_train.shape)
 
 df_train, cat_cols = to_pandas(df_train)
