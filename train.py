@@ -621,8 +621,8 @@ print('读取数据完毕！')
 
 
 # df_train = feature_eng(**data_store)
-df_train:pl.LazyFrame = SchemaGen.join_dataframes(**data_store)\
-.pipe(Pipeline.filter_cols).pipe(Pipeline.handle_dates)
+df_train:pl.LazyFrame = SchemaGen.join_dataframes(**data_store)
+# .pipe(Pipeline.filter_cols).pipe(Pipeline.handle_dates)
 
 
 # print("train data shape:\t", df_train.shape)
