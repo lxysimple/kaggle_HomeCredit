@@ -211,7 +211,8 @@ class Aggregator:
         # return  expr_max + expr_min + expr_last + expr_first + expr_count
 
         # return expr_last + expr_first # Mean AUC=0.741610
-        return expr_max
+        # return expr_max
+        return expr_mode
 
     def other_expr(df):
         # T、L代表各种杂七杂八的信息
@@ -237,7 +238,8 @@ class Aggregator:
         # return expr_mean + expr_max + expr_min
 
         # return expr_mean # Mean AUC=0.741610
-        return expr_max
+        # return expr_max
+        return expr_max + expr_mean + expr_var 
          
 
     
@@ -260,7 +262,8 @@ class Aggregator:
         # return expr_mean + expr_max + expr_min
 
         # return expr_mean # Mean AUC=0.741610
-        return  expr_max
+        # return  expr_max
+        return expr_max + expr_mean + expr_var 
              
     
     def get_exprs(df):
