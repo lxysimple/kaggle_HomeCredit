@@ -138,7 +138,8 @@ class Aggregator:
 
         # return expr_mean + expr_max + expr_min
 
-        return expr_mean
+        return expr_mean # Mean AUC=0.741610
+        # return expr_max, expr_min, expr_mean, expr_var 
     
     def date_expr(df):
         # D是借贷日期
@@ -157,7 +158,7 @@ class Aggregator:
 
         # return expr_mean + expr_max + expr_min
 
-        return expr_mean
+        return expr_mean # Mean AUC=0.741610
 
     
     def str_expr(df):
@@ -176,7 +177,7 @@ class Aggregator:
         # 0.754300 排列顺序
         # return  expr_max + expr_min + expr_last + expr_first + expr_count
 
-        return expr_last + expr_first
+        return expr_last + expr_first # Mean AUC=0.741610
 
 
     def other_expr(df):
@@ -202,7 +203,7 @@ class Aggregator:
 
         # return expr_mean + expr_max + expr_min
 
-        return expr_mean
+        return expr_mean # Mean AUC=0.741610
          
 
     
@@ -224,7 +225,7 @@ class Aggregator:
 
         # return expr_mean + expr_max + expr_min
 
-        return expr_mean 
+        return expr_mean # Mean AUC=0.741610
              
     
     def get_exprs(df):
@@ -453,7 +454,7 @@ print("train data shape:\t", df_train.shape)
 # import sys
 # sys.exit() 
 
-# df_train = df_train[:50000]
+df_train = df_train[:50000]
 # ======================================== 读入df_train =====================================
 
 
