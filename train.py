@@ -1250,6 +1250,9 @@ cv_scores_cat_lg = []
 cv_scores_lgb_dart = []
 cv_scores_lgb_rf = []
 
+
+print(df_train.head())
+
 fold = 1
 for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环5次
 
