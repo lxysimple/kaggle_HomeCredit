@@ -560,9 +560,6 @@ except:
 cv = StratifiedGroupKFold(n_splits=5, shuffle=False)
 # cv = StratifiedGroupKFold(n_splits=5, shuffle=True)
 
-# 随机打乱DataFrame的行
-df_train = df_train.sample(frac=1).reset_index(drop=True)
-
 
 # 找到除cat_cols列外的所有列
 non_cat_cols = df_train.columns.difference(cat_cols) 
