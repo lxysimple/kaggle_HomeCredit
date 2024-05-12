@@ -97,9 +97,10 @@ class Pipeline:
 
         df = df.with_columns([pl.col('date_decision').dt.year().alias('year').cast(pl.Int16), pl.col('date_decision').dt.month().alias('month').cast(pl.UInt8), pl.col('date_decision').dt.weekday().alias('week_num').cast(pl.UInt8)])
 
-        return df.drop('date_decision', 'MONTH', 'WEEK_NUM')
+        # return df.drop('date_decision', 'MONTH', 'WEEK_NUM')
+        return df.drop('date_decision', 'MONTH')
 
-    def filter_cols(df):
+    def filter_cols2(df):
         for col in df.columns:
             if col not in ["target", "case_id", "WEEK_NUM"]:
                 isnull = df[col].is_null().mean()
@@ -119,7 +120,23 @@ class Pipeline:
                     df = df.drop(col)
         
         return df
+    
+    def filter_cols(df:pd.DataFrame) -> pd.DataFrame:
+        for col in df.columns:
+            if col not in ['case_id', 'year', 'month', 'week_num', 'target']:
+                null_pct = df[col].is_null().mean()
 
+                if null_pct > 0.7:
+                    df = df.drop(col)
+
+        for col in df.columns:
+            if (col not in ['case_id', 'year', 'month', 'week_num', 'target']) & (df[col].dtype == pl.String):
+                freq = df[col].n_unique()
+
+                if (freq > 200) | (freq == 1):
+                    df = df.drop(col)
+
+        return df
 
 class Aggregator:
     #Please add or subtract features yourself, be aware that too many features will take up too much space.
