@@ -445,6 +445,155 @@ class SchemaGen:
             df_base = df_base.join(df, how='left', on='case_id', suffix=f'_{i}')
 
         return df_base.collect()
+
+class Utility:
+    @staticmethod
+    def get_feat_defs(ending_with:str):
+        feat_defs:pl.DataFrame = pl.read_csv(ROOT / 'feature_definitions.csv')
+
+        filtered_feats:pl.DataFrame = feat_defs.filter(pl.col('Variable').apply(lambda var: var.endswith(ending_with)))
+
+        with pl.Config(fmt_str_lengths=200, tbl_rows=-1):
+            print(filtered_feats)
+
+        filtered_feats = None
+        feat_defs = None
+
+     
+    @staticmethod
+    def find_index(lst:list, item:Any) -> int | None:
+        try:
+            return lst.index(item)
+        except ValueError:
+            return None
+
+    
+    @staticmethod
+    def dtype_to_str(dtype:pl.DataType) -> str:
+        dtype_map = {
+            pl.Decimal: 'Decimal',
+
+            pl.Float32: 'Float32',
+            pl.Float64: 'Float64',
+
+            pl.UInt8: 'UInt8',
+            pl.UInt16: 'UInt16',
+            pl.UInt32: 'UInt32',
+            pl.UInt64: 'UInt64',
+
+            pl.Int8: 'Int8',
+            pl.Int16: 'Int16',
+            pl.Int32: 'Int32',
+            pl.Int64: 'Int64',
+
+            pl.Date: 'Date',
+            pl.Datetime: 'Datetime',
+            pl.Duration: 'Duration',
+            pl.Time: 'Time',
+
+            pl.Array: 'Array',
+            pl.List: 'List',
+            pl.Struct: 'Struct',
+
+            pl.String: 'String',
+            pl.Categorical: 'Categorical',
+            pl.Enum: 'Enum',
+            pl.Utf8: 'Utf8',
+
+            pl.Binary: 'Binary',
+            pl.Boolean: 'Boolean',
+            pl.Null: 'Null',
+            pl.Object: 'Object',
+            pl.Unknown: 'Unknown'
+        }
+
+        return dtype_map.get(dtype)
+
+    
+    @staticmethod
+    def find_feat_occur(regex_path:str, ending_with:str) -> pl.DataFrame:
+        feat_defs:pl.DataFrame = pl.read_csv(ROOT / 'feature_definitions.csv').filter(pl.col('Variable').apply(lambda var: var.endswith(ending_with)))
+        feat_defs.sort(by=['Variable'])
+
+        feats:list = feat_defs['Variable'].to_list()
+        feats.sort()
+
+        occurrences:list = [[set(), set()] for _ in range(feat_defs.height)]
+
+        for path in glob(str(regex_path)):
+            df_schema:dict = pl.read_parquet_schema(path)
+
+            for (feat, dtype) in df_schema.items():
+                index:int = Utility.find_index(feats, feat)
+                if index != None:
+                    occurrences[index][0].add(Utility.dtype_to_str(dtype))
+                    occurrences[index][1].add(Path(path).stem)
+
+        data_types:list[str] = [None] * feat_defs.height
+        file_locs:list[str] = [None] * feat_defs.height
+
+        for i, feat in enumerate(feats):
+            data_types[i] = list(occurrences[i][0])
+            file_locs[i] = list(occurrences[i][1])
+
+        feat_defs = feat_defs.with_columns(pl.Series(data_types).alias('Data_Type(s)'))
+        feat_defs = feat_defs.with_columns(pl.Series(file_locs).alias('File_Loc(s)'))
+
+        return feat_defs
+    
+    
+    def reduce_memory_usage(df:pl.DataFrame, name) -> pl.DataFrame:
+        print(f'Memory usage of dataframe \'{name}\' is {round(df.estimated_size("mb"), 2)} MB.')
+
+        int_types = [pl.Int8, pl.Int16, pl.Int32, pl.Int64, pl.UInt8, pl.UInt16, pl.UInt32, pl.UInt64]
+        float_types = [pl.Float32, pl.Float64]
+
+        for col in df.columns:
+            col_type = df[col].dtype
+            if (col_type in int_types + float_types):
+                c_min = df[col].min()
+                c_max = df[col].max()
+
+                if c_min is not None and c_max is not None:
+                    if col_type in int_types:
+                        if c_min >= 0:
+                            if c_min >= np.iinfo(np.uint8).min and c_max <= np.iinfo(np.uint8).max:
+                                df = df.with_columns(df[col].cast(pl.UInt8))
+                            elif c_min >= np.iinfo(np.uint16).min and c_max <= np.iinfo(np.uint16).max:
+                                df = df.with_columns(df[col].cast(pl.UInt16))
+                            elif c_min >= np.iinfo(np.uint32).min and c_max <= np.iinfo(np.uint32).max:
+                                df = df.with_columns(df[col].cast(pl.UInt32))
+                            elif c_min >= np.iinfo(np.uint64).min and c_max <= np.iinfo(np.uint64).max:
+                                df = df.with_columns(df[col].cast(pl.UInt64))
+                        else:
+                            if c_min >= np.iinfo(np.int8).min and c_max <= np.iinfo(np.int8).max:
+                                df = df.with_columns(df[col].cast(pl.Int8))
+                            elif c_min >= np.iinfo(np.int16).min and c_max <= np.iinfo(np.int16).max:
+                                df = df.with_columns(df[col].cast(pl.Int16))
+                            elif c_min >= np.iinfo(np.int32).min and c_max <= np.iinfo(np.int32).max:
+                                df = df.with_columns(df[col].cast(pl.Int32))
+                            elif c_min >= np.iinfo(np.int64).min and c_max <= np.iinfo(np.int64).max:
+                                df = df.with_columns(df[col].cast(pl.Int64))
+                    elif col_type in float_types:
+                        if c_min > np.finfo(np.float32).min and c_max < np.finfo(np.float32).max:
+                            df = df.with_columns(df[col].cast(pl.Float32))
+
+        print(f'Memory usage of dataframe \'{name}\' became {round(df.estimated_size("mb"), 4)} MB.')
+
+        return df
+
+
+    def to_pandas(df:pl.DataFrame, cat_cols:list[str]=None) -> (pd.DataFrame, list[str]):
+        df:pd.DataFrame = df.to_pandas()
+
+        if cat_cols is None:
+            cat_cols = list(df.select_dtypes('object').columns)
+
+        df[cat_cols] = df[cat_cols].astype('str')
+
+        return df, cat_cols
+
+
 data_store:dict = {
     'df_base': SchemaGen.scan_files(TRAIN_DIR / 'train_base.parquet'),
     'depth_0': [
@@ -473,8 +622,8 @@ print('读取数据完毕！')
 
 # df_train = feature_eng(**data_store)
 df_train:pl.LazyFrame = SchemaGen.join_dataframes(**data_store)\
-.pipe(Pipeline.filter_cols).pipe(Pipeline.handle_dates)
-# .pipe(Utility.reduce_memory_usage, 'df_train')
+.pipe(Pipeline.filter_cols).pipe(Pipeline.handle_dates)\
+.pipe(Utility.reduce_memory_usage, 'df_train')
 
 
 # print("train data shape:\t", df_train.shape)
@@ -487,7 +636,7 @@ gc.collect()
 # print("train data shape:\t", df_train.shape)
 # df_train, cat_cols = to_pandas(df_train)
 
-df_train = reduce_mem_usage(df_train)
+# df_train = reduce_mem_usage(df_train)
 df_train, cat_cols = to_pandas(df_train)
 # df_train = reduce_mem_usage(df_train, 'df_train')
 print("train data shape:\t", df_train.shape)
