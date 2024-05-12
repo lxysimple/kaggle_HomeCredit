@@ -443,7 +443,8 @@ df_train = df_train.pipe(Pipeline.filter_cols)
 print("train data shape:\t", df_train.shape)
 
 df_train, cat_cols = to_pandas(df_train)
-df_train = reduce_mem_usage(df_train)
+# df_train = reduce_mem_usage(df_train)
+df_train = reduce_mem_usage(df_train, 'df_train')
 print("train data shape:\t", df_train.shape)
 
 
