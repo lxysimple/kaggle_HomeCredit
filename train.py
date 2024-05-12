@@ -80,6 +80,7 @@ class Pipeline:
                 df = df.with_columns(pl.col(col).cast(pl.Date))
         return df
 
+
     # def handle_dates(df):
     #     for col in df.columns:
     #         if col[-1] in ("D",):
