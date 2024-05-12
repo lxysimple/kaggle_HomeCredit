@@ -554,75 +554,75 @@ print("train data shape:\t", df_train.shape)
 
 """ 可理解为相关性处理，去掉相关性大致相同的列 """ 
 
-nums=df_train.select_dtypes(exclude='category').columns
-from itertools import combinations, permutations
-#df_train=df_train[nums]
-# 计算nums列（数值列）是否是nan的一个对应掩码矩阵
-nans_df = df_train[nums].isna()
-nans_groups={}
-for col in nums:
-    # 统计每列是nan的个数
-    cur_group = nans_df[col].sum()
-    try: 
-        nans_groups[cur_group].append(col)
-    except: # 可默认永不执行
-        nans_groups[cur_group]=[col]
-del nans_df; x=gc.collect()
+# nums=df_train.select_dtypes(exclude='category').columns
+# from itertools import combinations, permutations
+# #df_train=df_train[nums]
+# # 计算nums列（数值列）是否是nan的一个对应掩码矩阵
+# nans_df = df_train[nums].isna()
+# nans_groups={}
+# for col in nums:
+#     # 统计每列是nan的个数
+#     cur_group = nans_df[col].sum()
+#     try: 
+#         nans_groups[cur_group].append(col)
+#     except: # 可默认永不执行
+#         nans_groups[cur_group]=[col]
+# del nans_df; x=gc.collect()
 
-def reduce_group(grps):
-    use = []
-    for g in grps:
-        mx = 0; vx = g[0]
-        for gg in g:
-            n = df_train[gg].nunique()
-            if n>mx:
-                mx = n
-                vx = gg
-            #print(str(gg)+'-'+str(n),', ',end='')
-        use.append(vx)
-        #print()
-    # print('Use these',use)
-    return use
+# def reduce_group(grps):
+#     use = []
+#     for g in grps:
+#         mx = 0; vx = g[0]
+#         for gg in g:
+#             n = df_train[gg].nunique()
+#             if n>mx:
+#                 mx = n
+#                 vx = gg
+#             #print(str(gg)+'-'+str(n),', ',end='')
+#         use.append(vx)
+#         #print()
+#     # print('Use these',use)
+#     return use
 
-def group_columns_by_correlation(matrix, threshold=0.95):
-    # 计算列之间的相关性
-    correlation_matrix = matrix.corr()
+# def group_columns_by_correlation(matrix, threshold=0.95):
+#     # 计算列之间的相关性
+#     correlation_matrix = matrix.corr()
 
-    # 分组列
-    groups = []
-    remaining_cols = list(matrix.columns)
-    while remaining_cols:
-        col = remaining_cols.pop(0)
-        group = [col]
-        correlated_cols = [col]
-        for c in remaining_cols:
-            if correlation_matrix.loc[col, c] >= threshold:
-                group.append(c)
-                correlated_cols.append(c)
-        groups.append(group)
-        remaining_cols = [c for c in remaining_cols if c not in correlated_cols]
+#     # 分组列
+#     groups = []
+#     remaining_cols = list(matrix.columns)
+#     while remaining_cols:
+#         col = remaining_cols.pop(0)
+#         group = [col]
+#         correlated_cols = [col]
+#         for c in remaining_cols:
+#             if correlation_matrix.loc[col, c] >= threshold:
+#                 group.append(c)
+#                 correlated_cols.append(c)
+#         groups.append(group)
+#         remaining_cols = [c for c in remaining_cols if c not in correlated_cols]
     
-    return groups
+#     return groups
 
-uses=[]
-for k,v in nans_groups.items():
-    if len(v)>1:
-            Vs = nans_groups[k] # 是按照每列nunique的个数来分组的
-            #cross_features=list(combinations(Vs, 2))
-            #make_corr(Vs)
-            grps= group_columns_by_correlation(df_train[Vs], threshold=0.95)
-            use=reduce_group(grps)
-            uses=uses+use
-            #make_corr(use)
-    else:
-        uses=uses+v
-    # print('####### NAN count =',k)
-print(uses)
-print(len(uses))
-# 选则[处理后数值列+非数值列]做最终列
-uses=uses+list(df_train.select_dtypes(include='category').columns)
-print(len(uses))
-df_train=df_train[uses]
+# uses=[]
+# for k,v in nans_groups.items():
+#     if len(v)>1:
+#             Vs = nans_groups[k] # 是按照每列nunique的个数来分组的
+#             #cross_features=list(combinations(Vs, 2))
+#             #make_corr(Vs)
+#             grps= group_columns_by_correlation(df_train[Vs], threshold=0.8)
+#             use=reduce_group(grps)
+#             uses=uses+use
+#             #make_corr(use)
+#     else:
+#         uses=uses+v
+#     # print('####### NAN count =',k)
+# print(uses)
+# print(len(uses))
+# # 选则[处理后数值列+非数值列]做最终列
+# uses=uses+list(df_train.select_dtypes(include='category').columns)
+# print(len(uses))
+# df_train=df_train[uses]
 
 
 
