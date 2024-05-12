@@ -318,7 +318,7 @@ def to_pandas(df_data, cat_cols=None):
 
 
 def reduce_mem_usage(df:pl.DataFrame, name) -> pl.DataFrame:
-    print(f'Memory usage of dataframe \'{name}\' is {round(df.estimated_size("mb"), 2)} MB.')
+    # print(f'Memory usage of dataframe \'{name}\' is {round(df.estimated_size("mb"), 2)} MB.')
 
     int_types = [pl.Int8, pl.Int16, pl.Int32, pl.Int64, pl.UInt8, pl.UInt16, pl.UInt32, pl.UInt64]
     float_types = [pl.Float32, pl.Float64]
