@@ -98,8 +98,8 @@ class Pipeline:
 
         df = df.with_columns([pl.col('date_decision').dt.year().alias('year').cast(pl.Int16), pl.col('date_decision').dt.month().alias('month').cast(pl.UInt8), pl.col('date_decision').dt.weekday().alias('week_num').cast(pl.UInt8)])
 
-        # return df.drop('date_decision', 'MONTH', 'WEEK_NUM')
-        return df.drop('date_decision', 'MONTH')
+        return df.drop('date_decision', 'MONTH', 'WEEK_NUM')
+        # return df.drop('date_decision', 'MONTH')
 
     def filter_cols2(df):
         for col in df.columns:
@@ -547,7 +547,8 @@ if False:
 print(device)
 
 y = df_train["target"]
-weeks = df_train["WEEK_NUM"]
+# weeks = df_train["WEEK_NUM"]
+weeks = df_train["week_num"]
 try:
     df_train= df_train.drop(columns=["target", "case_id", "WEEK_NUM"])
 except:
