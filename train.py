@@ -434,7 +434,7 @@ def reduce_group(grps):
             #print(str(gg)+'-'+str(n),', ',end='')
         use.append(vx)
         #print()
-    print('Use these',use)
+    # print('Use these',use)
     return use
 
 def group_columns_by_correlation(matrix, threshold=0.8):
