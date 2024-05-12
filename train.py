@@ -464,7 +464,7 @@ for k,v in nans_groups.items():
             #make_corr(use)
     else:
         uses=uses+v
-    print('####### NAN count =',k)
+    # print('####### NAN count =',k)
 print(uses)
 print(len(uses))
 # 选则[处理后数值列+非数值列]做最终列
