@@ -360,6 +360,9 @@ def reduce_mem_usage(df):
 
 
 
+
+
+
 ROOT            = Path("/home/xyli/kaggle")
 
 TRAIN_DIR       = ROOT / "parquet_files" / "train"
@@ -367,7 +370,7 @@ TEST_DIR        = ROOT / "parquet_files" / "test"
 
 print('开始读取数据!')
 
-data_store = {
+data_store2 = {
     "df_base": read_file(TRAIN_DIR / "train_base.parquet"),
     "depth_0": [
         read_file(TRAIN_DIR / "train_static_cb_0.parquet"),
@@ -390,6 +393,79 @@ data_store = {
         read_files(TRAIN_DIR / "train_credit_bureau_a_2_*.parquet", 2),
         # read_file(TRAIN_DIR / "train_applprev_2.parquet", 2),
         # read_file(TRAIN_DIR / "train_person_2.parquet", 2)
+    ]
+}
+
+class SchemaGen:
+    @staticmethod
+    def change_dtypes(df:pl.LazyFrame) -> pl.LazyFrame:
+        for col in df.columns:
+            if col == 'case_id':
+                df = df.with_columns(pl.col(col).cast(pl.UInt32).alias(col))
+            elif col in ['WEEK_NUM', 'num_group1', 'num_group2']:
+                df = df.with_columns(pl.col(col).cast(pl.UInt16).alias(col))
+            elif col == 'date_decision' or col[-1] == 'D':
+                df = df.with_columns(pl.col(col).cast(pl.Date).alias(col))
+            elif col[-1] in ['P', 'A']:
+                df = df.with_columns(pl.col(col).cast(pl.Float64).alias(col))
+            elif col[-1] in ('M',):
+                    df = df.with_columns(pl.col(col).cast(pl.String));
+        return df
+
+
+    @staticmethod
+    def scan_files(glob_path: str, depth: int = None) -> pl.LazyFrame:
+        chunks: list[pl.LazyFrame] = []
+        for path in glob(str(glob_path)):
+            df: pl.LazyFrame = pl.scan_parquet(path, low_memory=True, rechunk=True).pipe(SchemaGen.change_dtypes)
+            print(f'File {Path(path).stem} loaded into memory.')
+            
+            if depth in (1, 2):
+                exprs: list[pl.Series] = Aggregator.get_exprs(df)
+                df = df.group_by('case_id').agg(exprs)
+
+                del exprs
+                gc.collect()
+                
+            chunks.append(df)
+
+        df: pl.LazyFrame = pl.concat(chunks, how='vertical_relaxed')
+        
+        del chunks
+        gc.collect()
+                
+        df = df.unique(subset=['case_id'])
+    
+        return df
+    
+    
+    @staticmethod
+    def join_dataframes(df_base: pl.LazyFrame, depth_0: list[pl.LazyFrame], depth_1: list[pl.LazyFrame], depth_2: list[pl.LazyFrame]) -> pl.DataFrame:
+        for (i, df) in enumerate(depth_0 + depth_1 + depth_2):
+            df_base = df_base.join(df, how='left', on='case_id', suffix=f'_{i}')
+
+        return df_base.collect()
+data_store:dict = {
+    'df_base': SchemaGen.scan_files(TRAIN_DIR / 'train_base.parquet'),
+    'depth_0': [
+        SchemaGen.scan_files(TRAIN_DIR / 'train_static_cb_0.parquet'),
+        SchemaGen.scan_files(TRAIN_DIR / 'train_static_0_*.parquet'),
+    ],
+    'depth_1': [
+        SchemaGen.scan_files(TRAIN_DIR / 'train_applprev_1_*.parquet', 1),
+        SchemaGen.scan_files(TRAIN_DIR / 'train_tax_registry_a_1.parquet', 1),
+        SchemaGen.scan_files(TRAIN_DIR / 'train_tax_registry_b_1.parquet', 1),
+        SchemaGen.scan_files(TRAIN_DIR / 'train_tax_registry_c_1.parquet', 1),
+        SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_a_1_*.parquet', 1),
+        SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_b_1.parquet', 1),
+        SchemaGen.scan_files(TRAIN_DIR / 'train_other_1.parquet', 1),
+        SchemaGen.scan_files(TRAIN_DIR / 'train_person_1.parquet', 1),
+        SchemaGen.scan_files(TRAIN_DIR / 'train_deposit_1.parquet', 1),
+        SchemaGen.scan_files(TRAIN_DIR / 'train_debitcard_1.parquet', 1),
+    ],
+    'depth_2': [
+        SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_a_2_*.parquet', 2),
+        SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_b_2.parquet', 2),
     ]
 }
 print('读取数据完毕！')
