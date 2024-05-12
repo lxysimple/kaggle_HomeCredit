@@ -39,14 +39,14 @@ import torch
 from torch.nn.modules.loss import _WeightedLoss
 
 import random
-def seed_everything(seed=42):
-    random.seed(seed)
-    os.environ['PYTHONHASHSEED'] = str(seed)
-    np.random.seed(seed)
-    torch.manual_seed(seed)
-    torch.cuda.manual_seed(seed)
-    torch.backends.cudnn.deterministic = True
-seed_everything(seed=42)
+# def seed_everything(seed=42):
+#     random.seed(seed)
+#     os.environ['PYTHONHASHSEED'] = str(seed)
+#     np.random.seed(seed)
+#     torch.manual_seed(seed)
+#     torch.cuda.manual_seed(seed)
+#     torch.backends.cudnn.deterministic = True
+# seed_everything(seed=42)
 
 from functools import lru_cache
 
