@@ -999,14 +999,14 @@ class VotingModel(BaseEstimator, RegressorMixin):
         y_preds = []
 
         X[cat_cols_829] = X[cat_cols_829].astype("str")
-        y_preds += [estimator.predict_proba(X[df_train_829])[:, 1] for estimator in self.estimators[0+fold]]
-        y_preds += [estimator.predict_proba(X[df_train_386])[:, 1] for estimator in self.estimators[5+fold]]
-        # y_preds += [estimator.predict_proba(X[df_train_469])[:, 1] for estimator in self.estimators[10+fold]]
+        y_preds += [self.estimators[0+fold].predict_proba(X[df_train_829])[:, 1]]
+        y_preds += [self.estimators[5+fold].predict_proba(X[df_train_386])[:, 1]]
+        # y_preds += [self.estimators[10+fold].predict_proba(X[df_train_469])[:, 1]] 
         
         X[cat_cols_829] = X[cat_cols_829].astype("category")
-        y_preds += [estimator.predict(X[df_train_829]) for estimator in self.estimators[15+fold]]
-        y_preds += [estimator.predict(X[df_train_386]) for estimator in self.estimators[20+fold]]
-        # y_preds += [estimator.predict(X[df_train_469]) for estimator in self.estimators[25+fold]]
+        y_preds += [self.estimators[15+fold].predict(X[df_train_829])]
+        y_preds += [self.estimators[20+fold].predict(X[df_train_386])]
+        # y_preds += [self.estimators[25+fold].predict(X[df_train_469])]
 
         return np.mean(y_preds, axis=0)
 
