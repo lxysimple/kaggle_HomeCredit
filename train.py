@@ -745,6 +745,9 @@ cat_cols_829 = ['description_5085714M', 'education_1103M', 'education_88M', 'mar
 non_cat_cols_829 = [i for i in df_train_829 if i not in cat_cols_829]
 print('len(cat_cols_829) : ', len(cat_cols_829))
 print('len(non_cat_cols_829): ', len(non_cat_cols_829))
+
+df_train[cat_cols] = df_train[cat_cols].astype(str)
+
 # ======================================== 特征列分类 =====================================
 
 # ======================================== 训练3树模型 =====================================
