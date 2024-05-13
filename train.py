@@ -222,7 +222,7 @@ class Aggregator:
         # return expr_last + expr_first # Mean AUC=0.741610
         # return expr_max # notebookv8
         # return  expr_max +expr_last # 829+386
-        return expr_last + expr_first+expr_max +expr_last # 829+386+433
+        return expr_last + expr_first+expr_max # 829+386+433
 
     def other_expr(df):
         # T、L代表各种杂七杂八的信息
