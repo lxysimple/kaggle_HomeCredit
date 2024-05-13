@@ -398,8 +398,10 @@ data_store2 = {
     "depth_2": [
         read_file(TRAIN_DIR / "train_credit_bureau_b_2.parquet", 2),
         read_files(TRAIN_DIR / "train_credit_bureau_a_2_*.parquet", 2),
-        # read_file(TRAIN_DIR / "train_applprev_2.parquet", 2),
-        # read_file(TRAIN_DIR / "train_person_2.parquet", 2)
+
+        # 829+386
+        read_file(TRAIN_DIR / "train_applprev_2.parquet", 2),
+        read_file(TRAIN_DIR / "train_person_2.parquet", 2)
     ]
 }
 
@@ -775,12 +777,12 @@ cv_scores_lgb_rf = []
 
 print(df_train.head())
 
-fold = 1
-for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环5次
+# fold = 1
+# for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环5次
 
-    # X_train(≈40000,386), y_train(≈40000)
-    X_train, y_train = df_train.iloc[idx_train], y.iloc[idx_train] 
-    X_valid, y_valid = df_train.iloc[idx_valid], y.iloc[idx_valid]    
+#     # X_train(≈40000,386), y_train(≈40000)
+#     X_train, y_train = df_train.iloc[idx_train], y.iloc[idx_train] 
+#     X_valid, y_valid = df_train.iloc[idx_valid], y.iloc[idx_valid]    
     
 
     # ===============================
