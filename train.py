@@ -199,7 +199,7 @@ class Aggregator:
         # return expr_max + expr_mean + expr_var # notebookv8
         # return  expr_max +expr_last+expr_mean # 829+386
         # return  expr_max +expr_last+expr_mean+expr_var # 829+386+notebookv8 
-        return expr_max +expr_last+expr_mean # 433+829+386 
+        return expr_max +expr_last+expr_mean +expr_min# 433+829+386 
 
     
     def str_expr(df):
@@ -251,7 +251,7 @@ class Aggregator:
         # return expr_max # notebookv8
         # return  expr_max +expr_last # 829+386
         # return  expr_max +expr_last # 829+386+notebookv8
-        return  expr_max +expr_last +expr_mean # 829+386+433
+        return  expr_max +expr_last +expr_mean+expr_min # 829+386+433
 
 
     
@@ -278,7 +278,7 @@ class Aggregator:
         # return  expr_max # notebookv8
         # return  expr_max +expr_last # 829+386
         # return  expr_max +expr_last # 829+386+notebookv8
-        return  expr_max +expr_last+expr_mean # 829+386+433
+        return  expr_max +expr_last+expr_mean+expr_min # 829+386+433
     
     def get_exprs(df):
         exprs = Aggregator.num_expr(df) + \
