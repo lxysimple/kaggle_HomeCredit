@@ -171,7 +171,8 @@ class Aggregator:
 
         # return expr_mean # Mean AUC=0.741610
         # return expr_max + expr_mean + expr_var # notebookv8
-        return expr_max +expr_last+expr_mean # 829+386 
+        # return expr_max +expr_last+expr_mean # 829+386 
+        return expr_max +expr_last+expr_mean+expr_var # 829+386 + notebookv8
     
     
     def date_expr(df):
@@ -194,7 +195,8 @@ class Aggregator:
 
         # return expr_mean # Mean AUC=0.741610
         # return expr_max + expr_mean + expr_var # notebookv8
-        return  expr_max +expr_last+expr_mean # 829+386
+        # return  expr_max +expr_last+expr_mean # 829+386
+        return  expr_max +expr_last+expr_mean+expr_var # 829+386+notebookv8 
 
     
     def str_expr(df):
@@ -243,7 +245,8 @@ class Aggregator:
 
         # return expr_mean # Mean AUC=0.741610
         # return expr_max # notebookv8
-        return  expr_max +expr_last # 829+386
+        # return  expr_max +expr_last # 829+386
+        return  expr_max +expr_last # 829+386+notebookv8
 
     
     def count_expr(df):
@@ -267,7 +270,8 @@ class Aggregator:
 
         # return expr_mean # Mean AUC=0.741610
         # return  expr_max # notebookv8
-        return  expr_max +expr_last # 829+386
+        # return  expr_max +expr_last # 829+386
+        return  expr_max +expr_last # 829+386+notebookv8
              
     
     def get_exprs(df):
