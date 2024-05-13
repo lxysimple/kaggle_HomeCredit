@@ -106,9 +106,9 @@ class Pipeline:
         for col in df.columns:
             if col not in ["target", "case_id", "WEEK_NUM"]:
                 isnull = df[col].is_null().mean()
-                # if isnull > 0.7:
+                if isnull > 0.7:
 #                 if isnull > 0.9:
-                if isnull == 1:
+                # if isnull == 1:
 #                 if isnull > 0.99:
                     df = df.drop(col)
         
@@ -168,13 +168,13 @@ class Aggregator:
         # 0.754300 排列顺序
         # return expr_max + expr_min + expr_last + expr_first + expr_mean
 
-        # return expr_mean + expr_max + expr_min
+        return expr_mean + expr_max + expr_min # 433
 
         # return expr_mean # Mean AUC=0.741610
         # return expr_max + expr_mean + expr_var # notebookv8
         # return expr_max +expr_last+expr_mean # 829+386 
         # return expr_max +expr_last+expr_mean+expr_var # 829+386 + notebookv8
-        return expr_max +expr_last+expr_mean+expr_min # 433+829+386 
+        # return expr_max +expr_last+expr_mean+expr_min # 433+829+386 
     
     
     def date_expr(df):
@@ -193,13 +193,13 @@ class Aggregator:
         # 0.754300 排列顺序
         # return  expr_max + expr_min  +  expr_last + expr_first + expr_mean
 
-        # return expr_mean + expr_max + expr_min
+        return expr_mean + expr_max + expr_min # 433
 
         # return expr_mean # Mean AUC=0.741610
         # return expr_max + expr_mean + expr_var # notebookv8
         # return  expr_max +expr_last+expr_mean # 829+386
         # return  expr_max +expr_last+expr_mean+expr_var # 829+386+notebookv8 
-        return expr_max +expr_last+expr_mean +expr_min# 433+829+386 
+        # return expr_max +expr_last+expr_mean +expr_min# 433+829+386 
 
     
     def str_expr(df):
@@ -218,11 +218,13 @@ class Aggregator:
 
         # 0.754300 排列顺序
         # return  expr_max + expr_min + expr_last + expr_first + expr_count
-
+        
+        return  expr_max +expr_last # 433
+    
         # return expr_last + expr_first # Mean AUC=0.741610
         # return expr_max # notebookv8
         # return  expr_max +expr_last # 829+386
-        return expr_last + expr_first+expr_max # 829+386+433
+        # return expr_last + expr_first+expr_max # 829+386+433
 
     def other_expr(df):
         # T、L代表各种杂七杂八的信息
@@ -245,13 +247,13 @@ class Aggregator:
         # 0.754300 排列顺序
         # return  expr_max + expr_min + expr_last + expr_first
 
-        # return expr_mean + expr_max + expr_min
+        return expr_mean
 
         # return expr_mean # Mean AUC=0.741610
         # return expr_max # notebookv8
         # return  expr_max +expr_last # 829+386
         # return  expr_max +expr_last # 829+386+notebookv8
-        return  expr_max +expr_last +expr_mean+expr_min # 829+386+433
+        # return  expr_max +expr_last +expr_mean+expr_min # 829+386+433
 
 
     
@@ -272,13 +274,13 @@ class Aggregator:
         # 0.755666 排列顺序
         # return  expr_max + expr_min + expr_last + expr_first + expr_count
 
-        # return expr_mean + expr_max + expr_min
+        return expr_mean
 
         # return expr_mean # Mean AUC=0.741610
         # return  expr_max # notebookv8
         # return  expr_max +expr_last # 829+386
         # return  expr_max +expr_last # 829+386+notebookv8
-        return  expr_max +expr_last+expr_mean+expr_min # 829+386+433
+        # return  expr_max +expr_last+expr_mean+expr_min # 829+386+433
     
     def get_exprs(df):
         exprs = Aggregator.num_expr(df) + \
