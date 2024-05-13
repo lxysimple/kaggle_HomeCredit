@@ -957,6 +957,9 @@ fitted_models_lgb1 = []
 fitted_models_cat2 = []
 fitted_models_lgb2 = []
 
+fitted_models_cat3 = []
+fitted_models_lgb3 = []
+
 for fold in range(1,6):
     clf = CatBoostClassifier() 
     clf.load_model(f"/home/xyli/kaggle/kaggle_HomeCredit/dataset9/catboost_fold{fold}.cbm")
@@ -974,6 +977,15 @@ for fold in range(1,6):
     model2 = lgb.Booster(model_file=f"/home/xyli/kaggle/kaggle_HomeCredit/dataset4/lgbm_fold{fold}.txt")
     fitted_models_lgb2.append(model2)
 
+    clf3 = CatBoostClassifier()
+    clf3.load_model(f"/home/xyli/kaggle/kaggle_HomeCredit/dataset19/catboost_fold{fold}.cbm")
+    fitted_models_cat3.append(clf3) 
+    
+    model3 = lgb.LGBMClassifier()
+    model3 = lgb.Booster(model_file=f"/home/xyli/kaggle/kaggle_HomeCredit/dataset19/lgbm_fold{fold}.txt")
+    fitted_models_lgb3.append(model3)
+
+
 class VotingModel(BaseEstimator, RegressorMixin):
     def __init__(self, estimators):
         super().__init__()
@@ -989,15 +1001,16 @@ class VotingModel(BaseEstimator, RegressorMixin):
         X[cat_cols_829] = X[cat_cols_829].astype("str")
         y_preds += [estimator.predict_proba(X[df_train_829])[:, 1] for estimator in self.estimators[0:5]]
         y_preds += [estimator.predict_proba(X[df_train_386])[:, 1] for estimator in self.estimators[5:10]]
+        y_preds += [estimator.predict_proba(X[df_train_469])[:, 1] for estimator in self.estimators[10:15]]
         
         X[cat_cols_829] = X[cat_cols_829].astype("category")
-        y_preds += [estimator.predict(X[df_train_829]) for estimator in self.estimators[10:15]]
-        y_preds += [estimator.predict(X[df_train_386]) for estimator in self.estimators[15:20]]
-        
-        
+        y_preds += [estimator.predict(X[df_train_829]) for estimator in self.estimators[15:20]]
+        y_preds += [estimator.predict(X[df_train_386]) for estimator in self.estimators[20:25]]
+        y_preds += [estimator.predict(X[df_train_469]) for estimator in self.estimators[25:30]]
+
         return np.mean(y_preds, axis=0)
 
-model = VotingModel(fitted_models_cat1 + fitted_models_cat2 + fitted_models_lgb1 + fitted_models_lgb2)
+model = VotingModel(fitted_models_cat1 + fitted_models_cat2 +fitted_models_cat3+ fitted_models_lgb1 + fitted_models_lgb2+fitted_models_lgb3)
 
 
 fold = 1
