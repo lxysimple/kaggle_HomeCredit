@@ -1011,9 +1011,10 @@ class VotingModel(BaseEstimator, RegressorMixin):
 
         res = []
         list_X = list(X.columns)
-        for x in list_X:
-            if x in cat_cols_433:
-                res.append(x)
+        for i in cat_cols_433:
+            if i in list_X:
+                res= res +i
+
 
 
         X[cat_cols_829] = X[cat_cols_829].astype("str")
