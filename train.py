@@ -1022,7 +1022,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     
     valid_preds = model.predict_proba(X_valid, fold) 
     valid_score = roc_auc_score(y_valid, valid_preds)
-    print('fold:{fold} valid_score: ', valid_score)
+    print(f'fold:{fold} valid_score: ', valid_score)
 
     fold = fold+1
 
