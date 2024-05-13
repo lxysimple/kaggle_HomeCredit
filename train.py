@@ -102,7 +102,7 @@ class Pipeline:
         return df.drop('date_decision', 'MONTH', 'WEEK_NUM')
         # return df.drop('date_decision', 'MONTH')
 
-    def filter_cols(df):
+    def filter_cols2(df):
         for col in df.columns:
             if col not in ["target", "case_id", "WEEK_NUM"]:
                 isnull = df[col].is_null().mean()
@@ -123,14 +123,14 @@ class Pipeline:
         
         return df
     
-    def filter_cols2(df:pd.DataFrame) -> pd.DataFrame:
+    def filter_cols(df:pd.DataFrame) -> pd.DataFrame:
         for col in df.columns:
             if col not in ['case_id', 'year', 'month', 'week_num', 'target']:
                 null_pct = df[col].is_null().mean()
 
                 # if null_pct > 0.7:
-                # if null_pct > 0.95:
-                if null_pct == 1: # 839
+                if null_pct > 0.95:
+                # if null_pct == 1: # 839
                     df = df.drop(col)
 
         for col in df.columns:
