@@ -989,7 +989,7 @@ class VotingModel(BaseEstimator, RegressorMixin):
         y_preds += [estimator.predict(X[df_train_386]) for estimator in self.estimators[15:20]]
         
         
-        return y_preds
+        return np.mean(y_preds, axis=0)
 
 model = VotingModel(fitted_models_cat1 + fitted_models_cat2 + fitted_models_lgb1 + fitted_models_lgb2)
 
