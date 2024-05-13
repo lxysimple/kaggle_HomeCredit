@@ -1004,6 +1004,7 @@ class VotingModel(BaseEstimator, RegressorMixin):
         fold = fold -1
         y_preds = []
 
+        print(cat_cols_433 in X.columns)
         X[cat_cols_829] = X[cat_cols_829].astype("str")
         y_preds += [estimator.predict_proba(X[df_train_829])[:, 1] for estimator in [self.estimators[0+fold]]]
         y_preds += [estimator.predict_proba(X[df_train_386])[:, 1] for estimator in [self.estimators[5+fold]]]
