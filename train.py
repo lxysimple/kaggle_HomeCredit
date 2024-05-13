@@ -907,28 +907,28 @@ print(df_train.head())
     # ===========================
 
 
-    fold = fold+1
+    # fold = fold+1
 
-print("CV AUC scores: ", cv_scores_cat)
-print("Mean CV AUC score: ", np.mean(cv_scores_cat))
+# print("CV AUC scores: ", cv_scores_cat)
+# print("Mean CV AUC score: ", np.mean(cv_scores_cat))
 
-print("CV AUC scores: ", cv_scores_lgb)
-print("Mean CV AUC score: ", np.mean(cv_scores_lgb))
+# print("CV AUC scores: ", cv_scores_lgb)
+# print("Mean CV AUC score: ", np.mean(cv_scores_lgb))
 
-print("CV AUC scores: ", cv_scores_xgb)
-print("Mean CV AUC score: ", np.mean(cv_scores_xgb))
+# print("CV AUC scores: ", cv_scores_xgb)
+# print("Mean CV AUC score: ", np.mean(cv_scores_xgb))
 
-print("CV AUC scores: ", cv_scores_cat_dw)
-print("Mean CV AUC score: ", np.mean(cv_scores_cat_dw))
+# print("CV AUC scores: ", cv_scores_cat_dw)
+# print("Mean CV AUC score: ", np.mean(cv_scores_cat_dw))
 
-print("CV AUC scores: ", cv_scores_cat_lg)
-print("Mean CV AUC score: ", np.mean(cv_scores_cat_lg))
+# print("CV AUC scores: ", cv_scores_cat_lg)
+# print("Mean CV AUC score: ", np.mean(cv_scores_cat_lg))
 
-print("CV AUC scores: ", cv_scores_lgb_dart)
-print("Mean CV AUC score: ", np.mean(cv_scores_lgb_dart))
+# print("CV AUC scores: ", cv_scores_lgb_dart)
+# print("Mean CV AUC score: ", np.mean(cv_scores_lgb_dart))
 
-print("CV AUC scores: ", cv_scores_lgb_rf)
-print("Mean CV AUC score: ", np.mean(cv_scores_lgb_rf))
+# print("CV AUC scores: ", cv_scores_lgb_rf)
+# print("Mean CV AUC score: ", np.mean(cv_scores_lgb_rf))
 
 # ======================================== 训练3树模型 =====================================
 fitted_models_cat1 = []
