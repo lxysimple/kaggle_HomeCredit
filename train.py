@@ -930,25 +930,9 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
 #     print('auc_score: ', auc_score)
 #     cv_scores_cat.append(auc_score)
     
-    # ==================================
-    
-    
+    # =================================
 
-    
-    
-
-
-
-    # ===========================
-
-
-
-
-
-    # ===========================
-
-
-    # fold = fold+1
+    fold = fold+1
 
 # print("CV AUC scores: ", cv_scores_cat)
 # print("Mean CV AUC score: ", np.mean(cv_scores_cat))
