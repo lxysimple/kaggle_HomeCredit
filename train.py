@@ -1007,11 +1007,13 @@ class VotingModel(BaseEstimator, RegressorMixin):
         X[cat_cols_829] = X[cat_cols_829].astype("str")
         y_preds += [estimator.predict_proba(X[df_train_829])[:, 1] for estimator in [self.estimators[0+fold]]]
         y_preds += [estimator.predict_proba(X[df_train_386])[:, 1] for estimator in [self.estimators[5+fold]]]
+        X[cat_cols_829] = X[cat_cols_433].astype("str")
         y_preds += [estimator.predict_proba(X[df_train_433])[:, 1] for estimator in [self.estimators[10+fold]]]
         
         X[cat_cols_829] = X[cat_cols_829].astype("category")
         y_preds += [estimator.predict(X[df_train_829]) for estimator in [self.estimators[15+fold]]]
         y_preds += [estimator.predict(X[df_train_386]) for estimator in [self.estimators[20+fold]]]
+        X[cat_cols_829] = X[cat_cols_433].astype("category")
         y_preds += [estimator.predict(X[df_train_433]) for estimator in [self.estimators[25+fold]]]
 
         return np.mean(y_preds, axis=0)
