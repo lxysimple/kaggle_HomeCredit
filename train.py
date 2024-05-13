@@ -1006,8 +1006,16 @@ class VotingModel(BaseEstimator, RegressorMixin):
 
         from IPython import embed
         embed()
-        
-        print(cat_cols_433 in X.columns)
+
+        print(cat_cols_433 in list(X.columns))
+
+        res = []
+        list_X = list(X.columns)
+        for x in list_X:
+            if x in cat_cols_433:
+                res.append(x)
+
+
         X[cat_cols_829] = X[cat_cols_829].astype("str")
         y_preds += [estimator.predict_proba(X[df_train_829])[:, 1] for estimator in [self.estimators[0+fold]]]
         y_preds += [estimator.predict_proba(X[df_train_386])[:, 1] for estimator in [self.estimators[5+fold]]]
