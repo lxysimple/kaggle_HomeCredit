@@ -453,6 +453,16 @@ class SchemaGen:
     
     @staticmethod
     def join_dataframes(df_base: pl.LazyFrame, depth_0: list[pl.LazyFrame], depth_1: list[pl.LazyFrame], depth_2: list[pl.LazyFrame]) -> pl.DataFrame:
+
+        df_base = ( # 829+386
+            df_base
+            .with_columns(
+                month_decision = pl.col("date_decision").dt.month(),
+                weekday_decision = pl.col("date_decision").dt.weekday(),
+            )
+        )
+
+
         for (i, df) in enumerate(depth_0 + depth_1 + depth_2):
             df_base = df_base.join(df, how='left', on='case_id', suffix=f'_{i}')
 
