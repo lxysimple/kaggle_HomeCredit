@@ -945,6 +945,8 @@ print(df_train.head())
 # print("Mean CV AUC score: ", np.mean(cv_scores_lgb_rf))
 
 # ======================================== 训练3树模型 =====================================
+
+# ======================================== 推理验证 =====================================
 fitted_models_cat1 = []
 fitted_models_lgb1 = []
 
@@ -1006,3 +1008,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     print('fold:{fold} valid_score: ', valid_score)
 
     fold = fold+1
+
+# ======================================== 推理验证 =====================================
+
+
