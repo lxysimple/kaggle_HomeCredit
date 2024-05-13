@@ -565,8 +565,9 @@ print("train data shape:\t", df_train.shape)
 del data_store
 gc.collect()
 
-df_train = df_train.pipe(Pipeline.filter_cols)
 df_train = df_train.pipe(Pipeline.handle_dates)
+df_train = df_train.pipe(Pipeline.filter_cols)
+
 # print("train data shape:\t", df_train.shape)
 df_train, cat_cols = to_pandas(df_train)
 
