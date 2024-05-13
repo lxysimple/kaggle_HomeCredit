@@ -82,7 +82,7 @@ class Pipeline:
 
 
 
-    def handle_dates2(df):
+    def handle_dates(df):
         for col in df.columns:
             if col[-1] in ("D",):
                 # 可能默认替换表达式中第1个列名吧
@@ -91,7 +91,7 @@ class Pipeline:
         df = df.drop("date_decision", "MONTH")
         return df
 
-    def handle_dates(df:pl.DataFrame) -> pl.DataFrame:
+    def handle_dates2(df:pl.DataFrame) -> pl.DataFrame:
         for col in df.columns:  
             if col.endswith('D'):
                 df = df.with_columns(pl.col(col) - pl.col('date_decision'))
@@ -102,7 +102,7 @@ class Pipeline:
         return df.drop('date_decision', 'MONTH', 'WEEK_NUM')
         # return df.drop('date_decision', 'MONTH')
 
-    def filter_cols2(df):
+    def filter_cols(df):
         for col in df.columns:
             if col not in ["target", "case_id", "WEEK_NUM"]:
                 isnull = df[col].is_null().mean()
@@ -123,7 +123,7 @@ class Pipeline:
         
         return df
     
-    def filter_cols(df:pd.DataFrame) -> pd.DataFrame:
+    def filter_cols2(df:pd.DataFrame) -> pd.DataFrame:
         for col in df.columns:
             if col not in ['case_id', 'year', 'month', 'week_num', 'target']:
                 null_pct = df[col].is_null().mean()
@@ -387,33 +387,33 @@ TEST_DIR        = ROOT / "parquet_files" / "test"
 
 print('开始读取数据!')
 
-# data_store2 = {
-#     "df_base": read_file(TRAIN_DIR / "train_base.parquet"),
-#     "depth_0": [
-#         read_file(TRAIN_DIR / "train_static_cb_0.parquet"),
-#         read_files(TRAIN_DIR / "train_static_0_*.parquet"),
-#     ],
-#     "depth_1": [
-#         read_files(TRAIN_DIR / "train_applprev_1_*.parquet", 1),
-#         read_file(TRAIN_DIR / "train_tax_registry_a_1.parquet", 1),
-#         read_file(TRAIN_DIR / "train_tax_registry_b_1.parquet", 1),
-#         read_file(TRAIN_DIR / "train_tax_registry_c_1.parquet", 1),
-#         read_files(TRAIN_DIR / "train_credit_bureau_a_1_*.parquet", 1),
-#         read_file(TRAIN_DIR / "train_credit_bureau_b_1.parquet", 1),
-#         read_file(TRAIN_DIR / "train_other_1.parquet", 1),
-#         read_file(TRAIN_DIR / "train_person_1.parquet", 1),
-#         read_file(TRAIN_DIR / "train_deposit_1.parquet", 1),
-#         read_file(TRAIN_DIR / "train_debitcard_1.parquet", 1),
-#     ],
-#     "depth_2": [
-#         read_file(TRAIN_DIR / "train_credit_bureau_b_2.parquet", 2),
-#         read_files(TRAIN_DIR / "train_credit_bureau_a_2_*.parquet", 2),
+data_store = {
+    "df_base": read_file(TRAIN_DIR / "train_base.parquet"),
+    "depth_0": [
+        read_file(TRAIN_DIR / "train_static_cb_0.parquet"),
+        read_files(TRAIN_DIR / "train_static_0_*.parquet"),
+    ],
+    "depth_1": [
+        read_files(TRAIN_DIR / "train_applprev_1_*.parquet", 1),
+        read_file(TRAIN_DIR / "train_tax_registry_a_1.parquet", 1),
+        read_file(TRAIN_DIR / "train_tax_registry_b_1.parquet", 1),
+        read_file(TRAIN_DIR / "train_tax_registry_c_1.parquet", 1),
+        read_files(TRAIN_DIR / "train_credit_bureau_a_1_*.parquet", 1),
+        read_file(TRAIN_DIR / "train_credit_bureau_b_1.parquet", 1),
+        read_file(TRAIN_DIR / "train_other_1.parquet", 1),
+        read_file(TRAIN_DIR / "train_person_1.parquet", 1),
+        read_file(TRAIN_DIR / "train_deposit_1.parquet", 1),
+        read_file(TRAIN_DIR / "train_debitcard_1.parquet", 1),
+    ],
+    "depth_2": [
+        read_file(TRAIN_DIR / "train_credit_bureau_b_2.parquet", 2),
+        read_files(TRAIN_DIR / "train_credit_bureau_a_2_*.parquet", 2),
 
-#         # 829+386
-#         read_file(TRAIN_DIR / "train_applprev_2.parquet", 2),
-#         read_file(TRAIN_DIR / "train_person_2.parquet", 2)
-#     ]
-# }
+        # 829+386
+        read_file(TRAIN_DIR / "train_applprev_2.parquet", 2),
+        read_file(TRAIN_DIR / "train_person_2.parquet", 2)
+    ]
+}
 
 class SchemaGen:
     @staticmethod
@@ -532,33 +532,33 @@ class Utility:
         return df, cat_cols
 
 
-data_store:dict = {
-    'df_base': SchemaGen.scan_files(TRAIN_DIR / 'train_base.parquet'),
-    'depth_0': [
-        SchemaGen.scan_files(TRAIN_DIR / 'train_static_cb_0.parquet'),
-        SchemaGen.scan_files(TRAIN_DIR / 'train_static_0_*.parquet'),
-    ],
-    'depth_1': [
-        SchemaGen.scan_files(TRAIN_DIR / 'train_applprev_1_*.parquet', 1),
-        SchemaGen.scan_files(TRAIN_DIR / 'train_tax_registry_a_1.parquet', 1),
-        SchemaGen.scan_files(TRAIN_DIR / 'train_tax_registry_b_1.parquet', 1),
-        SchemaGen.scan_files(TRAIN_DIR / 'train_tax_registry_c_1.parquet', 1),
-        SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_a_1_*.parquet', 1),
-        SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_b_1.parquet', 1),
-        SchemaGen.scan_files(TRAIN_DIR / 'train_other_1.parquet', 1),
-        SchemaGen.scan_files(TRAIN_DIR / 'train_person_1.parquet', 1),
-        SchemaGen.scan_files(TRAIN_DIR / 'train_deposit_1.parquet', 1),
-        SchemaGen.scan_files(TRAIN_DIR / 'train_debitcard_1.parquet', 1),
-    ],
-    'depth_2': [
-        SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_a_2_*.parquet', 2),
-        SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_b_2.parquet', 2),
+# data_store:dict = {
+#     'df_base': SchemaGen.scan_files(TRAIN_DIR / 'train_base.parquet'),
+#     'depth_0': [
+#         SchemaGen.scan_files(TRAIN_DIR / 'train_static_cb_0.parquet'),
+#         SchemaGen.scan_files(TRAIN_DIR / 'train_static_0_*.parquet'),
+#     ],
+#     'depth_1': [
+#         SchemaGen.scan_files(TRAIN_DIR / 'train_applprev_1_*.parquet', 1),
+#         SchemaGen.scan_files(TRAIN_DIR / 'train_tax_registry_a_1.parquet', 1),
+#         SchemaGen.scan_files(TRAIN_DIR / 'train_tax_registry_b_1.parquet', 1),
+#         SchemaGen.scan_files(TRAIN_DIR / 'train_tax_registry_c_1.parquet', 1),
+#         SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_a_1_*.parquet', 1),
+#         SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_b_1.parquet', 1),
+#         SchemaGen.scan_files(TRAIN_DIR / 'train_other_1.parquet', 1),
+#         SchemaGen.scan_files(TRAIN_DIR / 'train_person_1.parquet', 1),
+#         SchemaGen.scan_files(TRAIN_DIR / 'train_deposit_1.parquet', 1),
+#         SchemaGen.scan_files(TRAIN_DIR / 'train_debitcard_1.parquet', 1),
+#     ],
+#     'depth_2': [
+#         SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_a_2_*.parquet', 2),
+#         SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_b_2.parquet', 2),
    
-        # 829+386
-        SchemaGen.scan_files(TRAIN_DIR / 'train_applprev_2.parquet', 2), 
-        SchemaGen.scan_files(TRAIN_DIR / 'train_person_2.parquet', 2), 
-    ]
-}
+#         # 829+386
+#         SchemaGen.scan_files(TRAIN_DIR / 'train_applprev_2.parquet', 2), 
+#         SchemaGen.scan_files(TRAIN_DIR / 'train_person_2.parquet', 2), 
+#     ]
+# }
 print('读取数据完毕！')
 
 
