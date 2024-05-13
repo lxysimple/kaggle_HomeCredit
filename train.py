@@ -994,19 +994,19 @@ class VotingModel(BaseEstimator, RegressorMixin):
     def fit(self, X, y=None):
         return self
 
-    def predict_proba(self, X):
-        
+    def predict_proba(self, X, fold):
+        fold = fold -1
         y_preds = []
 
         X[cat_cols_829] = X[cat_cols_829].astype("str")
-        y_preds += [estimator.predict_proba(X[df_train_829])[:, 1] for estimator in self.estimators[0:5]]
-        y_preds += [estimator.predict_proba(X[df_train_386])[:, 1] for estimator in self.estimators[5:10]]
-        y_preds += [estimator.predict_proba(X[df_train_469])[:, 1] for estimator in self.estimators[10:15]]
+        y_preds += [estimator.predict_proba(X[df_train_829])[:, 1] for estimator in self.estimators[0+fold]]
+        y_preds += [estimator.predict_proba(X[df_train_386])[:, 1] for estimator in self.estimators[5+fold]]
+        y_preds += [estimator.predict_proba(X[df_train_469])[:, 1] for estimator in self.estimators[10+fold]]
         
         X[cat_cols_829] = X[cat_cols_829].astype("category")
-        y_preds += [estimator.predict(X[df_train_829]) for estimator in self.estimators[15:20]]
-        y_preds += [estimator.predict(X[df_train_386]) for estimator in self.estimators[20:25]]
-        y_preds += [estimator.predict(X[df_train_469]) for estimator in self.estimators[25:30]]
+        y_preds += [estimator.predict(X[df_train_829]) for estimator in self.estimators[15+fold]]
+        y_preds += [estimator.predict(X[df_train_386]) for estimator in self.estimators[20+fold]]
+        y_preds += [estimator.predict(X[df_train_469]) for estimator in self.estimators[25+fold]]
 
         return np.mean(y_preds, axis=0)
 
@@ -1020,7 +1020,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     X_train, y_train = df_train.iloc[idx_train], y.iloc[idx_train] 
     X_valid, y_valid = df_train.iloc[idx_valid], y.iloc[idx_valid]    
     
-    valid_preds = model.predict_proba(X_valid) 
+    valid_preds = model.predict_proba(X_valid, fold) 
     valid_score = roc_auc_score(y_valid, valid_preds)
     print('fold:{fold} valid_score: ', valid_score)
 
