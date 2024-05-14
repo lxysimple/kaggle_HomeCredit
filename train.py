@@ -748,20 +748,31 @@ print('读取数据完毕！')
 #     .pipe(handle_dates)
 #     # .pipe(Utility.reduce_memory_usage, "df_train")
 # )
-df_train: pl.LazyFrame = (
-    # 额外增加了 829+386 的两个外部数据文件
-    SchemaGen.join_dataframes(**data_store) # 这里已经有reduce_memory_usage了
-    .pipe(filter_cols) # 额外增加了2个特征列
-    .pipe(handle_dates)
-)
+# df_train: pl.LazyFrame = (
+#     # 额外增加了 829+386 的两个外部数据文件
+#     SchemaGen.join_dataframes(**data_store) # 这里已经有reduce_memory_usage了
+#     .pipe(filter_cols) # 额外增加了2个特征列
+#     .pipe(handle_dates)
+# )
 
-df_train, cat_cols = to_pandas(df_train) # 把字符串转化为category
-# df_train, cat_cols = Utility.to_pandas(df_train) # 这个是把字符串转化为str
+# df_train, cat_cols = to_pandas(df_train) # 把字符串转化为category
+# # df_train, cat_cols = Utility.to_pandas(df_train) # 这个是把字符串转化为str
 
-print("train data shape:\t", df_train.shape)
+# print("train data shape:\t", df_train.shape)
 
-del data_store
-gc.collect()
+# del data_store
+# gc.collect()
+
+
+df_train = feature_eng(**data_store)
+df_train = df_train.pipe(Pipeline.filter_cols)
+df_train, cat_cols = to_pandas(df_train)
+df_train = reduce_mem_usage(df_train, 'df_train')
+
+
+
+
+
 
 # df_train = df_train.pipe(Pipeline.filter_cols)
 # df_train = df_train.pipe(Pipeline.handle_dates)
