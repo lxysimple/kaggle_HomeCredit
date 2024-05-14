@@ -406,10 +406,9 @@ def feature_eng(df_base, depth_0, depth_1, depth_2):
     return df_base
 
 def to_pandas(df_data, cat_cols=None):
-    try:
-        df_data = df_data.to_pandas()
-    except:
-        df_data = df_data.collect().to_pandas()
+
+    df_data = df_data.to_pandas()
+
     if cat_cols is None:
         cat_cols = list(df_data.select_dtypes("object").columns)
     df_data[cat_cols] = df_data[cat_cols].astype("category")
