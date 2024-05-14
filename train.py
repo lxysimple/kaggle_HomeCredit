@@ -752,7 +752,7 @@ df_train_scan: pl.LazyFrame = (
     .pipe(handle_dates)
     # .pipe(Utility.reduce_memory_usage, "df_train")
 )
-df_train_scan, cat_cols = Utility.to_pandas(df_train) # 这个是把字符串转化为str
+df_train_scan, cat_cols = Utility.to_pandas(df_train_scan) # 这个是把字符串转化为str
 
 
 df_train = feature_eng(**data_store).collect()
