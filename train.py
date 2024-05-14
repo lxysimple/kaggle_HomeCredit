@@ -756,7 +756,7 @@ df_train: pl.LazyFrame = (
 # )
 
 # df_train, cat_cols = to_pandas(df_train) # 把字符串转化为category
-# # df_train, cat_cols = Utility.to_pandas(df_train) # 这个是把字符串转化为str
+df_train, cat_cols = Utility.to_pandas(df_train) # 这个是把字符串转化为str
 
 
 
