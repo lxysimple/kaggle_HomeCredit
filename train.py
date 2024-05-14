@@ -1186,24 +1186,26 @@ class VotingModel(BaseEstimator, RegressorMixin):
     def fit(self, X, y=None):
         return self
 
-    def predict_proba(self, X, fold):
+    def predict_proba(self, X, X_scan, fold):
         fold = fold -1
         y_preds = []
 
         # from IPython import embed
         # embed()
 
-        X[cat_cols] = X[cat_cols].astype("str")
+        # X[cat_cols] = X[cat_cols].astype("str")
         # y_preds += [estimator.predict_proba(X[df_train_829])[:, 1] for estimator in [self.estimators[0+fold]]]
         # y_preds += [estimator.predict_proba(X[df_train_386])[:, 1] for estimator in [self.estimators[5+fold]]]
         # y_preds += [estimator.predict_proba(X[df_train])[:, 1] for estimator in [self.estimators[10+fold]]]
         
-        # X[cat_cols] = X[cat_cols].astype("category")
+        X[cat_cols] = X[cat_cols].astype("category")
         # y_preds += [estimator.predict(X[df_train_829]) for estimator in [self.estimators[15+fold]]]
         # y_preds += [estimator.predict(X[df_train_386]) for estimator in [self.estimators[20+fold]]]
-        y_preds += [estimator.predict(X[df_train]) for estimator in [self.estimators[25+fold]]]
+        y_preds += [estimator.predict(X_scan[df_train]) for estimator in [self.estimators[25+fold]]]
 
         return np.mean(y_preds, axis=0)
+
+
 
 model = VotingModel(fitted_models_cat1 + fitted_models_cat2 +fitted_models_cat3+ fitted_models_lgb1 + fitted_models_lgb2+fitted_models_lgb3)
 
