@@ -869,18 +869,6 @@ print("train data shape:\t", df_train.shape)
 
 # ======================================== 导入配置 =====================================
 
-
-def to_pandas(df_data, cat_cols=None):
-    
-    if not isinstance(df_data, pd.DataFrame):
-        df_data = df_data.to_pandas()
-    
-    if cat_cols is None:
-        cat_cols = list(df_data.select_dtypes("object").columns)
-    df_data[cat_cols] = df_data[cat_cols].astype("category")
-    return df_data, cat_cols
-
-
 # file_path = '/home/xyli/kaggle/kaggle_HomeCredit/train2.csv'
 # # 打开文件并逐行读取
 # with open(file_path, 'r', encoding='utf-8') as file:
