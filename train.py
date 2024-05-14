@@ -877,11 +877,11 @@ df_train_scan, cat_cols = Utility.to_pandas(df_train_scan) # 这个是把字符�
 print("train data shape:\t", df_train_scan.shape)
 df_train = df_train_scan
 
-df_train = feature_eng(**data_store).collect()
-df_train = df_train.pipe(Pipeline.filter_cols)
-df_train, _ = to_pandas(df_train)    
-df_train = Utility.reduce_memory_usage(df_train, "df_train")
-print("train data shape:\t", df_train.shape)
+# df_train = feature_eng(**data_store).collect()
+# df_train = df_train.pipe(Pipeline.filter_cols)
+# df_train, _ = to_pandas(df_train)    
+# df_train = Utility.reduce_memory_usage(df_train, "df_train")
+# print("train data shape:\t", df_train.shape)
 
 del data_store
 gc.collect()
