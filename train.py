@@ -714,7 +714,7 @@ print('开始读取数据!')
 
 
 
-data_store:dict = {
+data_store_scan:dict = {
     'df_base': SchemaGen.scan_files(TRAIN_DIR / 'train_base.parquet'),
     'depth_0': [
         SchemaGen.scan_files(TRAIN_DIR / 'train_static_cb_0.parquet'),
@@ -744,21 +744,20 @@ data_store:dict = {
 print('读取数据完毕！')
 
 
-# df_train: pl.LazyFrame = (
-#     # 额外增加了 829+386 的两个外部数据文件
-#     SchemaGen.join_dataframes(**data_store) # 这里已经有reduce_memory_usage了
-#     .pipe(filter_cols) # 额外增加了2个特征列
-#     # .pipe(transform_cols) # 兼容0.592
-#     .pipe(handle_dates)
-#     # .pipe(Utility.reduce_memory_usage, "df_train")
-# )
-# df_train, cat_cols = to_pandas(df_train) # 把字符串转化为category
-# df_train, cat_cols = Utility.to_pandas(df_train) # 这个是把字符串转化为str
+df_train_scan: pl.LazyFrame = (
+    # 额外增加了 829+386 的两个外部数据文件
+    SchemaGen.join_dataframes(**data_store_scan) # 这里已经有reduce_memory_usage了
+    .pipe(filter_cols) # 额外增加了2个特征列
+    # .pipe(transform_cols) # 兼容0.592
+    .pipe(handle_dates)
+    # .pipe(Utility.reduce_memory_usage, "df_train")
+)
+df_train_scan, cat_cols = Utility.to_pandas(df_train) # 这个是把字符串转化为str
 
 
 df_train = feature_eng(**data_store).collect()
 df_train = df_train.pipe(Pipeline.filter_cols)
-df_train, cat_cols = to_pandas(df_train)    
+df_train, _ = to_pandas(df_train)    
 df_train = Utility.reduce_memory_usage(df_train, "df_train")
 
 print("train data shape:\t", df_train.shape)
@@ -888,11 +887,19 @@ if False:
 print(device)
 
 y = df_train["target"]
+y_scan = df_train_scan["target"]
+
 # weeks = df_train["WEEK_NUM"]
 try:
     weeks = df_train["week_num"]
 except:
     weeks = df_train["WEEK_NUM"] 
+
+try:
+    weeks_scan = df_train_scan["week_num"]
+except:
+    weeks_scan = df_train_scan["WEEK_NUM"] 
+
 
 try:
     # df_train= df_train.drop(columns=["target", "case_id", "WEEK_NUM"])
@@ -1203,11 +1210,14 @@ model = VotingModel(fitted_models_cat1 + fitted_models_cat2 +fitted_models_cat3+
 
 avg_score = 0
 fold = 1
-for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环5次
+for idx_train, idx_valid, idx_train_scan, idx_valid_scan in zip(cv.split(df_train, y, groups=weeks), cv.split(df_train_scan, y, groups=weeks_scan)): # 5折，循环5次
 
     # X_train(≈40000,386), y_train(≈40000)
     X_train, y_train = df_train.iloc[idx_train], y.iloc[idx_train] 
-    X_valid, y_valid = df_train.iloc[idx_valid], y.iloc[idx_valid]    
+    X_valid, y_valid = df_train.iloc[idx_valid], y.iloc[idx_valid] 
+
+    X_train_scan, y_train_scan = df_train_scan.iloc[idx_train_scan], y_scan.iloc[idx_train_scan] 
+    X_valid_scan, y_valid_scan = df_train_scan.iloc[idx_valid_scan], y_scan.iloc[idx_valid_scan]       
     
     valid_preds = model.predict_proba(X_valid, fold) 
     valid_score = roc_auc_score(y_valid, valid_preds)
