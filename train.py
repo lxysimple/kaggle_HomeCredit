@@ -168,8 +168,8 @@ class Aggregator:
         # 0.754300 排列顺序
         # return expr_max + expr_min + expr_last + expr_first + expr_mean
 
-        return expr_mean # Mean AUC=0.741610 433
-        # return expr_max + expr_mean + expr_var # notebookv8
+        # return expr_mean # Mean AUC=0.741610 433
+        return expr_max + expr_mean + expr_var # notebookv8
         # return expr_max +expr_last+expr_mean # 829+386 
         # return expr_max +expr_last+expr_mean+expr_var # 829+386 + notebookv8
         # return expr_max +expr_last+expr_mean+expr_min # 433+829+386 
@@ -191,8 +191,8 @@ class Aggregator:
         # 0.754300 排列顺序
         # return  expr_max + expr_min  +  expr_last + expr_first + expr_mean
 
-        return expr_mean # Mean AUC=0.741610 433
-        # return expr_max + expr_mean + expr_var # notebookv8
+        # return expr_mean # Mean AUC=0.741610 433
+        return expr_max + expr_mean + expr_var # notebookv8
         # return  expr_max +expr_last+expr_mean # 829+386
         # return  expr_max +expr_last+expr_mean+expr_var # 829+386+notebookv8 
         # return expr_max +expr_last+expr_mean +expr_min# 433+829+386 
@@ -215,8 +215,8 @@ class Aggregator:
         # 0.754300 排列顺序
         # return  expr_max + expr_min + expr_last + expr_first + expr_count
         
-        return expr_max + expr_last + expr_first # Mean AUC=0.741610 433
-        # return expr_max # notebookv8
+        # return expr_max + expr_last + expr_first # Mean AUC=0.741610 433
+        return expr_min + expr_max # notebookv8
         # return  expr_max +expr_last # 829+386
         # return expr_last + expr_first+expr_max # 829+386+433
 
@@ -242,8 +242,8 @@ class Aggregator:
         # return  expr_max + expr_min + expr_last + expr_first
 
 
-        return expr_mean # Mean AUC=0.741610 433
-        # return expr_max # notebookv8
+        # return expr_mean # Mean AUC=0.741610 433
+        return expr_min+expr_max # notebookv8
         # return  expr_max +expr_last # 829+386
         # return  expr_max +expr_last # 829+386+notebookv8
         # return  expr_max +expr_last +expr_mean+expr_min # 829+386+433
