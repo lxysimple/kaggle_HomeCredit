@@ -159,9 +159,9 @@ def filter_cols(df: pl.DataFrame) -> pl.DataFrame:
         if col not in ["case_id", "year", "month", "week_num", "target"]:
             null_pct = df[col].is_null().mean()
 
-            # if null_pct > 0.95:
-            if null_pct == 1: # 兼容0.592版本的
-                df = df.drop(col)
+            if null_pct > 0.95:
+            # if null_pct == 1: # 兼容0.592版本的
+                df = df.drop(col) 
 
     for col in df.columns:
         if (col not in ["case_id", "year", "month", "week_num", "target"]) & (
@@ -253,9 +253,9 @@ class Aggregator:
         # return expr_max + expr_min + expr_last + expr_first + expr_mean
 
         # return expr_mean # Mean AUC=0.741610 433
-        # return expr_max + expr_mean + expr_var # notebookv8 
+        return expr_max + expr_mean + expr_var # notebookv8 
         # return expr_max +expr_last+expr_mean # 829+386 
-        return expr_max +expr_last+expr_mean+expr_var # 829+386 + notebookv8
+        # return expr_max +expr_last+expr_mean+expr_var # 829+386 + notebookv8
         # return expr_max +expr_last+expr_mean+expr_min # 433+829+386 
     
     
@@ -276,9 +276,9 @@ class Aggregator:
         # return  expr_max + expr_min  +  expr_last + expr_first + expr_mean
 
         # return expr_mean # Mean AUC=0.741610 433
-        # return expr_max + expr_mean + expr_var # notebookv8
+        return expr_max + expr_mean + expr_var # notebookv8
         # return  expr_max +expr_last+expr_mean # 829+386
-        return  expr_max +expr_last+expr_mean+expr_var # 829+386+notebookv8 
+        # return  expr_max +expr_last+expr_mean+expr_var # 829+386+notebookv8 
         # return expr_max +expr_last+expr_mean +expr_min# 433+829+386 
 
     
@@ -300,8 +300,8 @@ class Aggregator:
         # return  expr_max + expr_min + expr_last + expr_first + expr_count
         
         # return expr_max + expr_last + expr_first # Mean AUC=0.741610 433
-        # return expr_max # notebookv8
-        return  expr_max +expr_last # 829+386+notebookv8
+        return expr_max # notebookv8
+        # return  expr_max +expr_last # 829+386+notebookv8
         # return expr_last + expr_first+expr_max # 829+386+433
 
     def other_expr(df):
@@ -327,9 +327,9 @@ class Aggregator:
 
 
         # return expr_mean # Mean AUC=0.741610 433
-        # return expr_max # notebookv8
+        return expr_max # notebookv8
         # return  expr_max +expr_last # 829+386
-        return  expr_max +expr_last # 829+386+notebookv8
+        # return  expr_max +expr_last # 829+386+notebookv8
         # return  expr_max +expr_last +expr_mean+expr_min # 829+386+433
 
 
@@ -352,9 +352,9 @@ class Aggregator:
         # return  expr_max + expr_min + expr_last + expr_first + expr_count
 
         # return expr_mean # Mean AUC=0.741610 433
-        # return expr_max # notebookv8
+        return expr_max # notebookv8
         # return  expr_max +expr_last # 829+386
-        return  expr_max +expr_last # 829+386+notebookv8
+        # return  expr_max +expr_last # 829+386+notebookv8
         # return  expr_max +expr_last+expr_mean+expr_min # 829+386+433
     
     def get_exprs(df):
@@ -540,14 +540,14 @@ class SchemaGen:
         """
 
         # ===============================================================
-        """ 为了兼容0.592的模型，我自己加上去的 """
-        df_base = (
-            df_base
-            .with_columns(
-                month_decision = pl.col("date_decision").dt.month(),
-                weekday_decision = pl.col("date_decision").dt.weekday(),
-            )
-        )
+        # """ 为了兼容0.592的模型，我自己加上去的 """
+        # df_base = (
+        #     df_base
+        #     .with_columns(
+        #         month_decision = pl.col("date_decision").dt.month(),
+        #         weekday_decision = pl.col("date_decision").dt.weekday(),
+        #     )
+        # )
         # ===============================================================
 
         for i, df in enumerate(depth_0 + depth_1 + depth_2):
@@ -748,7 +748,7 @@ df_train_scan: pl.LazyFrame = (
     # 额外增加了 829+386 的两个外部数据文件
     SchemaGen.join_dataframes(**data_store) # 这里已经有reduce_memory_usage了
     .pipe(filter_cols) # 额外增加了2个特征列
-    # .pipe(transform_cols) # 兼容0.592
+    .pipe(transform_cols) # 兼容0.592
     .pipe(handle_dates)
     # .pipe(Utility.reduce_memory_usage, "df_train")
 )
