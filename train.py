@@ -940,266 +940,28 @@ df_train[cat_cols] = df_train[cat_cols].astype(str)
 # ======================================== 特征列分类 =====================================
 
 # ======================================== 训练3树模型 =====================================
-# # %%time
 
-fitted_models_cat = []
-fitted_models_lgb = []
-fitted_models_xgb = []
-fitted_models_rf = []
-fitted_models_cat_dw = []
-fitted_models_cat_lg = []
-fitted_models_lgb_dart = []
-fitted_models_lgb_rf = []
-
-
-cv_scores_cat = []
-cv_scores_lgb = []
-cv_scores_xgb = []
-cv_scores_rf = []
-cv_scores_cat_dw = []
-cv_scores_cat_lg = []
-cv_scores_lgb_dart = []
-cv_scores_lgb_rf = []
+# fitted_models_cat = []
+# fitted_models_lgb = []
+# fitted_models_xgb = []
+# fitted_models_rf = []
+# fitted_models_cat_dw = []
+# fitted_models_cat_lg = []
+# fitted_models_lgb_dart = []
+# fitted_models_lgb_rf = []
 
 
-print(df_train.head())
-
-fold = 1
-for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环5次
-
-    # X_train(≈40000,386), y_train(≈40000)
-    X_train, y_train = df_train.iloc[idx_train], y.iloc[idx_train] 
-    X_valid, y_valid = df_train.iloc[idx_valid], y.iloc[idx_valid]    
-    
-
-    # ===============================
-    X_train[cat_cols] = X_train[cat_cols].astype("category")
-    X_valid[cat_cols] = X_valid[cat_cols].astype("category")
-
-    params = {
-        "boosting_type": "gbdt",
-        "colsample_bynode": 0.8,
-        "colsample_bytree": 0.8,
-        "device": device,
-        "extra_trees": True,
-        "learning_rate": 0.05,
-        "l1_regularization": 0.1,
-        "l2_regularization": 10,
-        "max_depth": 20,
-        "metric": "auc",
-        "n_estimators": 2000,
-        "num_leaves": 64,
-        "objective": "binary",
-        "random_state": 42,
-        "verbose": -1,
-    }
-    # params = {
-    #     "boosting_type": "gbdt",
-    #     "objective": "binary",
-    #     "metric": "auc",
-    #     "max_depth": 10,  
-    #     "learning_rate": 0.05,
-    #     "n_estimators": 2000,  
-    #     # 则每棵树在构建时会随机选择 80% 的特征进行训练，剩下的 20% 特征将不参与训练，从而增加模型的泛化能力和稳定性
-    #     "colsample_bytree": 0.8, 
-    #     "colsample_bynode": 0.8, # 控制每个节点的特征采样比例
-    #     "verbose": -1,
-    #     "random_state": 42,
-    #     "reg_alpha": 0.1,
-    #     "reg_lambda": 10,
-    #     "extra_trees":True,
-    #     'num_leaves':64,
-    #     "device": 'gpu', # gpu
-    #     'gpu_use_dp' : True, # 转化float为64精度
-
-    #     # # 平衡类别之间的权重  损失函数不会因为样本不平衡而被“推向”样本量偏少的类别中
-    #     # "sample_weight":'balanced',
-    # }
-
-    # 一次训练
-    model = lgb.LGBMClassifier(**params)
-    model.fit(
-        X_train, y_train,
-        eval_set = [(X_valid, y_valid)],
-        callbacks = [lgb.log_evaluation(200), lgb.early_stopping(100)],
-        # init_model = f"/home/xyli/kaggle/kaggle_HomeCredit/dataset/lgbm_fold{fold}.txt",
-    )
-    model.booster_.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/lgbm_fold{fold}.txt')
-    model2 = model
-
-    # # 二次优化
-    # params['learning_rate'] = 0.01
-    # model2 = lgb.LGBMClassifier(**params)
-    # model2.fit(
-    #     X_train, y_train,
-    #     eval_set = [(X_valid, y_valid)],
-    #     callbacks = [lgb.log_evaluation(200), lgb.early_stopping(200)],
-    #     init_model = f"/home/xyli/kaggle/kaggle_HomeCredit/dataset8/lgbm_fold{fold}.txt",
-    # )
-    # model2.booster_.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/lgbm_fold{fold}.txt')
-    
-
-    fitted_models_lgb.append(model2)
-    y_pred_valid = model2.predict_proba(X_valid)[:,1]
-    auc_score = roc_auc_score(y_valid, y_pred_valid)
-    print('auc_score: ', auc_score)
-    cv_scores_lgb.append(auc_score)
-    print()
-    print("分隔符")
-    print()
-    # ===========================
+# cv_scores_cat = []
+# cv_scores_lgb = []
+# cv_scores_xgb = []
+# cv_scores_rf = []
+# cv_scores_cat_dw = []
+# cv_scores_cat_lg = []
+# cv_scores_lgb_dart = []
+# cv_scores_lgb_rf = []
 
 
-    # ======================================
-    # train_pool = Pool(X_train, y_train,cat_features=cat_cols)
-    # val_pool = Pool(X_valid, y_valid,cat_features=cat_cols)
-    
-# #     train_pool = Pool(X_train, y_train)
-# #     val_pool = Pool(X_valid, y_valid)
-     
-
-    # clf = CatBoostClassifier( 
-    #     best_model_min_trees = 1000,
-    #     boosting_type = "Plain",
-    #     eval_metric = "AUC",
-    #     iterations = 6000,
-    #     learning_rate = 0.05,
-    #     l2_leaf_reg = 10,
-    #     max_leaves = 64,
-    #     random_seed = 42,
-    #     task_type = "GPU",
-    #     use_best_model = True
-    # ) 
-
-#     clf = CatBoostClassifier(
-#         eval_metric='AUC',
-#         task_type='GPU',
-#         learning_rate=0.03, # 0.03
-#         iterations=6000, # n_est
-# #         early_stopping_rounds = 500,
-#     )
-#     # clf = CatBoostClassifier(
-#     #     eval_metric='AUC',
-#     #     task_type='GPU',
-#     #     learning_rate=0.05, # 0.03
-#     #     # iterations=n_est, # n_est iterations与n_estimators二者只能有一
-#     #     grow_policy = 'Lossguide',
-#     #     max_depth = 10,
-#     #     n_estimators = 2000,   
-#     #     reg_lambda = 10,
-#     #     num_leaves = 64,
-#     #     early_stopping_rounds = 100,
-#     # )
-
-#     random_seed=3107
-#     clf.fit(
-#         train_pool, 
-#         eval_set=val_pool,
-#         verbose=300,
-# #         # 保证调试的时候不需要重新训练
-# #         save_snapshot = True, 
-# #         snapshot_file = '/kaggle/working/catboost.cbsnapshot',
-# #         snapshot_interval = 10
-#     )
-#     clf.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/catboost_fold{fold}.cbm')
-#     fitted_models_cat.append(clf)
-#     y_pred_valid = clf.predict_proba(X_valid)[:,1]
-#     auc_score = roc_auc_score(y_valid, y_pred_valid)
-#     print('auc_score: ', auc_score)
-#     cv_scores_cat.append(auc_score)
-    
-    # =================================
-
-    fold = fold+1
-
-# print("CV AUC scores: ", cv_scores_cat)
-# print("Mean CV AUC score: ", np.mean(cv_scores_cat))
-
-# print("CV AUC scores: ", cv_scores_lgb)
-# print("Mean CV AUC score: ", np.mean(cv_scores_lgb))
-
-# print("CV AUC scores: ", cv_scores_xgb)
-# print("Mean CV AUC score: ", np.mean(cv_scores_xgb))
-
-# print("CV AUC scores: ", cv_scores_cat_dw)
-# print("Mean CV AUC score: ", np.mean(cv_scores_cat_dw))
-
-# print("CV AUC scores: ", cv_scores_cat_lg)
-# print("Mean CV AUC score: ", np.mean(cv_scores_cat_lg))
-
-# print("CV AUC scores: ", cv_scores_lgb_dart)
-# print("Mean CV AUC score: ", np.mean(cv_scores_lgb_dart))
-
-# print("CV AUC scores: ", cv_scores_lgb_rf)
-# print("Mean CV AUC score: ", np.mean(cv_scores_lgb_rf))
-
-# ======================================== 训练3树模型 =====================================
-
-# ======================================== 推理验证 =====================================
-# fitted_models_cat1 = []
-# fitted_models_lgb1 = []
-
-# fitted_models_cat2 = []
-# fitted_models_lgb2 = []
-
-# fitted_models_cat3 = []
-# fitted_models_lgb3 = []
-
-# for fold in range(1,6):
-#     clf = CatBoostClassifier() 
-#     clf.load_model(f"/home/xyli/kaggle/kaggle_HomeCredit/dataset9/catboost_fold{fold}.cbm")
-#     fitted_models_cat1.append(clf)
-    
-#     model = lgb.LGBMClassifier()
-#     model = lgb.Booster(model_file=f"/home/xyli/kaggle/kaggle_HomeCredit/dataset8/lgbm_fold{fold}.txt")
-#     fitted_models_lgb1.append(model)
-    
-#     clf2 = CatBoostClassifier()
-#     clf2.load_model(f"/home/xyli/kaggle/kaggle_HomeCredit/dataset5/catboost_fold{fold}.cbm")
-#     fitted_models_cat2.append(clf2) 
-    
-#     model2 = lgb.LGBMClassifier()
-#     model2 = lgb.Booster(model_file=f"/home/xyli/kaggle/kaggle_HomeCredit/dataset4/lgbm_fold{fold}.txt")
-#     fitted_models_lgb2.append(model2)
-
-#     clf3 = CatBoostClassifier()
-#     clf3.load_model(f"/home/xyli/kaggle/kaggle_HomeCredit/dataset18/catboost_fold{fold}.cbm")
-#     fitted_models_cat3.append(clf3) 
-    
-#     model3 = lgb.LGBMClassifier()
-#     model3 = lgb.Booster(model_file=f"/home/xyli/kaggle/kaggle_HomeCredit/dataset18/lgbm_fold{fold}.txt")
-#     fitted_models_lgb3.append(model3)
-
-
-# class VotingModel(BaseEstimator, RegressorMixin):
-#     def __init__(self, estimators):
-#         super().__init__()
-#         self.estimators = estimators
-        
-#     def fit(self, X, y=None):
-#         return self
-
-#     def predict_proba(self, X, fold):
-#         fold = fold -1
-#         y_preds = []
-
-#         # from IPython import embed
-#         # embed()
-
-#         X[cat_cols] = X[cat_cols].astype("str")
-#         # y_preds += [estimator.predict_proba(X[df_train_829])[:, 1] for estimator in [self.estimators[0+fold]]]
-#         # y_preds += [estimator.predict_proba(X[df_train_386])[:, 1] for estimator in [self.estimators[5+fold]]]
-#         y_preds += [estimator.predict_proba(X[df_train])[:, 1] for estimator in [self.estimators[10+fold]]]
-        
-#         X[cat_cols] = X[cat_cols].astype("category")
-#         # y_preds += [estimator.predict(X[df_train_829]) for estimator in [self.estimators[15+fold]]]
-#         # y_preds += [estimator.predict(X[df_train_386]) for estimator in [self.estimators[20+fold]]]
-#         y_preds += [estimator.predict(X[df_train]) for estimator in [self.estimators[25+fold]]]
-
-#         return np.mean(y_preds, axis=0)
-
-# model = VotingModel(fitted_models_cat1 + fitted_models_cat2 +fitted_models_cat3+ fitted_models_lgb1 + fitted_models_lgb2+fitted_models_lgb3)
-
+# print(df_train.head())
 
 # fold = 1
 # for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环5次
@@ -1208,11 +970,248 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
 #     X_train, y_train = df_train.iloc[idx_train], y.iloc[idx_train] 
 #     X_valid, y_valid = df_train.iloc[idx_valid], y.iloc[idx_valid]    
     
-#     valid_preds = model.predict_proba(X_valid, fold) 
-#     valid_score = roc_auc_score(y_valid, valid_preds)
-#     print(f'fold:{fold} valid_score: ', valid_score)
+
+#     # ===============================
+#     X_train[cat_cols] = X_train[cat_cols].astype("category")
+#     X_valid[cat_cols] = X_valid[cat_cols].astype("category")
+
+#     params = {
+#         "boosting_type": "gbdt",
+#         "colsample_bynode": 0.8,
+#         "colsample_bytree": 0.8,
+#         "device": device,
+#         "extra_trees": True,
+#         "learning_rate": 0.05,
+#         "l1_regularization": 0.1,
+#         "l2_regularization": 10,
+#         "max_depth": 20,
+#         "metric": "auc",
+#         "n_estimators": 2000,
+#         "num_leaves": 64,
+#         "objective": "binary",
+#         "random_state": 42,
+#         "verbose": -1,
+#     }
+#     # params = {
+#     #     "boosting_type": "gbdt",
+#     #     "objective": "binary",
+#     #     "metric": "auc",
+#     #     "max_depth": 10,  
+#     #     "learning_rate": 0.05,
+#     #     "n_estimators": 2000,  
+#     #     # 则每棵树在构建时会随机选择 80% 的特征进行训练，剩下的 20% 特征将不参与训练，从而增加模型的泛化能力和稳定性
+#     #     "colsample_bytree": 0.8, 
+#     #     "colsample_bynode": 0.8, # 控制每个节点的特征采样比例
+#     #     "verbose": -1,
+#     #     "random_state": 42,
+#     #     "reg_alpha": 0.1,
+#     #     "reg_lambda": 10,
+#     #     "extra_trees":True,
+#     #     'num_leaves':64,
+#     #     "device": 'gpu', # gpu
+#     #     'gpu_use_dp' : True, # 转化float为64精度
+
+#     #     # # 平衡类别之间的权重  损失函数不会因为样本不平衡而被“推向”样本量偏少的类别中
+#     #     # "sample_weight":'balanced',
+#     # }
+
+#     # 一次训练
+#     model = lgb.LGBMClassifier(**params)
+#     model.fit(
+#         X_train, y_train,
+#         eval_set = [(X_valid, y_valid)],
+#         callbacks = [lgb.log_evaluation(200), lgb.early_stopping(100)],
+#         # init_model = f"/home/xyli/kaggle/kaggle_HomeCredit/dataset/lgbm_fold{fold}.txt",
+#     )
+#     model.booster_.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/lgbm_fold{fold}.txt')
+#     model2 = model
+
+#     # # 二次优化
+#     # params['learning_rate'] = 0.01
+#     # model2 = lgb.LGBMClassifier(**params)
+#     # model2.fit(
+#     #     X_train, y_train,
+#     #     eval_set = [(X_valid, y_valid)],
+#     #     callbacks = [lgb.log_evaluation(200), lgb.early_stopping(200)],
+#     #     init_model = f"/home/xyli/kaggle/kaggle_HomeCredit/dataset8/lgbm_fold{fold}.txt",
+#     # )
+#     # model2.booster_.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/lgbm_fold{fold}.txt')
+    
+
+#     fitted_models_lgb.append(model2)
+#     y_pred_valid = model2.predict_proba(X_valid)[:,1]
+#     auc_score = roc_auc_score(y_valid, y_pred_valid)
+#     print('auc_score: ', auc_score)
+#     cv_scores_lgb.append(auc_score)
+#     print()
+#     print("分隔符")
+#     print()
+#     # ===========================
+
+
+#     # ======================================
+#     # train_pool = Pool(X_train, y_train,cat_features=cat_cols)
+#     # val_pool = Pool(X_valid, y_valid,cat_features=cat_cols)
+    
+# # #     train_pool = Pool(X_train, y_train)
+# # #     val_pool = Pool(X_valid, y_valid)
+     
+
+#     # clf = CatBoostClassifier( 
+#     #     best_model_min_trees = 1000,
+#     #     boosting_type = "Plain",
+#     #     eval_metric = "AUC",
+#     #     iterations = 6000,
+#     #     learning_rate = 0.05,
+#     #     l2_leaf_reg = 10,
+#     #     max_leaves = 64,
+#     #     random_seed = 42,
+#     #     task_type = "GPU",
+#     #     use_best_model = True
+#     # ) 
+
+# #     clf = CatBoostClassifier(
+# #         eval_metric='AUC',
+# #         task_type='GPU',
+# #         learning_rate=0.03, # 0.03
+# #         iterations=6000, # n_est
+# # #         early_stopping_rounds = 500,
+# #     )
+# #     # clf = CatBoostClassifier(
+# #     #     eval_metric='AUC',
+# #     #     task_type='GPU',
+# #     #     learning_rate=0.05, # 0.03
+# #     #     # iterations=n_est, # n_est iterations与n_estimators二者只能有一
+# #     #     grow_policy = 'Lossguide',
+# #     #     max_depth = 10,
+# #     #     n_estimators = 2000,   
+# #     #     reg_lambda = 10,
+# #     #     num_leaves = 64,
+# #     #     early_stopping_rounds = 100,
+# #     # )
+
+# #     random_seed=3107
+# #     clf.fit(
+# #         train_pool, 
+# #         eval_set=val_pool,
+# #         verbose=300,
+# # #         # 保证调试的时候不需要重新训练
+# # #         save_snapshot = True, 
+# # #         snapshot_file = '/kaggle/working/catboost.cbsnapshot',
+# # #         snapshot_interval = 10
+# #     )
+# #     clf.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/catboost_fold{fold}.cbm')
+# #     fitted_models_cat.append(clf)
+# #     y_pred_valid = clf.predict_proba(X_valid)[:,1]
+# #     auc_score = roc_auc_score(y_valid, y_pred_valid)
+# #     print('auc_score: ', auc_score)
+# #     cv_scores_cat.append(auc_score)
+    
+#     # =================================
 
 #     fold = fold+1
+
+# # print("CV AUC scores: ", cv_scores_cat)
+# # print("Mean CV AUC score: ", np.mean(cv_scores_cat))
+
+# # print("CV AUC scores: ", cv_scores_lgb)
+# # print("Mean CV AUC score: ", np.mean(cv_scores_lgb))
+
+# # print("CV AUC scores: ", cv_scores_xgb)
+# # print("Mean CV AUC score: ", np.mean(cv_scores_xgb))
+
+# # print("CV AUC scores: ", cv_scores_cat_dw)
+# # print("Mean CV AUC score: ", np.mean(cv_scores_cat_dw))
+
+# # print("CV AUC scores: ", cv_scores_cat_lg)
+# # print("Mean CV AUC score: ", np.mean(cv_scores_cat_lg))
+
+# # print("CV AUC scores: ", cv_scores_lgb_dart)
+# # print("Mean CV AUC score: ", np.mean(cv_scores_lgb_dart))
+
+# # print("CV AUC scores: ", cv_scores_lgb_rf)
+# # print("Mean CV AUC score: ", np.mean(cv_scores_lgb_rf))
+
+# ======================================== 训练3树模型 =====================================
+
+# ======================================== 推理验证 =====================================
+fitted_models_cat1 = []
+fitted_models_lgb1 = []
+
+fitted_models_cat2 = []
+fitted_models_lgb2 = []
+
+fitted_models_cat3 = []
+fitted_models_lgb3 = []
+
+for fold in range(1,6):
+    clf = CatBoostClassifier() 
+    clf.load_model(f"/home/xyli/kaggle/kaggle_HomeCredit/dataset9/catboost_fold{fold}.cbm")
+    fitted_models_cat1.append(clf)
+    
+    model = lgb.LGBMClassifier()
+    model = lgb.Booster(model_file=f"/home/xyli/kaggle/kaggle_HomeCredit/dataset8/lgbm_fold{fold}.txt")
+    fitted_models_lgb1.append(model)
+    
+    clf2 = CatBoostClassifier()
+    clf2.load_model(f"/home/xyli/kaggle/kaggle_HomeCredit/dataset5/catboost_fold{fold}.cbm")
+    fitted_models_cat2.append(clf2) 
+    
+    model2 = lgb.LGBMClassifier()
+    model2 = lgb.Booster(model_file=f"/home/xyli/kaggle/kaggle_HomeCredit/dataset4/lgbm_fold{fold}.txt")
+    fitted_models_lgb2.append(model2)
+
+    clf3 = CatBoostClassifier()
+    clf3.load_model(f"/home/xyli/kaggle/kaggle_HomeCredit/dataset18/catboost_fold{fold}.cbm")
+    fitted_models_cat3.append(clf3) 
+    
+    model3 = lgb.LGBMClassifier()
+    model3 = lgb.Booster(model_file=f"/home/xyli/kaggle/kaggle_HomeCredit/lgbm_fold{fold}.txt")
+    fitted_models_lgb3.append(model3)
+
+
+class VotingModel(BaseEstimator, RegressorMixin):
+    def __init__(self, estimators):
+        super().__init__()
+        self.estimators = estimators
+        
+    def fit(self, X, y=None):
+        return self
+
+    def predict_proba(self, X, fold):
+        fold = fold -1
+        y_preds = []
+
+        # from IPython import embed
+        # embed()
+
+        X[cat_cols] = X[cat_cols].astype("str")
+        y_preds += [estimator.predict_proba(X[df_train_829])[:, 1] for estimator in [self.estimators[0+fold]]]
+        y_preds += [estimator.predict_proba(X[df_train_386])[:, 1] for estimator in [self.estimators[5+fold]]]
+        # y_preds += [estimator.predict_proba(X[df_train])[:, 1] for estimator in [self.estimators[10+fold]]]
+        
+        X[cat_cols] = X[cat_cols].astype("category")
+        y_preds += [estimator.predict(X[df_train_829]) for estimator in [self.estimators[15+fold]]]
+        y_preds += [estimator.predict(X[df_train_386]) for estimator in [self.estimators[20+fold]]]
+        # y_preds += [estimator.predict(X[df_train]) for estimator in [self.estimators[25+fold]]]
+
+        return np.mean(y_preds, axis=0)
+
+model = VotingModel(fitted_models_cat1 + fitted_models_cat2 +fitted_models_cat3+ fitted_models_lgb1 + fitted_models_lgb2+fitted_models_lgb3)
+
+
+fold = 1
+for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环5次
+
+    # X_train(≈40000,386), y_train(≈40000)
+    X_train, y_train = df_train.iloc[idx_train], y.iloc[idx_train] 
+    X_valid, y_valid = df_train.iloc[idx_valid], y.iloc[idx_valid]    
+    
+    valid_preds = model.predict_proba(X_valid, fold) 
+    valid_score = roc_auc_score(y_valid, valid_preds)
+    print(f'fold:{fold} valid_score: ', valid_score)
+
+    fold = fold+1
 
 # ======================================== 推理验证 =====================================
 
