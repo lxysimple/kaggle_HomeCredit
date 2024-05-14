@@ -756,8 +756,12 @@ print('读取数据完毕！')
 df_train = feature_eng(**data_store)
 # df_train = df_train.pipe(Pipeline.filter_cols)
 df_train = df_train.select().pipe(Pipeline.filter_cols)
+<<<<<<< HEAD
+df_train, cat_cols = to_pandas(df_train)
+=======
 # df_train, cat_cols = to_pandas(df_train)
 df_train, cat_cols = to_pandas(df_train.collect())
+>>>>>>> d7fcf69eb65402a78ea2357ec168097274b226a4
 df_train = Utility.reduce_memory_usage(df_train, "df_train")
 
 print("train data shape:\t", df_train.shape)
