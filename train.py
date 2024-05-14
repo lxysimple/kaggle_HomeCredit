@@ -160,7 +160,7 @@ def filter_cols(df: pl.DataFrame) -> pl.DataFrame:
             null_pct = df[col].is_null().mean()
 
             # if null_pct > 0.95:
-            if null_pct > 0.7: # 兼容0.592版本的
+            if null_pct == 1: # 兼容0.592版本的
                 df = df.drop(col)
 
     for col in df.columns:
