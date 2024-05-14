@@ -749,7 +749,7 @@ print('读取数据完毕！')
 #     # .pipe(Utility.reduce_memory_usage, "df_train")
 # )
 df_train: pl.LazyFrame = (
-    feature_eng(**data_store) # 这里已经有reduce_memory_usage了
+    feature_eng(**data_store)
     .pipe(Pipeline.filter_cols)
     .pipe(Pipeline.handle_dates)
 )
