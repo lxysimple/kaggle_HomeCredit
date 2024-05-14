@@ -1204,7 +1204,25 @@ class VotingModel(BaseEstimator, RegressorMixin):
         y_preds += [estimator.predict(X_scan[df_train]) for estimator in [self.estimators[25+fold]]]
 
         return np.mean(y_preds, axis=0)
+    
+    def predict_proba_scan(self, X, fold):
+        fold = fold -1
+        y_preds = []
 
+        # from IPython import embed
+        # embed()
+
+        # X[cat_cols] = X[cat_cols].astype("str")
+        # y_preds += [estimator.predict_proba(X[df_train_829])[:, 1] for estimator in [self.estimators[0+fold]]]
+        # y_preds += [estimator.predict_proba(X[df_train_386])[:, 1] for estimator in [self.estimators[5+fold]]]
+        # y_preds += [estimator.predict_proba(X[df_train])[:, 1] for estimator in [self.estimators[10+fold]]]
+        
+        X[cat_cols] = X[cat_cols].astype("category")
+        # y_preds += [estimator.predict(X[df_train_829]) for estimator in [self.estimators[15+fold]]]
+        # y_preds += [estimator.predict(X[df_train_386]) for estimator in [self.estimators[20+fold]]]
+        y_preds += [estimator.predict(X_scan[df_train]) for estimator in [self.estimators[25+fold]]]
+
+        return np.mean(y_preds, axis=0)
 
 
 model = VotingModel(fitted_models_cat1 + fitted_models_cat2 +fitted_models_cat3+ fitted_models_lgb1 + fitted_models_lgb2+fitted_models_lgb3)
@@ -1230,8 +1248,10 @@ for  df_train_idx, df_train_scan_idx in zip(cv.split(df_train, y, groups=weeks),
     X_train_scan, y_train_scan = df_train_scan.iloc[idx_train_scan], y_scan.iloc[idx_train_scan] 
     X_valid_scan, y_valid_scan = df_train_scan.iloc[idx_valid_scan], y_scan.iloc[idx_valid_scan]       
     
-    valid_preds = model.predict_proba(X_valid, fold) 
-    valid_score = roc_auc_score(y_valid, valid_preds)
+    valid_preds = model.predict_proba_scan(X_valid_scan, fold)   
+    valid_score = roc_auc_score(y_valid_scan, valid_preds)
+
+
     avg_score = avg_score + valid_score
     print(f'fold:{fold} valid_score: ', valid_score)
 
