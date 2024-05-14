@@ -867,7 +867,7 @@ print('读取数据完毕！')
 
 
 df_train_scan: pl.LazyFrame = (
-    SchemaGen.join_dataframes(**data_store) # 这里已经有reduce_memory_usage了
+    SchemaGen.join_dataframes(**data_store)
     .pipe(filter_cols)
     .pipe(transform_cols) # 兼容0.592
     .pipe(handle_dates)
