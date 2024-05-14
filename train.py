@@ -714,7 +714,7 @@ print('开始读取数据!')
 
 
 
-data_store_scan:dict = {
+data_store:dict = {
     'df_base': SchemaGen.scan_files(TRAIN_DIR / 'train_base.parquet'),
     'depth_0': [
         SchemaGen.scan_files(TRAIN_DIR / 'train_static_cb_0.parquet'),
@@ -746,7 +746,7 @@ print('读取数据完毕！')
 
 df_train_scan: pl.LazyFrame = (
     # 额外增加了 829+386 的两个外部数据文件
-    SchemaGen.join_dataframes(**data_store_scan) # 这里已经有reduce_memory_usage了
+    SchemaGen.join_dataframes(**data_store) # 这里已经有reduce_memory_usage了
     .pipe(filter_cols) # 额外增加了2个特征列
     # .pipe(transform_cols) # 兼容0.592
     .pipe(handle_dates)
