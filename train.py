@@ -91,16 +91,7 @@ class Pipeline:
         df = df.drop("date_decision", "MONTH")
         return df
 
-    def handle_dates(df:pl.DataFrame) -> pl.DataFrame:
-        for col in df.columns:  
-            if col.endswith('D'):
-                df = df.with_columns(pl.col(col) - pl.col('date_decision'))
-                df = df.with_columns(pl.col(col).dt.total_days().cast(pl.Int32))
-
-        df = df.with_columns([pl.col('date_decision').dt.year().alias('year').cast(pl.Int16), pl.col('date_decision').dt.month().alias('month').cast(pl.UInt8), pl.col('date_decision').dt.weekday().alias('week_num').cast(pl.UInt8)])
-
-        return df.drop('date_decision', 'MONTH', 'WEEK_NUM')
-        # return df.drop('date_decision', 'MONTH')
+    
 
     def filter_cols2(df):
         for col in df.columns:
@@ -123,25 +114,117 @@ class Pipeline:
         
         return df
     
-    def filter_cols(df:pd.DataFrame) -> pd.DataFrame:
+def handle_dates(df: pl.DataFrame) -> pl.DataFrame:
+        """
+        Handles date columns in the DataFrame.
+
+        Args:
+        - df (pl.DataFrame): Input DataFrame.
+
+        Returns:
+        - pl.DataFrame: DataFrame with transformed date columns.
+        """
         for col in df.columns:
-            if col not in ['case_id', 'year', 'month', 'week_num', 'target']:
-                null_pct = df[col].is_null().mean()
+            if col.endswith("D"):
+                df = df.with_columns(pl.col(col) - pl.col("date_decision"))
+                df = df.with_columns(pl.col(col).dt.total_days().cast(pl.Int32))
 
-                # if null_pct > 0.7:
-                if null_pct > 0.95:
-                # if null_pct == 1: # 839
-                    df = df.drop(col)
+        df = df.rename(
+            {
+                "MONTH": "month",
+                "WEEK_NUM": "week_num"
+            }
+        )
+                
+        df = df.with_columns(
+            [
+                pl.col("date_decision").dt.year().alias("year").cast(pl.Int16),
+                pl.col("date_decision").dt.day().alias("day").cast(pl.UInt8),
+            ]
+        )
 
-        for col in df.columns:
-            if (col not in ['case_id', 'year', 'month', 'week_num', 'target']) & (df[col].dtype == pl.String):
-                freq = df[col].n_unique()
+        return df.drop("date_decision")
 
-                if (freq > 200) | (freq == 1):
-                    df = df.drop(col)
+def filter_cols(df: pl.DataFrame) -> pl.DataFrame:
+    """
+    Filters columns in the DataFrame based on null percentage and unique values for string columns.
 
-        return df
+    Args:
+    - df (pl.DataFrame): Input DataFrame.
 
+    Returns:
+    - pl.DataFrame: DataFrame with filtered columns.
+    """
+    for col in df.columns:
+        if col not in ["case_id", "year", "month", "week_num", "target"]:
+            null_pct = df[col].is_null().mean()
+
+            if null_pct > 0.95:
+                df = df.drop(col)
+
+    for col in df.columns:
+        if (col not in ["case_id", "year", "month", "week_num", "target"]) & (
+            df[col].dtype == pl.String
+        ):
+            freq = df[col].n_unique()
+
+            if (freq > 200) | (freq == 1):
+                df = df.drop(col)
+
+    return df
+
+def transform_cols(df: pl.DataFrame) -> pl.DataFrame:
+    """
+    Transforms columns in the DataFrame according to predefined rules.
+
+    Args:
+    - df (pl.DataFrame): Input DataFrame.
+
+    Returns:
+    - pl.DataFrame: DataFrame with transformed columns.
+    """
+    if "riskassesment_302T" in df.columns:
+        if df["riskassesment_302T"].dtype == pl.Null:
+            df = df.with_columns(
+                [
+                    pl.Series(
+                        "riskassesment_302T_rng", df["riskassesment_302T"], pl.UInt8
+                    ),
+                    pl.Series(
+                        "riskassesment_302T_mean", df["riskassesment_302T"], pl.UInt8
+                    ),
+                ]
+            )
+        else:
+            pct_low: pl.Series = (
+                df["riskassesment_302T"]
+                .str.split(" - ")
+                .apply(lambda x: x[0].replace("%", ""))
+                .cast(pl.UInt8)
+            )
+            pct_high: pl.Series = (
+                df["riskassesment_302T"]
+                .str.split(" - ")
+                .apply(lambda x: x[1].replace("%", ""))
+                .cast(pl.UInt8)
+            )
+
+            diff: pl.Series = pct_high - pct_low
+            avg: pl.Series = ((pct_low + pct_high) / 2).cast(pl.Float32)
+
+            del pct_high, pct_low
+            gc.collect()
+
+            df = df.with_columns(
+                [
+                    diff.alias("riskassesment_302T_rng"),
+                    avg.alias("riskassesment_302T_mean"),
+                ]
+            )
+
+        df.drop("riskassesment_302T")
+
+    return df
     
 class Aggregator:
     #Please add or subtract features yourself, be aware that too many features will take up too much space.
@@ -380,96 +463,119 @@ TEST_DIR        = ROOT / "parquet_files" / "test"
 
 print('开始读取数据!')
 
-data_store = {
-    "df_base": read_file(TRAIN_DIR / "train_base.parquet"),
-    "depth_0": [
-        read_file(TRAIN_DIR / "train_static_cb_0.parquet"),
-        read_files(TRAIN_DIR / "train_static_0_*.parquet"),
-    ],
-    "depth_1": [
-        read_files(TRAIN_DIR / "train_applprev_1_*.parquet", 1),
-        read_file(TRAIN_DIR / "train_tax_registry_a_1.parquet", 1),
-        read_file(TRAIN_DIR / "train_tax_registry_b_1.parquet", 1),
-        read_file(TRAIN_DIR / "train_tax_registry_c_1.parquet", 1),
-        read_files(TRAIN_DIR / "train_credit_bureau_a_1_*.parquet", 1),
-        read_file(TRAIN_DIR / "train_credit_bureau_b_1.parquet", 1),
-        read_file(TRAIN_DIR / "train_other_1.parquet", 1),
-        read_file(TRAIN_DIR / "train_person_1.parquet", 1),
-        read_file(TRAIN_DIR / "train_deposit_1.parquet", 1),
-        read_file(TRAIN_DIR / "train_debitcard_1.parquet", 1),
-    ],
-    "depth_2": [
-        read_file(TRAIN_DIR / "train_credit_bureau_b_2.parquet", 2),
-        read_files(TRAIN_DIR / "train_credit_bureau_a_2_*.parquet", 2),
+# data_store = {
+#     "df_base": read_file(TRAIN_DIR / "train_base.parquet"),
+#     "depth_0": [
+#         read_file(TRAIN_DIR / "train_static_cb_0.parquet"),
+#         read_files(TRAIN_DIR / "train_static_0_*.parquet"),
+#     ],
+#     "depth_1": [
+#         read_files(TRAIN_DIR / "train_applprev_1_*.parquet", 1),
+#         read_file(TRAIN_DIR / "train_tax_registry_a_1.parquet", 1),
+#         read_file(TRAIN_DIR / "train_tax_registry_b_1.parquet", 1),
+#         read_file(TRAIN_DIR / "train_tax_registry_c_1.parquet", 1),
+#         read_files(TRAIN_DIR / "train_credit_bureau_a_1_*.parquet", 1),
+#         read_file(TRAIN_DIR / "train_credit_bureau_b_1.parquet", 1),
+#         read_file(TRAIN_DIR / "train_other_1.parquet", 1),
+#         read_file(TRAIN_DIR / "train_person_1.parquet", 1),
+#         read_file(TRAIN_DIR / "train_deposit_1.parquet", 1),
+#         read_file(TRAIN_DIR / "train_debitcard_1.parquet", 1),
+#     ],
+#     "depth_2": [
+#         read_file(TRAIN_DIR / "train_credit_bureau_b_2.parquet", 2),
+#         read_files(TRAIN_DIR / "train_credit_bureau_a_2_*.parquet", 2),
 
-        # 829+386
-        read_file(TRAIN_DIR / "train_applprev_2.parquet", 2),
-        read_file(TRAIN_DIR / "train_person_2.parquet", 2)
-    ]
-}
+#         # 829+386
+#         read_file(TRAIN_DIR / "train_applprev_2.parquet", 2),
+#         read_file(TRAIN_DIR / "train_person_2.parquet", 2)
+#     ]
+# }
 
 class SchemaGen:
     @staticmethod
-    def change_dtypes(df:pl.LazyFrame) -> pl.LazyFrame:
-        for col in df.columns:
-            if col == 'case_id':
-                df = df.with_columns(pl.col(col).cast(pl.UInt32).alias(col))
-            elif col in ['WEEK_NUM', 'num_group1', 'num_group2']:
-                df = df.with_columns(pl.col(col).cast(pl.UInt16).alias(col))
-            elif col == 'date_decision' or col[-1] == 'D':
-                df = df.with_columns(pl.col(col).cast(pl.Date).alias(col))
-            elif col[-1] in ['P', 'A']:
-                df = df.with_columns(pl.col(col).cast(pl.Float64).alias(col))
-            elif col[-1] in ('M',):
-                    df = df.with_columns(pl.col(col).cast(pl.String));
-        return df
+    def change_dtypes(df: pl.LazyFrame) -> pl.LazyFrame:
+        """
+        Changes the data types of columns in the DataFrame.
 
+        Args:
+        - df (pl.LazyFrame): Input LazyFrame.
+
+        Returns:
+        - pl.LazyFrame: LazyFrame with modified data types.
+        """
+        for col in df.columns:
+            if col == "case_id":
+                df = df.with_columns(pl.col(col).cast(pl.UInt32).alias(col))
+            elif col in ["WEEK_NUM", "num_group1", "num_group2"]:
+                df = df.with_columns(pl.col(col).cast(pl.UInt16).alias(col))
+            elif col == "date_decision" or col[-1] == "D":
+                df = df.with_columns(pl.col(col).cast(pl.Date).alias(col))
+            elif col[-1] in ["P", "A"]:
+                df = df.with_columns(pl.col(col).cast(pl.Float64).alias(col))
+            elif col[-1] in ("M",):
+                df = df.with_columns(pl.col(col).cast(pl.String))
+        return df
 
     @staticmethod
     def scan_files(glob_path: str, depth: int = None) -> pl.LazyFrame:
+        """
+        Scans Parquet files matching the glob pattern and combines them into a LazyFrame.
+
+        Args:
+        - glob_path (str): Glob pattern to match Parquet files.
+        - depth (int, optional): Depth level for data aggregation. Defaults to None.
+
+        Returns:
+        - pl.LazyFrame: Combined LazyFrame.
+        """
         chunks: list[pl.LazyFrame] = []
         for path in glob(str(glob_path)):
-            # 增加low_memory=True + rechunk=True 将会导致一些数据被局部打乱
-            # 导致一些高质量数据被分配在5w个中
-            # 使得数据分布更加均匀
-            df: pl.LazyFrame = pl.scan_parquet(path, low_memory=True, rechunk=True).pipe(SchemaGen.change_dtypes)
-            print(f'File {Path(path).stem} loaded into memory.')
-            
+            df: pl.LazyFrame = pl.scan_parquet(
+                path, low_memory=True, rechunk=True
+            ).pipe(SchemaGen.change_dtypes)
+            print(f"File {Path(path).stem} loaded into memory.")
+
             if depth in (1, 2):
                 exprs: list[pl.Series] = Aggregator.get_exprs(df)
-                df = df.group_by('case_id').agg(exprs)
+                df = df.group_by("case_id").agg(exprs)
 
                 del exprs
                 gc.collect()
-                
+
             chunks.append(df)
 
-        df: pl.LazyFrame = pl.concat(chunks, how='vertical_relaxed')
-        
+        df = pl.concat(chunks, how="vertical_relaxed")
+
         del chunks
         gc.collect()
-                
-        df = df.unique(subset=['case_id'])
-    
+
+        df = df.unique(subset=["case_id"])
+
         return df
-    
-    
+
     @staticmethod
-    def join_dataframes(df_base: pl.LazyFrame, depth_0: list[pl.LazyFrame], depth_1: list[pl.LazyFrame], depth_2: list[pl.LazyFrame]) -> pl.DataFrame:
+    def join_dataframes(
+        df_base: pl.LazyFrame,
+        depth_0: list[pl.LazyFrame],
+        depth_1: list[pl.LazyFrame],
+        depth_2: list[pl.LazyFrame],
+    ) -> pl.DataFrame:
+        """
+        Joins multiple LazyFrames with a base LazyFrame.
 
-        df_base = ( # 829+386
-            df_base
-            .with_columns(
-                month_decision = pl.col("date_decision").dt.month(),
-                weekday_decision = pl.col("date_decision").dt.weekday(),
-            )
-        )
+        Args:
+        - df_base (pl.LazyFrame): Base LazyFrame.
+        - depth_0 (list[pl.LazyFrame]): List of LazyFrames for depth 0.
+        - depth_1 (list[pl.LazyFrame]): List of LazyFrames for depth 1.
+        - depth_2 (list[pl.LazyFrame]): List of LazyFrames for depth 2.
 
+        Returns:
+        - pl.DataFrame: Joined DataFrame.
+        """
+        for i, df in enumerate(depth_0 + depth_1 + depth_2):
+            df_base = df_base.join(df, how="left", on="case_id", suffix=f"_{i}")
 
-        for (i, df) in enumerate(depth_0 + depth_1 + depth_2):
-            df_base = df_base.join(df, how='left', on='case_id', suffix=f'_{i}')
-
-        return df_base.collect()
+        return df_base.collect().pipe(Utility.reduce_memory_usage, "df_train")
 
 class Utility:
     
@@ -555,9 +661,18 @@ data_store:dict = {
 print('读取数据完毕！')
 
 
-df_train = feature_eng(**data_store)
-df_train:pl.LazyFrame = SchemaGen.join_dataframes(**data_store)\
-.pipe(Pipeline.filter_cols).pipe(Pipeline.handle_dates).pipe(Utility.reduce_memory_usage, 'df_train')
+df_train: pl.LazyFrame = (
+    SchemaGen.join_dataframes(**data_store)
+    .pipe(filter_cols)
+    .pipe(transform_cols)
+    .pipe(handle_dates)
+    # .pipe(Utility.reduce_memory_usage, "df_train")
+)
+
+
+# df_train = feature_eng(**data_store)
+# df_train:pl.LazyFrame = SchemaGen.join_dataframes(**data_store)\
+# .pipe(Pipeline.filter_cols).pipe(Pipeline.handle_dates).pipe(Utility.reduce_memory_usage, 'df_train')
 
 
 # print("train data shape:\t", df_train.shape)
@@ -569,7 +684,7 @@ gc.collect()
 # df_train = df_train.pipe(Pipeline.handle_dates)
 
 
-# print("train data shape:\t", df_train.shape)
+print("train data shape:\t", df_train.shape)
 df_train, cat_cols = to_pandas(df_train)
 
 # df_train = reduce_mem_usage(df_train)
