@@ -764,7 +764,7 @@ df_train = feature_eng(**data_store)
 df_train = df_train.pipe(Pipeline.filter_cols)
 df_train, cat_cols = to_pandas(df_train)
 df_train = reduce_mem_usage(df_train)
-
+df_train = Utility.reduce_memory_usage(df_train, "df_train")
 
 print("train data shape:\t", df_train.shape)
 
