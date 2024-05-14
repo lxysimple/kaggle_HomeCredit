@@ -745,7 +745,7 @@ df_train: pl.LazyFrame = (
     .pipe(filter_cols)
     # .pipe(transform_cols) # 兼容0.592
     .pipe(handle_dates)
-    .pipe(Utility.reduce_memory_usage, "df_train")
+    # .pipe(Utility.reduce_memory_usage, "df_train")
 )
 
 
