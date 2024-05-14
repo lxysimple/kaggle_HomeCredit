@@ -343,7 +343,7 @@ class Aggregator2:
         - list[pl.Series]: List of combined expressions.
         """
         exprs = (
-            Aggregator.max_expr(df) + Aggregator.mean_expr(df) + Aggregator.var_expr(df)
+            Aggregator2.max_expr(df) + Aggregator2.mean_expr(df) + Aggregator2.var_expr(df)
         )
 
         return exprs
