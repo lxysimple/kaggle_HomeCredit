@@ -1214,7 +1214,7 @@ avg_score = 0
 fold = 1
 for idx_train, idx_valid, idx_train_scan, idx_valid_scan in\
     [cv.split(df_train, y, groups=weeks)]+\
-    [cv.split(df_train_scan, y, groups=weeks_scan)]: # 5折，循环5次
+    [cv.split(df_train_scan, y, groups=weeks_scan)]: # 5折，循环5次  
 
     # X_train(≈40000,386), y_train(≈40000)
     X_train, y_train = df_train.iloc[idx_train], y.iloc[idx_train] 
