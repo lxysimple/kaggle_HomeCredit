@@ -114,7 +114,7 @@ class Pipeline:
         
         return df
     
-def handle_dates2(df: pl.DataFrame) -> pl.DataFrame:
+def handle_dates(df: pl.DataFrame) -> pl.DataFrame:
         """
         Handles date columns in the DataFrame.
 
