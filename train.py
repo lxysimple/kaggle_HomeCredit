@@ -754,8 +754,8 @@ print('读取数据完毕！')
 # df_train, cat_cols = Utility.to_pandas(df_train) # 这个是把字符串转化为str
 
 
-# df_train = SchemaGen.join_dataframes(**data_store)
-df_train = feature_eng(**data_store)
+df_train = SchemaGen.join_dataframes(**data_store)
+# df_train = feature_eng(**data_store)
 # df_train = df_train.pipe(Pipeline.filter_cols)
 df_train = df_train.pipe(filter_cols)
 df_train, cat_cols = to_pandas(df_train)    
