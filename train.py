@@ -767,7 +767,7 @@ print('读取数据完毕！')
 df_train = feature_eng(**data_store)
 df_train = df_train.pipe(Pipeline.filter_cols)
 df_train, cat_cols = to_pandas(df_train)
-df_train = reduce_mem_usage(df_train, 'df_train')
+df_train = reduce_mem_usage(df_train)
 
 
 
