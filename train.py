@@ -1206,6 +1206,7 @@ class VotingModel(BaseEstimator, RegressorMixin):
 model = VotingModel(fitted_models_cat1 + fitted_models_cat2 +fitted_models_cat3+ fitted_models_lgb1 + fitted_models_lgb2+fitted_models_lgb3)
 
 
+avg_score = 0
 fold = 1
 for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环5次
 
@@ -1215,10 +1216,11 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     
     valid_preds = model.predict_proba(X_valid, fold) 
     valid_score = roc_auc_score(y_valid, valid_preds)
+    avg_score = avg_score + valid_score
     print(f'fold:{fold} valid_score: ', valid_score)
 
     fold = fold+1
-
+print('avg_score: ', avg_score/5.0)  
 # ======================================== 推理验证 =====================================
 
 
