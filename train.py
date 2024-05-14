@@ -82,7 +82,7 @@ class Pipeline:
 
 
 
-    def handle_dates2(df):
+    def handle_dates(df):
         for col in df.columns:
             if col[-1] in ("D",):
                 # 可能默认替换表达式中第1个列名吧
@@ -113,8 +113,17 @@ class Pipeline:
                     df = df.drop(col)
         
         return df
+
+def handle_dates(df):
+    for col in df.columns:
+        if col[-1] in ("D",):
+            # 可能默认替换表达式中第1个列名吧
+            df = df.with_columns(pl.col(col) - pl.col("date_decision"))  #!!?
+            df = df.with_columns(pl.col(col).dt.total_days()) # t - t-1
+    df = df.drop("date_decision", "MONTH")
+    return df
     
-def handle_dates(df: pl.DataFrame) -> pl.DataFrame:
+def handle_dates2(df: pl.DataFrame) -> pl.DataFrame:
         """
         Handles date columns in the DataFrame.
 
