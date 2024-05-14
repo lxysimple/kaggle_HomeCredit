@@ -267,8 +267,8 @@ class Aggregator:
         # 0.755666 排列顺序
         # return  expr_max + expr_min + expr_last + expr_first + expr_count
 
-        return expr_mean # Mean AUC=0.741610 433
-        # return  expr_max # notebookv8
+        # return expr_mean # Mean AUC=0.741610 433
+        return  expr_min + expr_max # notebookv8
         # return  expr_max +expr_last # 829+386
         # return  expr_max +expr_last # 829+386+notebookv8
         # return  expr_max +expr_last+expr_mean+expr_min # 829+386+433
