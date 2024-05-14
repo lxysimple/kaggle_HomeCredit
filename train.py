@@ -82,7 +82,7 @@ class Pipeline:
 
 
 
-    def handle_dates(df):
+    def handle_dates2(df):
         for col in df.columns:
             if col[-1] in ("D",):
                 # 可能默认替换表达式中第1个列名吧
@@ -91,7 +91,7 @@ class Pipeline:
         df = df.drop("date_decision", "MONTH")
         return df
 
-    def handle_dates2(df:pl.DataFrame) -> pl.DataFrame:
+    def handle_dates(df:pl.DataFrame) -> pl.DataFrame:
         for col in df.columns:  
             if col.endswith('D'):
                 df = df.with_columns(pl.col(col) - pl.col('date_decision'))
