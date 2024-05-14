@@ -65,7 +65,7 @@ from functools import lru_cache
 
 
 class Pipeline:
-
+  
     def set_table_dtypes(df):
         for col in df.columns:
             if col in ["case_id", "WEEK_NUM", "num_group1", "num_group2"]:
@@ -494,9 +494,14 @@ class SchemaGen:
         """
         chunks: list[pl.LazyFrame] = []
         for path in glob(str(glob_path)):
+            # df: pl.LazyFrame = pl.scan_parquet(
+            #     path, low_memory=True, rechunk=True
+            # ).pipe(SchemaGen.change_dtypes)
+            
             df: pl.LazyFrame = pl.scan_parquet(
                 path, low_memory=True, rechunk=True
-            ).pipe(SchemaGen.change_dtypes)
+            ).pipe(Pipeline.set_table_dtypes)
+
             print(f"File {Path(path).stem} loaded into memory.")
 
             if depth in (1, 2):
