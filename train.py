@@ -671,15 +671,26 @@ class Utility:
 
 
 
-    def to_pandas(df:pl.DataFrame, cat_cols:list[str]=None) -> (pd.DataFrame, list[str]):
-        df:pd.DataFrame = df.to_pandas()
+    def to_pandas(df: pl.DataFrame, cat_cols: list[str] = None) -> (pd.DataFrame, list[str]):  # type: ignore
+        """
+        Converts a Polars DataFrame to a Pandas DataFrame.
+
+        Args:
+        - df (pl.DataFrame): Polars DataFrame to convert.
+        - cat_cols (list[str]): List of categorical columns. Default is None.
+
+        Returns:
+        - (pd.DataFrame, list[str]): Tuple containing the converted Pandas DataFrame and categorical columns.
+        """
+        df: pd.DataFrame = df.to_pandas()
 
         if cat_cols is None:
-            cat_cols = list(df.select_dtypes('object').columns)
+            cat_cols = list(df.select_dtypes("object").columns)
 
-        df[cat_cols] = df[cat_cols].astype('str')
+        df[cat_cols] = df[cat_cols].astype("str")
 
         return df, cat_cols
+
 
 
 data_store:dict = {
@@ -736,7 +747,8 @@ gc.collect()
 
 
 print("train data shape:\t", df_train.shape)
-df_train, cat_cols = to_pandas(df_train)
+# df_train, cat_cols = to_pandas(df_train)
+df_train, cat_cols = Utility.to_pandas(df_train)
 
 # df_train = reduce_mem_usage(df_train)
 # df_train, cat_cols = to_pandas(df_train)
