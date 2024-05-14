@@ -572,9 +572,10 @@ class SchemaGen:
         Returns:
         - pl.DataFrame: Joined DataFrame.
         """
-        
+
         # ===============================================================
-        df_base = ( # 为了兼容0.592的模型，我自己加上去的
+        """ 为了兼容0.592的模型，我自己加上去的 """
+        df_base = (
             df_base
             .with_columns(
                 month_decision = pl.col("date_decision").dt.month(),
