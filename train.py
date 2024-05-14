@@ -877,11 +877,11 @@ df_train_scan, cat_cols = Utility.to_pandas(df_train_scan) # 这个是把字符�
 print("train data shape:\t", df_train_scan.shape)
 df_train = df_train_scan
 
-# df_train = feature_eng(**data_store).collect()
-# df_train = df_train.pipe(Pipeline.filter_cols)
-# df_train, _ = to_pandas(df_train)    
-# df_train = Utility.reduce_memory_usage(df_train, "df_train")
-# print("train data shape:\t", df_train.shape)
+df_train = feature_eng(**data_store).collect()
+df_train = df_train.pipe(Pipeline.filter_cols)
+df_train, _ = to_pandas(df_train)    
+df_train = Utility.reduce_memory_usage(df_train, "df_train")
+print("train data shape:\t", df_train.shape)
 
 del data_store
 gc.collect()
@@ -1320,15 +1320,15 @@ class VotingModel(BaseEstimator, RegressorMixin):
         # from IPython import embed
         # embed()
 
-        # X[cat_cols] = X[cat_cols].astype("str")
-        # y_preds += [estimator.predict_proba(X[df_train_829])[:, 1] for estimator in [self.estimators[0+fold]]]
-        # y_preds += [estimator.predict_proba(X[df_train_386])[:, 1] for estimator in [self.estimators[5+fold]]]
+        X[cat_cols] = X[cat_cols].astype("str")
+        y_preds += [estimator.predict_proba(X[df_train_829])[:, 1] for estimator in [self.estimators[0+fold]]]
+        y_preds += [estimator.predict_proba(X[df_train_386])[:, 1] for estimator in [self.estimators[5+fold]]]
         # y_preds += [estimator.predict_proba(X[df_train])[:, 1] for estimator in [self.estimators[10+fold]]]
         
         X[cat_cols] = X[cat_cols].astype("category")
-        # y_preds += [estimator.predict(X[df_train_829]) for estimator in [self.estimators[15+fold]]]
-        # y_preds += [estimator.predict(X[df_train_386]) for estimator in [self.estimators[20+fold]]]
-        y_preds += [estimator.predict(X_scan[df_train]) for estimator in [self.estimators[25+fold]]]
+        y_preds += [estimator.predict(X[df_train_829]) for estimator in [self.estimators[15+fold]]]
+        y_preds += [estimator.predict(X[df_train_386]) for estimator in [self.estimators[20+fold]]]
+        # y_preds += [estimator.predict(X_scan[df_train]) for estimator in [self.estimators[25+fold]]]
 
         return np.mean(y_preds, axis=0)
     
@@ -1349,7 +1349,7 @@ class VotingModel(BaseEstimator, RegressorMixin):
         # y_preds += [estimator.predict(X[df_train_386]) for estimator in [self.estimators[20+fold]]]
         y_preds += [estimator.predict(X) for estimator in [self.estimators[25+fold]]]
 
-        return np.mean(y_preds, axis=0)
+        return y_preds
 
 
 model = VotingModel(fitted_models_cat1 + fitted_models_cat2 +fitted_models_cat3+ fitted_models_lgb1 + fitted_models_lgb2+fitted_models_lgb3)
@@ -1375,7 +1375,12 @@ for  df_train_idx, df_train_scan_idx in zip(cv.split(df_train, y, groups=weeks),
     X_train_scan, y_train_scan = df_train_scan.iloc[idx_train_scan], y_scan.iloc[idx_train_scan] 
     X_valid_scan, y_valid_scan = df_train_scan.iloc[idx_valid_scan], y_scan.iloc[idx_valid_scan]       
     
-    valid_preds = model.predict_proba_scan(X_valid_scan, fold)   
+    # valid_preds = model.predict_proba(X_valid, fold) 
+    # valid_preds = valid_preds + model.predict_proba_scan(X_valid_scan, fold)
+    # valid_preds = np.mean(valid_preds, axis=0)
+
+    print(X_valid_scan.shape)
+    valid_preds = model.predict_proba_scan(X_valid_scan, fold)
     valid_score = roc_auc_score(y_valid_scan, valid_preds)
 
 
