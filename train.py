@@ -550,11 +550,10 @@ class SchemaGen:
             df_base = df_base.join(df, how="left", on="case_id", suffix=f"_{i}")
 
         try: # 如果是lazyframe对象，则collect转化为dataframe
-            # return df_base.collect().pipe(Utility.reduce_memory_usage, "df_train")
-            return df_base.collect()
+            return df_base.collect().pipe(Utility.reduce_memory_usage, "df_train")
         except: # 如果是dataframe则无需转化
-            # return df_base.pipe(Utility.reduce_memory_usage, "df_train")
-            return df_base
+            return df_base.pipe(Utility.reduce_memory_usage, "df_train")
+
 
 class Utility:
     
