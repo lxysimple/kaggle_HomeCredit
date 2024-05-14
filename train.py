@@ -93,13 +93,13 @@ class Pipeline:
 
     
 
-    def filter_cols2(df):
+    def filter_cols(df):
         for col in df.columns:
             if col not in ["target", "case_id", "WEEK_NUM"]:
                 isnull = df[col].is_null().mean()
-                if isnull > 0.7:
+                # if isnull > 0.7:
 #                 if isnull > 0.9:
-                # if isnull == 1:
+                if isnull == 1:
 #                 if isnull > 0.99:
                     df = df.drop(col)
         
@@ -113,15 +113,6 @@ class Pipeline:
                     df = df.drop(col)
         
         return df
-
-def handle_dates(df):
-    for col in df.columns:
-        if col[-1] in ("D",):
-            # 可能默认替换表达式中第1个列名吧
-            df = df.with_columns(pl.col(col) - pl.col("date_decision"))  #!!?
-            df = df.with_columns(pl.col(col).dt.total_days()) # t - t-1
-    df = df.drop("date_decision", "MONTH")
-    return df
     
 def handle_dates2(df: pl.DataFrame) -> pl.DataFrame:
         """
