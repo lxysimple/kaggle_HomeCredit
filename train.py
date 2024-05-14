@@ -568,9 +568,9 @@ class Utility:
         Returns:
         - pl.DataFrame: Optimized DataFrame.
         """
-        print(
-            f"Memory usage of dataframe \"{name}\" is {round(df.estimated_size('mb'), 4)} MB."
-        )
+        # print(
+        #     f"Memory usage of dataframe \"{name}\" is {round(df.estimated_size('mb'), 4)} MB."
+        # )
 
         int_types = [
             pl.Int8,
@@ -641,9 +641,9 @@ class Utility:
                         ):
                             df = df.with_columns(df[col].cast(pl.Float32))
 
-        print(
-            f"Memory usage of dataframe \"{name}\" became {round(df.estimated_size('mb'), 4)} MB."
-        )
+        # print(
+        #     f"Memory usage of dataframe \"{name}\" became {round(df.estimated_size('mb'), 4)} MB."
+        # )
 
         return df
 
@@ -759,11 +759,11 @@ print('读取数据完毕！')
 # df_train, cat_cols = Utility.to_pandas(df_train) # 这个是把字符串转化为str
 
 
-
+# df_train = SchemaGen.join_dataframes(**data_store)
 df_train = feature_eng(**data_store)
 df_train = df_train.pipe(Pipeline.filter_cols)
-# df_train, cat_cols = to_pandas(df_train)
-df_train, cat_cols = Utility.to_pandas(df_train) # 这个是把字符串转化为str
+df_train, cat_cols = to_pandas(df_train)
+# df_train, cat_cols = Utility.to_pandas(df_train) # 这个是把字符串转化为str
 df_train = reduce_mem_usage(df_train)
 # df_train = Utility.reduce_memory_usage(df_train, "df_train")
 
