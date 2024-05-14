@@ -891,8 +891,8 @@ if False:
 print(device)
 
 y = df_train["target"]
-weeks = df_train["WEEK_NUM"]
-# weeks = df_train["week_num"]
+# weeks = df_train["WEEK_NUM"]
+weeks = df_train["week_num"]
 try:
     # df_train= df_train.drop(columns=["target", "case_id", "WEEK_NUM"])
     df_train= df_train.drop(columns=["target", "case_id"])
