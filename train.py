@@ -497,10 +497,10 @@ class SchemaGen:
             # df: pl.LazyFrame = pl.scan_parquet(
             #     path, low_memory=True, rechunk=True
             # ).pipe(SchemaGen.change_dtypes)
-            
+
             df: pl.LazyFrame = pl.scan_parquet(
-                path, low_memory=True, rechunk=True
-            ).pipe(Pipeline.set_table_dtypes)
+                path, rechunk=True
+            ).pipe(SchemaGen.change_dtypes)
 
             print(f"File {Path(path).stem} loaded into memory.")
 
