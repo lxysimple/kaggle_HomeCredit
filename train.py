@@ -1210,14 +1210,18 @@ class VotingModel(BaseEstimator, RegressorMixin):
 model = VotingModel(fitted_models_cat1 + fitted_models_cat2 +fitted_models_cat3+ fitted_models_lgb1 + fitted_models_lgb2+fitted_models_lgb3)
 
 
-from IPython import embed
+# from IPython import embed
 embed()
 
 avg_score = 0
 fold = 1
-for idx_train, idx_valid, idx_train_scan, idx_valid_scan in\
-    [cv.split(df_train, y, groups=weeks)]+\
-    [cv.split(df_train_scan, y, groups=weeks_scan)]: # 5折，循环5次  
+for  df_train_idx, df_train_scan_idx in zip(cv.split(df_train, y, groups=weeks), cv.split(df_train_scan, y, groups=weeks_scan)): # 5折，循环5次  
+
+    idx_train = df_train_idx[0]
+    idx_valid = df_train_idx[1]
+    idx_train_scan = df_train_scan_idx[0]
+    idx_valid_scan = df_train_scan_idx[1]
+
 
     # X_train(≈40000,386), y_train(≈40000)
     X_train, y_train = df_train.iloc[idx_train], y.iloc[idx_train] 
