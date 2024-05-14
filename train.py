@@ -572,7 +572,8 @@ class SchemaGen:
         Returns:
         - pl.DataFrame: Joined DataFrame.
         """
-
+        
+        # ===============================================================
         df_base = ( # 为了兼容0.592的模型，我自己加上去的
             df_base
             .with_columns(
@@ -580,7 +581,7 @@ class SchemaGen:
                 weekday_decision = pl.col("date_decision").dt.weekday(),
             )
         )
-
+        # ===============================================================
 
         for i, df in enumerate(depth_0 + depth_1 + depth_2):
             df_base = df_base.join(df, how="left", on="case_id", suffix=f"_{i}")
