@@ -758,7 +758,7 @@ df_train: pl.LazyFrame = (
 df_train, cat_cols = to_pandas(df_train) # 把字符串转化为category
 # df_train, cat_cols = Utility.to_pandas(df_train) # 这个是把字符串转化为str
 
-# print("train data shape:\t", df_train.shape)
+print("train data shape:\t", df_train.shape)
 
 del data_store
 gc.collect()
@@ -767,14 +767,14 @@ gc.collect()
 # df_train = df_train.pipe(Pipeline.handle_dates)
 
 
-print("train data shape:\t", df_train.shape)
+# print("train data shape:\t", df_train.shape)
 # df_train, cat_cols = to_pandas(df_train)
-df_train, cat_cols = Utility.to_pandas(df_train)
+# df_train, cat_cols = Utility.to_pandas(df_train)
 
 # df_train = reduce_mem_usage(df_train)
 # df_train, cat_cols = to_pandas(df_train)
 # df_train = reduce_mem_usage(df_train, 'df_train')
-print("train data shape:\t", df_train.shape)
+# print("train data shape:\t", df_train.shape)
 
 
 
