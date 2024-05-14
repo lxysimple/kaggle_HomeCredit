@@ -913,7 +913,11 @@ print(device)
 
 y = df_train["target"]
 # weeks = df_train["WEEK_NUM"]
-weeks = df_train["week_num"]
+try:
+    weeks = df_train["week_num"]
+except:
+    weeks = df_train["WEEK_NUM"] 
+
 try:
     # df_train= df_train.drop(columns=["target", "case_id", "WEEK_NUM"])
     df_train= df_train.drop(columns=["target", "case_id"])
