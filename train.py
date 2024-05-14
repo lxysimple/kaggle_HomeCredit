@@ -1210,6 +1210,9 @@ class VotingModel(BaseEstimator, RegressorMixin):
 model = VotingModel(fitted_models_cat1 + fitted_models_cat2 +fitted_models_cat3+ fitted_models_lgb1 + fitted_models_lgb2+fitted_models_lgb3)
 
 
+from IPython import embed
+embed()
+
 avg_score = 0
 fold = 1
 for idx_train, idx_valid, idx_train_scan, idx_valid_scan in\
