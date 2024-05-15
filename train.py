@@ -1339,12 +1339,12 @@ class VotingModel(BaseEstimator, RegressorMixin):
         # from IPython import embed
         # embed()
 
-        X[cat_cols] = X[cat_cols_470].astype("str")
+        # X[cat_cols] = X[cat_cols_470].astype("str")
         # y_preds += [estimator.predict_proba(X[df_train_829])[:, 1] for estimator in [self.estimators[0+fold]]]
         # y_preds += [estimator.predict_proba(X[df_train_386])[:, 1] for estimator in [self.estimators[5+fold]]]
         # y_preds += [estimator.predict_proba(X[df_train])[:, 1] for estimator in [self.estimators[10+fold]]]
         
-        # X[cat_cols] = X[cat_cols].astype("category")
+        X[cat_cols_470] = X[cat_cols_470].astype("category")
         # y_preds += [estimator.predict(X[df_train_829]) for estimator in [self.estimators[15+fold]]]
         # y_preds += [estimator.predict(X[df_train_386]) for estimator in [self.estimators[20+fold]]]
         y_preds += [estimator.predict(X[df_train_470]) for estimator in [self.estimators[25+fold]]]
@@ -1367,22 +1367,12 @@ for  df_train_idx, df_train_scan_idx in zip(cv.split(df_train, y, groups=weeks),
     idx_train_scan = df_train_scan_idx[0]
     idx_valid_scan = df_train_scan_idx[1]
 
-    print(len(idx_train))
-    print(len(idx_valid))
-    print(len(idx_train_scan))
-    print(len(idx_valid_scan))
-
     # X_train(≈40000,386), y_train(≈40000)
     X_train, y_train = df_train.iloc[idx_train], y.iloc[idx_train] 
     X_valid, y_valid = df_train.iloc[idx_valid], y.iloc[idx_valid] 
 
     X_train_scan, y_train_scan = df_train_scan.iloc[idx_train_scan], y_scan.iloc[idx_train_scan] 
     X_valid_scan, y_valid_scan = df_train_scan.iloc[idx_valid_scan], y_scan.iloc[idx_valid_scan]       
-    
-    print(len(X_train_scan))
-    print(len(y_train_scan))
-    print(len(X_valid_scan))
-    print(len(y_valid_scan))
 
     # valid_preds = model.predict_proba(X_valid, fold) 
     # valid_preds = valid_preds + model.predict_proba_scan(X_valid_scan, fold)
