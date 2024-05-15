@@ -1250,139 +1250,139 @@ print("Mean CV AUC score: ", np.mean(cv_scores_lgb_rf))
 # ======================================== 训练3树模型 =====================================
 
 # ======================================== 推理验证 =====================================
-# fitted_models_cat1 = []
-# fitted_models_lgb1 = []
+fitted_models_cat1 = []
+fitted_models_lgb1 = []
 
-# fitted_models_cat2 = []
-# fitted_models_lgb2 = []
+fitted_models_cat2 = []
+fitted_models_lgb2 = []
 
-# fitted_models_cat3 = []
-# fitted_models_lgb3 = []
+fitted_models_cat3 = []
+fitted_models_lgb3 = []
 
-# for fold in range(1,6):
-#     clf = CatBoostClassifier() 
-#     clf.load_model(f"/home/xyli/kaggle/kaggle_HomeCredit/dataset9/catboost_fold{fold}.cbm")
-#     fitted_models_cat1.append(clf)
+for fold in range(1,6):
+    clf = CatBoostClassifier() 
+    clf.load_model(f"/home/xyli/kaggle/kaggle_HomeCredit/dataset9/catboost_fold{fold}.cbm")
+    fitted_models_cat1.append(clf)
     
-#     model = lgb.LGBMClassifier()
-#     model = lgb.Booster(model_file=f"/home/xyli/kaggle/kaggle_HomeCredit/dataset8/lgbm_fold{fold}.txt")
-#     fitted_models_lgb1.append(model)
+    model = lgb.LGBMClassifier()
+    model = lgb.Booster(model_file=f"/home/xyli/kaggle/kaggle_HomeCredit/dataset8/lgbm_fold{fold}.txt")
+    fitted_models_lgb1.append(model)
     
-#     clf2 = CatBoostClassifier()
-#     clf2.load_model(f"/home/xyli/kaggle/kaggle_HomeCredit/dataset5/catboost_fold{fold}.cbm")
-#     fitted_models_cat2.append(clf2) 
+    clf2 = CatBoostClassifier()
+    clf2.load_model(f"/home/xyli/kaggle/kaggle_HomeCredit/dataset5/catboost_fold{fold}.cbm")
+    fitted_models_cat2.append(clf2) 
     
-#     model2 = lgb.LGBMClassifier()
-#     model2 = lgb.Booster(model_file=f"/home/xyli/kaggle/kaggle_HomeCredit/dataset4/lgbm_fold{fold}.txt")
-#     fitted_models_lgb2.append(model2)
+    model2 = lgb.LGBMClassifier()
+    model2 = lgb.Booster(model_file=f"/home/xyli/kaggle/kaggle_HomeCredit/dataset4/lgbm_fold{fold}.txt")
+    fitted_models_lgb2.append(model2)
 
-#     clf3 = CatBoostClassifier()
-#     clf3.load_model(f"/home/xyli/kaggle/kaggle_HomeCredit/dataset18/catboost_fold{fold}.cbm")
-#     fitted_models_cat3.append(clf3) 
+    clf3 = CatBoostClassifier()
+    clf3.load_model(f"/home/xyli/kaggle/kaggle_HomeCredit/dataset18/catboost_fold{fold}.cbm")
+    fitted_models_cat3.append(clf3) 
     
-#     model3 = lgb.LGBMClassifier()
-#     model3 = lgb.Booster(model_file=f"/home/xyli/kaggle/kaggle_HomeCredit/lgbm_fold{fold}.txt")
-#     fitted_models_lgb3.append(model3)
+    model3 = lgb.LGBMClassifier()
+    model3 = lgb.Booster(model_file=f"/home/xyli/kaggle/kaggle_HomeCredit/lgbm_fold{fold}.txt")
+    fitted_models_lgb3.append(model3)
 
 
-# class VotingModel(BaseEstimator, RegressorMixin):
-#     def __init__(self, estimators):
-#         super().__init__()
-#         self.estimators = estimators
+class VotingModel(BaseEstimator, RegressorMixin):
+    def __init__(self, estimators):
+        super().__init__()
+        self.estimators = estimators
         
-#     def fit(self, X, y=None):
-#         return self
+    def fit(self, X, y=None):
+        return self
 
-#     def predict_proba(self, X):
-#         y_preds = []
+    def predict_proba(self, X):
+        y_preds = []
 
-#         # from IPython import embed
-#         # embed()
+        # from IPython import embed
+        # embed()
 
-#         X[cat_cols_829] = X[cat_cols_829].astype("str")
-#         y_preds += [estimator.predict_proba(X[df_train_829])[:, 1] for estimator in self.estimators[0:5]]
-#         # y_preds += [estimator.predict_proba(X[df_train_386])[:, 1] for estimator in self.estimators[5:10]]
+        X[cat_cols_829] = X[cat_cols_829].astype("str")
+        y_preds += [estimator.predict_proba(X[df_train_829])[:, 1] for estimator in self.estimators[0:5]]
+        # y_preds += [estimator.predict_proba(X[df_train_386])[:, 1] for estimator in self.estimators[5:10]]
        
-#         # X[cat_cols_829] = X[cat_cols_829].astype("category")
-#         # y_preds += [estimator.predict(X[df_train_829]) for estimator in self.estimators[15:20]]
-#         # y_preds += [estimator.predict(X[df_train_386]) for estimator in self.estimators[20:25]]
+        # X[cat_cols_829] = X[cat_cols_829].astype("category")
+        # y_preds += [estimator.predict(X[df_train_829]) for estimator in self.estimators[15:20]]
+        # y_preds += [estimator.predict(X[df_train_386]) for estimator in self.estimators[20:25]]
         
-#         return np.mean(y_preds, axis=0)
+        return np.mean(y_preds, axis=0)
     
-#     def predict_proba_scan(self, X):
-#         y_preds = []
-#         # from IPython import embed
-#         # embed()
+    def predict_proba_scan(self, X):
+        y_preds = []
+        # from IPython import embed
+        # embed()
 
-#         # X[cat_cols_470] = X[cat_cols_470].astype("str")
-#         # y_preds += [estimator.predict_proba(X[df_train_829])[:, 1] for estimator in [self.estimators[0+fold]]]
-#         # y_preds += [estimator.predict_proba(X[df_train_386])[:, 1] for estimator in [self.estimators[5+fold]]]
-#         # y_preds += [estimator.predict_proba(X[df_train])[:, 1] for estimator in [self.estimators[10+fold]]]
+        X[cat_cols_470] = X[cat_cols_470].astype("str")
+        # y_preds += [estimator.predict_proba(X[df_train_829])[:, 1] for estimator in [self.estimators[0+fold]]]
+        # y_preds += [estimator.predict_proba(X[df_train_386])[:, 1] for estimator in [self.estimators[5+fold]]]
+        y_preds += [estimator.predict_proba(X[df_train_470])[:, 1] for estimator in [self.estimators[10+fold]]]
         
-#         X[cat_cols_470] = X[cat_cols_470].astype("category")
-#         # y_preds += [estimator.predict(X[df_train_829]) for estimator in [self.estimators[15+fold]]]
-#         # y_preds += [estimator.predict(X[df_train_386]) for estimator in [self.estimators[20+fold]]]
-#         y_preds += [estimator.predict(X[df_train_470]) for estimator in self.estimators[25:30]]
+        # X[cat_cols_470] = X[cat_cols_470].astype("category")
+        # y_preds += [estimator.predict(X[df_train_829]) for estimator in [self.estimators[15+fold]]]
+        # y_preds += [estimator.predict(X[df_train_386]) for estimator in [self.estimators[20+fold]]]
+        # y_preds += [estimator.predict(X[df_train_470]) for estimator in self.estimators[25:30]]
 
-#         return np.mean(y_preds, axis=0)
-
-
-# model = VotingModel(fitted_models_cat1 + fitted_models_cat2 +fitted_models_cat3+ fitted_models_lgb1 + fitted_models_lgb2+fitted_models_lgb3)
+        return np.mean(y_preds, axis=0)
 
 
-# # from IPython import embed
-# # embed()
+model = VotingModel(fitted_models_cat1 + fitted_models_cat2 +fitted_models_cat3+ fitted_models_lgb1 + fitted_models_lgb2+fitted_models_lgb3)
 
-# # 5min
-# print('开始计算cv')
-# valid_score = []
-# # valid_preds = model.predict_proba_scan(df_train_scan)
-# # valid_score += [roc_auc_score(y_scan, valid_preds)]
-# # print(valid_score)
-# valid_preds = model.predict_proba(df_train)
-# valid_score += [roc_auc_score(y, valid_preds)]
+
+# from IPython import embed
+# embed()
+
+# 5min
+print('开始计算cv')
+valid_score = []
+# valid_preds = model.predict_proba_scan(df_train_scan)
+# valid_score += [roc_auc_score(y_scan, valid_preds)]
 # print(valid_score)
-# # valid_score += [(valid_score[0]+valid_score[1])/2.0]
-# # print(valid_score)
+valid_preds = model.predict_proba(df_train)
+valid_score += [roc_auc_score(y, valid_preds)]
+print(valid_score)
+# valid_score += [(valid_score[0]+valid_score[1])/2.0]
+# print(valid_score)
 
 
 
-# # avg_score = 0
-# # fold = 1
-# # for  df_train_idx, df_train_scan_idx in zip(cv.split(df_train, y, groups=weeks), cv.split(df_train_scan, y, groups=weeks_scan)): # 5折，循环5次  
+# avg_score = 0
+# fold = 1
+# for  df_train_idx, df_train_scan_idx in zip(cv.split(df_train, y, groups=weeks), cv.split(df_train_scan, y, groups=weeks_scan)): # 5折，循环5次  
 
-# #     idx_train = df_train_idx[0]
-# #     idx_valid = df_train_idx[1]
-# #     idx_train_scan = df_train_scan_idx[0]
-# #     idx_valid_scan = df_train_scan_idx[1]
+#     idx_train = df_train_idx[0]
+#     idx_valid = df_train_idx[1]
+#     idx_train_scan = df_train_scan_idx[0]
+#     idx_valid_scan = df_train_scan_idx[1]
 
-# #     # X_train(≈40000,386), y_train(≈40000)
-# #     X_train, y_train = df_train.iloc[idx_train], y.iloc[idx_train] 
-# #     X_valid, y_valid = df_train.iloc[idx_valid], y.iloc[idx_valid] 
+#     # X_train(≈40000,386), y_train(≈40000)
+#     X_train, y_train = df_train.iloc[idx_train], y.iloc[idx_train] 
+#     X_valid, y_valid = df_train.iloc[idx_valid], y.iloc[idx_valid] 
 
-# #     X_train_scan, y_train_scan = df_train_scan.iloc[idx_train_scan], y_scan.iloc[idx_train_scan] 
-# #     X_valid_scan, y_valid_scan = df_train_scan.iloc[idx_valid_scan], y_scan.iloc[idx_valid_scan]       
+#     X_train_scan, y_train_scan = df_train_scan.iloc[idx_train_scan], y_scan.iloc[idx_train_scan] 
+#     X_valid_scan, y_valid_scan = df_train_scan.iloc[idx_valid_scan], y_scan.iloc[idx_valid_scan]       
 
-# #     # X_valid样本顺序=X_valid_scan样本顺序，所以共享一个标签集
-# #     # print(X_valid)
-# #     # print(X_valid_scan)
+#     # X_valid样本顺序=X_valid_scan样本顺序，所以共享一个标签集
+#     # print(X_valid)
+#     # print(X_valid_scan)
 
-# #     valid_preds = []
-# #     valid_preds += model.predict_proba_scan(X_valid_scan, fold)
-# #     valid_preds += model.predict_proba(X_valid, fold)
+#     valid_preds = []
+#     valid_preds += model.predict_proba_scan(X_valid_scan, fold)
+#     valid_preds += model.predict_proba(X_valid, fold)
 
-# #     # from IPython import embed
-# #     # embed()
+#     # from IPython import embed
+#     # embed()
     
-# #     valid_preds = np.mean(valid_preds, axis=0)
-# #     valid_score = roc_auc_score(y_valid_scan, valid_preds)
+#     valid_preds = np.mean(valid_preds, axis=0)
+#     valid_score = roc_auc_score(y_valid_scan, valid_preds)
 
 
-# #     avg_score = avg_score + valid_score
-# #     print(f'fold:{fold} valid_score: ', valid_score)
+#     avg_score = avg_score + valid_score
+#     print(f'fold:{fold} valid_score: ', valid_score)
 
-# #     fold = fold+1
-# # print('avg_score: ', avg_score/5.0)  
+#     fold = fold+1
+# print('avg_score: ', avg_score/5.0)  
 # ======================================== 推理验证 =====================================
 
 
