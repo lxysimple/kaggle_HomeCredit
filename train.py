@@ -1326,7 +1326,7 @@ class VotingModel(BaseEstimator, RegressorMixin):
         
         return np.mean(y_preds, axis=0)
     
-    def predict_proba_scan(self, X, fold):
+    def predict_proba_scan(self, X):
         fold = fold -1
         y_preds = []
 
