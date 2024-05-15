@@ -857,12 +857,37 @@ data_store:dict = {
     'depth_2': [
         SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_a_2_*.parquet', 2),
         SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_b_2.parquet', 2),
+    ]
+}
+
+data_store2:dict = {
+    'df_base': SchemaGen.scan_files(TRAIN_DIR / 'train_base.parquet'),
+    'depth_0': [
+        SchemaGen.scan_files(TRAIN_DIR / 'train_static_cb_0.parquet'),
+        SchemaGen.scan_files(TRAIN_DIR / 'train_static_0_*.parquet'),
+    ],
+    'depth_1': [
+        SchemaGen.scan_files(TRAIN_DIR / 'train_applprev_1_*.parquet', 1),
+        SchemaGen.scan_files(TRAIN_DIR / 'train_tax_registry_a_1.parquet', 1),
+        SchemaGen.scan_files(TRAIN_DIR / 'train_tax_registry_b_1.parquet', 1),
+        SchemaGen.scan_files(TRAIN_DIR / 'train_tax_registry_c_1.parquet', 1),
+        SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_a_1_*.parquet', 1),
+        SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_b_1.parquet', 1),
+        SchemaGen.scan_files(TRAIN_DIR / 'train_other_1.parquet', 1),
+        SchemaGen.scan_files(TRAIN_DIR / 'train_person_1.parquet', 1),
+        SchemaGen.scan_files(TRAIN_DIR / 'train_deposit_1.parquet', 1),
+        SchemaGen.scan_files(TRAIN_DIR / 'train_debitcard_1.parquet', 1),
+    ],
+    'depth_2': [
+        SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_a_2_*.parquet', 2),
+        SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_b_2.parquet', 2),
    
         # 829+386
         SchemaGen.scan_files(TRAIN_DIR / 'train_applprev_2.parquet', 2), 
         SchemaGen.scan_files(TRAIN_DIR / 'train_person_2.parquet', 2), 
     ]
 }
+
 print('读取数据完毕！')
 
 
@@ -877,7 +902,7 @@ df_train_scan, cat_cols = Utility.to_pandas(df_train_scan) # 这个是把字符�
 print("df_train_scan shape:\t", df_train_scan.shape)
 # df_train = df_train_scan
 
-df_train = feature_eng(**data_store).collect() # 别忘记829+386要多加载2个文件
+df_train = feature_eng(**data_store2).collect() # 别忘记829+386要多加载2个文件
 df_train = df_train.pipe(Pipeline.filter_cols)
 df_train, _ = to_pandas(df_train)    
 df_train = Utility.reduce_memory_usage(df_train, "df_train")
