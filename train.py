@@ -1324,7 +1324,7 @@ class VotingModel(BaseEstimator, RegressorMixin):
         y_preds += [estimator.predict(X[df_train_829]) for estimator in [self.estimators[15+fold]]]
         y_preds += [estimator.predict(X[df_train_386]) for estimator in [self.estimators[20+fold]]]
         
-        return np.mean(y_preds, axis=0)
+        return y_preds
     
     def predict_proba_scan(self, X, fold):
         fold = fold -1
