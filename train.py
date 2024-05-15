@@ -1324,7 +1324,7 @@ class VotingModel(BaseEstimator, RegressorMixin):
         y_preds += [estimator.predict(X[df_train_829]) for estimator in [self.estimators[15+fold]]]
         y_preds += [estimator.predict(X[df_train_386]) for estimator in [self.estimators[20+fold]]]
         
-        return np.mean(y_preds, axis=0)
+        return y_preds
     
     def predict_proba_scan(self, X, fold):
         fold = fold -1
@@ -1343,7 +1343,7 @@ class VotingModel(BaseEstimator, RegressorMixin):
         # y_preds += [estimator.predict(X[df_train_386]) for estimator in [self.estimators[20+fold]]]
         y_preds += [estimator.predict(X[df_train_470]) for estimator in [self.estimators[25+fold]]]
 
-        return np.mean(y_preds, axis=0)
+        return y_preds
 
 
 model = VotingModel(fitted_models_cat1 + fitted_models_cat2 +fitted_models_cat3+ fitted_models_lgb1 + fitted_models_lgb2+fitted_models_lgb3)
@@ -1373,8 +1373,8 @@ for  df_train_idx, df_train_scan_idx in zip(cv.split(df_train, y, groups=weeks),
     # print(X_valid_scan)
 
     valid_preds = []
-    valid_preds.append(model.predict_proba_scan(X_valid_scan, fold))
-    valid_preds.append(model.predict_proba(X_valid, fold))
+    valid_preds += model.predict_proba_scan(X_valid_scan, fold)
+    valid_preds += model.predict_proba(X_valid, fold)
     valid_preds = np.mean(valid_preds, axis=0)
     valid_score = roc_auc_score(y_valid_scan, valid_preds)
 
