@@ -859,8 +859,8 @@ data_store:dict = {
         SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_b_2.parquet', 2),
    
         # 829+386
-        # SchemaGen.scan_files(TRAIN_DIR / 'train_applprev_2.parquet', 2), 
-        # SchemaGen.scan_files(TRAIN_DIR / 'train_person_2.parquet', 2), 
+        SchemaGen.scan_files(TRAIN_DIR / 'train_applprev_2.parquet', 2), 
+        SchemaGen.scan_files(TRAIN_DIR / 'train_person_2.parquet', 2), 
     ]
 }
 print('读取数据完毕！')
