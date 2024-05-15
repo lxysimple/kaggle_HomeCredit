@@ -1327,7 +1327,6 @@ class VotingModel(BaseEstimator, RegressorMixin):
     
     def predict_proba_scan(self, X):
         y_preds = []
-
         # from IPython import embed
         # embed()
 
