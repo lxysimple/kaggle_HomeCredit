@@ -1349,6 +1349,7 @@ model = VotingModel(fitted_models_cat1 + fitted_models_cat2 +fitted_models_cat3+
 # from IPython import embed
 # embed()
 
+# 5min
 print('开始计算cv')
 valid_score = []
 valid_preds = model.predict_proba_scan(df_train_scan)
