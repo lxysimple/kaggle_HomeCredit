@@ -1310,7 +1310,6 @@ class VotingModel(BaseEstimator, RegressorMixin):
         return self
 
     def predict_proba(self, X):
-        fold = fold -1
         y_preds = []
 
         # from IPython import embed
@@ -1327,7 +1326,6 @@ class VotingModel(BaseEstimator, RegressorMixin):
         return np.mean(y_preds, axis=0)
     
     def predict_proba_scan(self, X):
-        fold = fold -1
         y_preds = []
 
         # from IPython import embed
