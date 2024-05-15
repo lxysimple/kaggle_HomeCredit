@@ -866,7 +866,7 @@ df_train_scan: pl.LazyFrame = (
     .pipe(filter_cols)
     .pipe(transform_cols) # 兼容0.592
     .pipe(handle_dates)
-    # .pipe(Utility.reduce_memory_usage, "df_train")
+    .pipe(Utility.reduce_memory_usage, "df_train") 
 )
 df_train_scan, cat_cols = Utility.to_pandas(df_train_scan) # 这个是把字符串转化为str
 print("df_train_scan shape:\t", df_train_scan.shape)
@@ -1315,7 +1315,7 @@ class VotingModel(BaseEstimator, RegressorMixin):
         # from IPython import embed
         # embed()
 
-        X[cat_cols] = X[cat_cols].astype("str")
+        X[cat_cols] = X[cat_cols].astype("category")
         y_preds += [estimator.predict_proba(X[df_train])[:, 1] for estimator in self.estimators[10:15]]
         
         # X[cat_cols_470] = X[cat_cols_470].astype("category")
