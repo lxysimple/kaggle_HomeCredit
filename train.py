@@ -1357,7 +1357,7 @@ print(valid_score)
 valid_preds += model.predict_proba(df_train)
 valid_score += [roc_auc_score(y, valid_preds)]
 print(valid_score)
-valid_score += [valid_score/2.0]
+valid_score += [(valid_score[0]+valid_score[1])/2.0]
 print(valid_score)
 
 
