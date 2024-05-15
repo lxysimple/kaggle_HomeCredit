@@ -865,15 +865,15 @@ data_store:dict = {
 print('读取数据完毕！')
 
 
-# df_train_scan: pl.LazyFrame = (
-#     SchemaGen.join_dataframes(**data_store) # 别忘记829+386要多加载2个文件
-#     .pipe(filter_cols)
-#     .pipe(transform_cols) # 兼容0.592
-#     .pipe(handle_dates)
-#     .pipe(Utility.reduce_memory_usage, "df_train")
-# )
-# df_train_scan, cat_cols = Utility.to_pandas(df_train_scan) # 这个是把字符串转化为str
-# print("df_train_scan shape:\t", df_train_scan.shape)
+df_train_scan: pl.LazyFrame = (
+    SchemaGen.join_dataframes(**data_store) # 别忘记829+386要多加载2个文件
+    .pipe(filter_cols)
+    .pipe(transform_cols) # 兼容0.592
+    .pipe(handle_dates)
+    .pipe(Utility.reduce_memory_usage, "df_train")
+)
+df_train_scan, cat_cols = Utility.to_pandas(df_train_scan) # 这个是把字符串转化为str
+print("df_train_scan shape:\t", df_train_scan.shape)
 # df_train = df_train_scan
 
 df_train = feature_eng(**data_store).collect() # 别忘记829+386要多加载2个文件
