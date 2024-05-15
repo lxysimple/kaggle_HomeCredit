@@ -867,7 +867,7 @@ print('读取数据完毕！')
 
 
 df_train_scan: pl.LazyFrame = (
-    SchemaGen.join_dataframes(**data_store)
+    SchemaGen.join_dataframes(**data_store) # 别忘记829+386要多加载2个文件
     .pipe(filter_cols)
     .pipe(transform_cols) # 兼容0.592
     .pipe(handle_dates)
