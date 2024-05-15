@@ -376,8 +376,8 @@ class Aggregator:
 
         # return expr_mean # Mean AUC=0.741610 433
         # return expr_max + expr_mean + expr_var # notebookv8 
-        return expr_max +expr_last+expr_mean # 829+386 
-        # return expr_max +expr_last+expr_mean+expr_var # 829+386 + notebookv8
+        # return expr_max +expr_last+expr_mean # 829+386 
+        return expr_max +expr_last+expr_mean+expr_var # 829+386 + notebookv8
         # return expr_max +expr_last+expr_mean+expr_min # 433+829+386 
     
     
@@ -399,8 +399,8 @@ class Aggregator:
 
         # return expr_mean # Mean AUC=0.741610 433
         # return expr_max + expr_mean + expr_var # notebookv8
-        return  expr_max +expr_last+expr_mean # 829+386
-        # return  expr_max +expr_last+expr_mean+expr_var # 829+386+notebookv8 
+        # return  expr_max +expr_last+expr_mean # 829+386
+        return  expr_max +expr_last+expr_mean+expr_var # 829+386+notebookv8 
         # return expr_max +expr_last+expr_mean +expr_min# 433+829+386 
 
     
@@ -450,8 +450,8 @@ class Aggregator:
 
         # return expr_mean # Mean AUC=0.741610 433
         # return expr_max # notebookv8
-        return  expr_max +expr_last # 829+386
-        # return  expr_max +expr_last # 829+386+notebookv8
+        # return  expr_max +expr_last # 829+386
+        return  expr_max +expr_last # 829+386+notebookv8
         # return  expr_max +expr_last +expr_mean+expr_min # 829+386+433
 
 
@@ -475,8 +475,8 @@ class Aggregator:
 
         # return expr_mean # Mean AUC=0.741610 433
         # return expr_max # notebookv8
-        return  expr_max +expr_last # 829+386
-        # return  expr_max +expr_last # 829+386+notebookv8
+        # return  expr_max +expr_last # 829+386
+        return  expr_max +expr_last # 829+386+notebookv8
         # return  expr_max +expr_last+expr_mean+expr_min # 829+386+433
     
     def get_exprs(df):
@@ -624,7 +624,7 @@ class SchemaGen:
             print(f"File {Path(path).stem} loaded into memory.")
 
             if depth in (1, 2):
-                exprs: list[pl.Series] = Aggregator2.get_exprs(df)
+                exprs: list[pl.Series] = Aggregator.get_exprs(df)
                 df = df.group_by("case_id").agg(exprs)
 
                 del exprs
