@@ -1315,12 +1315,12 @@ class VotingModel(BaseEstimator, RegressorMixin):
         # from IPython import embed
         # embed()
 
-        # X[cat_cols_829] = X[cat_cols_829].astype("str")
+        X[cat_cols_829] = X[cat_cols_829].astype("str")
         # y_preds += [estimator.predict_proba(X[df_train_829])[:, 1] for estimator in self.estimators[0:5]]
-        # y_preds += [estimator.predict_proba(X[df_train_386])[:, 1] for estimator in self.estimators[5:10]]
+        y_preds += [estimator.predict_proba(X[df_train_386])[:, 1] for estimator in self.estimators[5:10]]
        
-        X[cat_cols_829] = X[cat_cols_829].astype("category")
-        y_preds += [estimator.predict(X[df_train_829]) for estimator in self.estimators[15:20]]
+        # X[cat_cols_829] = X[cat_cols_829].astype("category")
+        # y_preds += [estimator.predict(X[df_train_829]) for estimator in self.estimators[15:20]]
         # y_preds += [estimator.predict(X[df_train_386]) for estimator in self.estimators[20:25]]
         
         return np.mean(y_preds, axis=0)
