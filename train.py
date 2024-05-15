@@ -1309,7 +1309,7 @@ class VotingModel(BaseEstimator, RegressorMixin):
     def fit(self, X, y=None):
         return self
 
-    def predict_proba(self, X, fold):
+    def predict_proba(self, X):
         fold = fold -1
         y_preds = []
 
@@ -1317,14 +1317,14 @@ class VotingModel(BaseEstimator, RegressorMixin):
         # embed()
 
         X[cat_cols_829] = X[cat_cols_829].astype("str")
-        y_preds += [estimator.predict_proba(X[df_train_829])[:, 1] for estimator in [self.estimators[0+fold]]]
-        y_preds += [estimator.predict_proba(X[df_train_386])[:, 1] for estimator in [self.estimators[5+fold]]]
+        y_preds += [estimator.predict_proba(X[df_train_829])[:, 1] for estimator in self.estimators[0:5]]
+        y_preds += [estimator.predict_proba(X[df_train_386])[:, 1] for estimator in self.estimators[5:10]]
        
         X[cat_cols_829] = X[cat_cols_829].astype("category")
-        y_preds += [estimator.predict(X[df_train_829]) for estimator in [self.estimators[15+fold]]]
-        y_preds += [estimator.predict(X[df_train_386]) for estimator in [self.estimators[20+fold]]]
+        y_preds += [estimator.predict(X[df_train_829]) for estimator in self.estimators[15:20]]
+        y_preds += [estimator.predict(X[df_train_386]) for estimator in self.estimators[20:25]]
         
-        return y_preds
+        return np.mean(y_preds, axis=0)
     
     def predict_proba_scan(self, X, fold):
         fold = fold -1
@@ -1341,9 +1341,9 @@ class VotingModel(BaseEstimator, RegressorMixin):
         X[cat_cols_470] = X[cat_cols_470].astype("category")
         # y_preds += [estimator.predict(X[df_train_829]) for estimator in [self.estimators[15+fold]]]
         # y_preds += [estimator.predict(X[df_train_386]) for estimator in [self.estimators[20+fold]]]
-        y_preds += [estimator.predict(X[df_train_470]) for estimator in [self.estimators[25+fold]]]
+        y_preds += [estimator.predict(X[df_train_470]) for estimator in self.estimators[25:30]]
 
-        return y_preds
+        return np.mean(y_preds, axis=0)
 
 
 model = VotingModel(fitted_models_cat1 + fitted_models_cat2 +fitted_models_cat3+ fitted_models_lgb1 + fitted_models_lgb2+fitted_models_lgb3)
@@ -1352,42 +1352,54 @@ model = VotingModel(fitted_models_cat1 + fitted_models_cat2 +fitted_models_cat3+
 # from IPython import embed
 # embed()
 
-avg_score = 0
-fold = 1
-for  df_train_idx, df_train_scan_idx in zip(cv.split(df_train, y, groups=weeks), cv.split(df_train_scan, y, groups=weeks_scan)): # 5折，循环5次  
+valid_score = []
+valid_preds = model.predict_proba_scan(df_train_scan)
+valid_score += roc_auc_score(y_scan, valid_preds)
+print(valid_score)
+valid_preds += model.predict_proba(df_train)
+valid_score += roc_auc_score(y, valid_preds)
+print(valid_score)
+valid_score += valid_score/2.0
+print(valid_score)
 
-    idx_train = df_train_idx[0]
-    idx_valid = df_train_idx[1]
-    idx_train_scan = df_train_scan_idx[0]
-    idx_valid_scan = df_train_scan_idx[1]
 
-    # X_train(≈40000,386), y_train(≈40000)
-    X_train, y_train = df_train.iloc[idx_train], y.iloc[idx_train] 
-    X_valid, y_valid = df_train.iloc[idx_valid], y.iloc[idx_valid] 
 
-    X_train_scan, y_train_scan = df_train_scan.iloc[idx_train_scan], y_scan.iloc[idx_train_scan] 
-    X_valid_scan, y_valid_scan = df_train_scan.iloc[idx_valid_scan], y_scan.iloc[idx_valid_scan]       
+# avg_score = 0
+# fold = 1
+# for  df_train_idx, df_train_scan_idx in zip(cv.split(df_train, y, groups=weeks), cv.split(df_train_scan, y, groups=weeks_scan)): # 5折，循环5次  
 
-    # X_valid样本顺序=X_valid_scan样本顺序，所以共享一个标签集
-    # print(X_valid)
-    # print(X_valid_scan)
+#     idx_train = df_train_idx[0]
+#     idx_valid = df_train_idx[1]
+#     idx_train_scan = df_train_scan_idx[0]
+#     idx_valid_scan = df_train_scan_idx[1]
 
-    valid_preds = []
-    valid_preds += model.predict_proba_scan(X_valid_scan, fold)
-    valid_preds += model.predict_proba(X_valid, fold)
+#     # X_train(≈40000,386), y_train(≈40000)
+#     X_train, y_train = df_train.iloc[idx_train], y.iloc[idx_train] 
+#     X_valid, y_valid = df_train.iloc[idx_valid], y.iloc[idx_valid] 
 
-    from IPython import embed
-    embed()
+#     X_train_scan, y_train_scan = df_train_scan.iloc[idx_train_scan], y_scan.iloc[idx_train_scan] 
+#     X_valid_scan, y_valid_scan = df_train_scan.iloc[idx_valid_scan], y_scan.iloc[idx_valid_scan]       
+
+#     # X_valid样本顺序=X_valid_scan样本顺序，所以共享一个标签集
+#     # print(X_valid)
+#     # print(X_valid_scan)
+
+#     valid_preds = []
+#     valid_preds += model.predict_proba_scan(X_valid_scan, fold)
+#     valid_preds += model.predict_proba(X_valid, fold)
+
+#     # from IPython import embed
+#     # embed()
     
-    valid_preds = np.mean(valid_preds, axis=0)
-    valid_score = roc_auc_score(y_valid_scan, valid_preds)
+#     valid_preds = np.mean(valid_preds, axis=0)
+#     valid_score = roc_auc_score(y_valid_scan, valid_preds)
 
 
-    avg_score = avg_score + valid_score
-    print(f'fold:{fold} valid_score: ', valid_score)
+#     avg_score = avg_score + valid_score
+#     print(f'fold:{fold} valid_score: ', valid_score)
 
-    fold = fold+1
-print('avg_score: ', avg_score/5.0)  
+#     fold = fold+1
+# print('avg_score: ', avg_score/5.0)  
 # ======================================== 推理验证 =====================================
 
 
