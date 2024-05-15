@@ -369,16 +369,14 @@ class Aggregator:
         expr_sum = [pl.sum(col).alias(f"sum_{col}") for col in cols]
         expr_var = [pl.var(col).alias(f"var_{col}") for col in cols]
 
-        # expr_product = [pl.product(col).alias(f"product_{col}") for col in cols]
 
         # 0.754300 排列顺序
         # return expr_max + expr_min + expr_last + expr_first + expr_mean
 
-        # return expr_mean # Mean AUC=0.741610 433
-        # return expr_max + expr_mean + expr_var # notebookv8 
+        return expr_max + expr_mean + expr_var # notebookv8 
         # return expr_max +expr_last+expr_mean # 829+386 
-        return expr_max +expr_last+expr_mean+expr_var # 829+386 + notebookv8
-        # return expr_max +expr_last+expr_mean+expr_min # 433+829+386 
+        # return expr_max +expr_last+expr_mean+expr_var # 829+386 + notebookv8
+
     
     
     def date_expr(df):
@@ -397,11 +395,10 @@ class Aggregator:
         # 0.754300 排列顺序
         # return  expr_max + expr_min  +  expr_last + expr_first + expr_mean
 
-        # return expr_mean # Mean AUC=0.741610 433
-        # return expr_max + expr_mean + expr_var # notebookv8
+        return expr_max + expr_mean + expr_var # notebookv8
         # return  expr_max +expr_last+expr_mean # 829+386
-        return  expr_max +expr_last+expr_mean+expr_var # 829+386+notebookv8 
-        # return expr_max +expr_last+expr_mean +expr_min# 433+829+386 
+        # return  expr_max +expr_last+expr_mean+expr_var # 829+386+notebookv8 
+
 
     
     def str_expr(df):
@@ -421,10 +418,10 @@ class Aggregator:
         # 0.754300 排列顺序
         # return  expr_max + expr_min + expr_last + expr_first + expr_count
         
-        # return expr_max + expr_last + expr_first # Mean AUC=0.741610 433
-        # return expr_max # notebookv8
-        return  expr_max +expr_last # 829+386+notebookv8
-        # return expr_last + expr_first+expr_max # 829+386+433
+
+        return expr_max # notebookv8
+        # return  expr_max +expr_last # 829+386+notebookv8
+
 
     def other_expr(df):
         # T、L代表各种杂七杂八的信息
@@ -448,11 +445,11 @@ class Aggregator:
         # return  expr_max + expr_min + expr_last + expr_first
 
 
-        # return expr_mean # Mean AUC=0.741610 433
-        # return expr_max # notebookv8
+
+        return expr_max # notebookv8
         # return  expr_max +expr_last # 829+386
-        return  expr_max +expr_last # 829+386+notebookv8
-        # return  expr_max +expr_last +expr_mean+expr_min # 829+386+433
+        # return  expr_max +expr_last # 829+386+notebookv8
+
 
 
     
@@ -473,11 +470,10 @@ class Aggregator:
         # 0.755666 排列顺序
         # return  expr_max + expr_min + expr_last + expr_first + expr_count
 
-        # return expr_mean # Mean AUC=0.741610 433
-        # return expr_max # notebookv8
+
+        return expr_max # notebookv8
         # return  expr_max +expr_last # 829+386
-        return  expr_max +expr_last # 829+386+notebookv8
-        # return  expr_max +expr_last+expr_mean+expr_min # 829+386+433
+        # return  expr_max +expr_last # 829+386+notebookv8
     
     def get_exprs(df):
         exprs = Aggregator.num_expr(df) + \
@@ -866,7 +862,7 @@ print('读取数据完毕！')
 
 
 df_train_scan: pl.LazyFrame = (
-    SchemaGen.join_dataframes(**data_store) # 别忘记829+386要多加载2个文件
+    SchemaGen.join_dataframes(**data_store) # 别忘记829+386要多加载2个文件+改新增的统计特征
     .pipe(filter_cols)
     .pipe(transform_cols) # 兼容0.592
     .pipe(handle_dates)
@@ -1030,13 +1026,13 @@ cv = StratifiedGroupKFold(n_splits=5, shuffle=False)
 
 
 # 找到除cat_cols列外的所有列
-# non_cat_cols = df_train.columns.difference(cat_cols) 
-# print('cat_cols:')
-# print('len(cat_cols):',len(cat_cols))
-# print(cat_cols)
-# print('df_train.columns')
-# print("len(list(df_train.columns)): ", len(list(df_train.columns)))
-# print(list(df_train.columns))
+non_cat_cols = df_train.columns.difference(cat_cols) 
+print('cat_cols:')
+print('len(cat_cols):',len(cat_cols))
+print(cat_cols)
+print('df_train.columns')
+print("len(list(df_train.columns)): ", len(list(df_train.columns)))
+print(list(df_train.columns))
 
 
 # ======================================== 特征列分类 =====================================
@@ -1201,25 +1197,13 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
         use_best_model = True
     ) 
 
-    clf = CatBoostClassifier(
-        eval_metric='AUC',
-        task_type='GPU',
-        learning_rate=0.03, # 0.03
-        iterations=6000, # n_est
-#         early_stopping_rounds = 500,
-    )
-    # clf = CatBoostClassifier(
-    #     eval_metric='AUC',
-    #     task_type='GPU',
-    #     learning_rate=0.05, # 0.03
-    #     # iterations=n_est, # n_est iterations与n_estimators二者只能有一
-    #     grow_policy = 'Lossguide',
-    #     max_depth = 10,
-    #     n_estimators = 2000,   
-    #     reg_lambda = 10,
-    #     num_leaves = 64,
-    #     early_stopping_rounds = 100,
-    # )
+#     clf = CatBoostClassifier(
+#         eval_metric='AUC',
+#         task_type='GPU',
+#         learning_rate=0.03, # 0.03
+#         iterations=6000, # n_est
+# #         early_stopping_rounds = 500,
+#     )
 
     random_seed=3107
     clf.fit(
