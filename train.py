@@ -867,7 +867,7 @@ print('读取数据完毕！')
 
 
 df_train_scan: pl.LazyFrame = (
-    SchemaGen.join_dataframes(**data_store).clone()
+    SchemaGen.join_dataframes(**data_store)
     .pipe(filter_cols)
     .pipe(transform_cols) # 兼容0.592
     .pipe(handle_dates)
@@ -1376,8 +1376,8 @@ for  df_train_idx, df_train_scan_idx in zip(cv.split(df_train, y, groups=weeks),
     # print(X_valid)
     # print(X_valid_scan)
 
-    valid_preds = model.predict_proba_scan(X_valid, fold)
-    valid_preds = valid_preds + model.predict_proba(X_valid_scan, fold)
+    valid_preds = model.predict_proba_scan(X_valid_scan, fold)
+    valid_preds = valid_preds + model.predict_proba(X_valid, fold)
 
     valid_preds = np.mean(valid_preds, axis=0)
     valid_score = roc_auc_score(y_valid_scan, valid_preds)
