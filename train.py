@@ -1373,7 +1373,7 @@ for  df_train_idx, df_train_scan_idx in zip(cv.split(df_train, y, groups=weeks),
     # print(X_valid_scan)
 
     valid_preds = model.predict_proba_scan(X_valid_scan, fold)
-    # valid_preds = valid_preds + model.predict_proba(X_valid, fold)
+    valid_preds = valid_preds + model.predict_proba(X_valid, fold)
 
     valid_preds = np.mean(valid_preds, axis=0)
     valid_score = roc_auc_score(y_valid_scan, valid_preds)
