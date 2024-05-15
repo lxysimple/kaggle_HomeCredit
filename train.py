@@ -866,7 +866,7 @@ df_train_scan: pl.LazyFrame = (
     .pipe(filter_cols)
     .pipe(transform_cols) # 兼容0.592
     .pipe(handle_dates)
-    .pipe(Utility.reduce_memory_usage, "df_train")
+    # .pipe(Utility.reduce_memory_usage, "df_train")
 )
 df_train_scan, cat_cols = Utility.to_pandas(df_train_scan) # 这个是把字符串转化为str
 print("df_train_scan shape:\t", df_train_scan.shape)
