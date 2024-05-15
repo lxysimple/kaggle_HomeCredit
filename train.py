@@ -1367,6 +1367,10 @@ for  df_train_idx, df_train_scan_idx in zip(cv.split(df_train, y, groups=weeks),
     idx_train_scan = df_train_scan_idx[0]
     idx_valid_scan = df_train_scan_idx[1]
 
+    print(len(idx_train))
+    print(len(idx_valid))
+    print(len(idx_train_scan))
+    print(len(idx_valid_scan))
 
     # X_train(≈40000,386), y_train(≈40000)
     X_train, y_train = df_train.iloc[idx_train], y.iloc[idx_train] 
@@ -1375,6 +1379,11 @@ for  df_train_idx, df_train_scan_idx in zip(cv.split(df_train, y, groups=weeks),
     X_train_scan, y_train_scan = df_train_scan.iloc[idx_train_scan], y_scan.iloc[idx_train_scan] 
     X_valid_scan, y_valid_scan = df_train_scan.iloc[idx_valid_scan], y_scan.iloc[idx_valid_scan]       
     
+    print(len(X_train_scan))
+    print(len(y_train_scan))
+    print(len(X_valid_scan))
+    print(len(y_valid_scan))
+
     # valid_preds = model.predict_proba(X_valid, fold) 
     # valid_preds = valid_preds + model.predict_proba_scan(X_valid_scan, fold)
     # valid_preds = np.mean(valid_preds, axis=0)
