@@ -375,8 +375,8 @@ class Aggregator:
         # return expr_max + expr_min + expr_last + expr_first + expr_mean
 
         # return expr_mean # Mean AUC=0.741610 433
-        return expr_max + expr_mean + expr_var # notebookv8 
-        # return expr_max +expr_last+expr_mean # 829+386 
+        # return expr_max + expr_mean + expr_var # notebookv8 
+        return expr_max +expr_last+expr_mean # 829+386 
         # return expr_max +expr_last+expr_mean+expr_var # 829+386 + notebookv8
         # return expr_max +expr_last+expr_mean+expr_min # 433+829+386 
     
@@ -398,8 +398,8 @@ class Aggregator:
         # return  expr_max + expr_min  +  expr_last + expr_first + expr_mean
 
         # return expr_mean # Mean AUC=0.741610 433
-        return expr_max + expr_mean + expr_var # notebookv8
-        # return  expr_max +expr_last+expr_mean # 829+386
+        # return expr_max + expr_mean + expr_var # notebookv8
+        return  expr_max +expr_last+expr_mean # 829+386
         # return  expr_max +expr_last+expr_mean+expr_var # 829+386+notebookv8 
         # return expr_max +expr_last+expr_mean +expr_min# 433+829+386 
 
@@ -422,8 +422,8 @@ class Aggregator:
         # return  expr_max + expr_min + expr_last + expr_first + expr_count
         
         # return expr_max + expr_last + expr_first # Mean AUC=0.741610 433
-        return expr_max # notebookv8
-        # return  expr_max +expr_last # 829+386+notebookv8
+        # return expr_max # notebookv8
+        return  expr_max +expr_last # 829+386+notebookv8
         # return expr_last + expr_first+expr_max # 829+386+433
 
     def other_expr(df):
@@ -449,8 +449,8 @@ class Aggregator:
 
 
         # return expr_mean # Mean AUC=0.741610 433
-        return expr_max # notebookv8
-        # return  expr_max +expr_last # 829+386
+        # return expr_max # notebookv8
+        return  expr_max +expr_last # 829+386
         # return  expr_max +expr_last # 829+386+notebookv8
         # return  expr_max +expr_last +expr_mean+expr_min # 829+386+433
 
@@ -474,8 +474,8 @@ class Aggregator:
         # return  expr_max + expr_min + expr_last + expr_first + expr_count
 
         # return expr_mean # Mean AUC=0.741610 433
-        return expr_max # notebookv8
-        # return  expr_max +expr_last # 829+386
+        # return expr_max # notebookv8
+        return  expr_max +expr_last # 829+386
         # return  expr_max +expr_last # 829+386+notebookv8
         # return  expr_max +expr_last+expr_mean+expr_min # 829+386+433
     
@@ -875,13 +875,13 @@ df_train_scan: pl.LazyFrame = (
 )
 df_train_scan, cat_cols = Utility.to_pandas(df_train_scan) # 这个是把字符串转化为str
 print("train data shape:\t", df_train_scan.shape)
-df_train = df_train_scan
+# df_train = df_train_scan
 
-# df_train = feature_eng(**data_store).collect()
-# df_train = df_train.pipe(Pipeline.filter_cols)
-# df_train, _ = to_pandas(df_train)    
-# df_train = Utility.reduce_memory_usage(df_train, "df_train")
-# print("train data shape:\t", df_train.shape)
+df_train = feature_eng(**data_store).collect()
+df_train = df_train.pipe(Pipeline.filter_cols)
+df_train, _ = to_pandas(df_train)    
+df_train = Utility.reduce_memory_usage(df_train, "df_train")
+print("train data shape:\t", df_train.shape)
 
 del data_store
 gc.collect()
