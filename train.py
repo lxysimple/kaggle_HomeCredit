@@ -1374,7 +1374,8 @@ for  df_train_idx, df_train_scan_idx in zip(cv.split(df_train, y, groups=weeks),
     X_train_scan, y_train_scan = df_train_scan.iloc[idx_train_scan], y_scan.iloc[idx_train_scan] 
     X_valid_scan, y_valid_scan = df_train_scan.iloc[idx_valid_scan], y_scan.iloc[idx_valid_scan]       
 
-
+    print(X_valid)
+    print(X_valid_scan)
 
     valid_preds = model.predict_proba_scan(X_valid, fold)
     valid_preds = valid_preds + model.predict_proba(X_valid_scan, fold)
