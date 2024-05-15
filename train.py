@@ -1315,7 +1315,7 @@ class VotingModel(BaseEstimator, RegressorMixin):
         # from IPython import embed
         # embed()
 
-        X[cat_cols] = X[cat_cols].astype("category")
+        X[cat_cols] = X[cat_cols].astype("str")
         y_preds += [estimator.predict_proba(X)[:, 1] for estimator in self.estimators[10:15]]
         
         # X[cat_cols_470] = X[cat_cols_470].astype("category")
