@@ -1316,8 +1316,6 @@ class VotingModel(BaseEstimator, RegressorMixin):
 
         X[cat_cols_470] = X[cat_cols_470].astype("category")
         y_preds += [estimator.predict_proba(X[df_train_470])[:, 1] for estimator in self.estimators[10:15]]
-        
-        # X[cat_cols_470] = X[cat_cols_470].astype("category")
         # y_preds += [estimator.predict(X[df_train_470]) for estimator in self.estimators[25:30]]
 
         return np.mean(y_preds, axis=0)
