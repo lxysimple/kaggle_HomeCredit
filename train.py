@@ -1316,11 +1316,11 @@ class VotingModel(BaseEstimator, RegressorMixin):
         # embed()
 
         X[cat_cols_829] = X[cat_cols_829].astype("str")
-        # y_preds += [estimator.predict_proba(X[df_train_829])[:, 1] for estimator in self.estimators[0:5]]
-        # y_preds += [estimator.predict_proba(X[df_train_386])[:, 1] for estimator in self.estimators[5:10]]
+        y_preds += [estimator.predict_proba(X[df_train_829])[:, 1] for estimator in self.estimators[0:5]]
+        y_preds += [estimator.predict_proba(X[df_train_386])[:, 1] for estimator in self.estimators[5:10]]
        
         X[cat_cols_829] = X[cat_cols_829].astype("category")
-        # y_preds += [estimator.predict(X[df_train_829]) for estimator in self.estimators[15:20]]
+        y_preds += [estimator.predict(X[df_train_829]) for estimator in self.estimators[15:20]]
         y_preds += [estimator.predict(X[df_train_386]) for estimator in self.estimators[20:25]]
         
         return np.mean(y_preds, axis=0)
@@ -1352,8 +1352,8 @@ model = VotingModel(fitted_models_cat1 + fitted_models_cat2 +fitted_models_cat3+
 # 5min
 print('开始计算cv')
 valid_score = []
-# valid_preds = model.predict_proba_scan(df_train_scan)
-# valid_score += [roc_auc_score(y_scan, valid_preds)]
+valid_preds = model.predict_proba_scan(df_train_scan)
+valid_score += [roc_auc_score(y_scan, valid_preds)]
 print(valid_score)
 valid_preds += model.predict_proba(df_train)
 valid_score += [roc_auc_score(y, valid_preds)]
