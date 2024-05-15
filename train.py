@@ -1034,13 +1034,13 @@ cv = StratifiedGroupKFold(n_splits=5, shuffle=False)
 
 
 # 找到除cat_cols列外的所有列
-non_cat_cols = df_train.columns.difference(cat_cols) 
-print('cat_cols:')
-print('len(cat_cols):',len(cat_cols))
-print(cat_cols)
-print('df_train.columns')
-print("len(list(df_train.columns)): ", len(list(df_train.columns)))
-print(list(df_train.columns))
+# non_cat_cols = df_train.columns.difference(cat_cols) 
+# print('cat_cols:')
+# print('len(cat_cols):',len(cat_cols))
+# print(cat_cols)
+# print('df_train.columns')
+# print("len(list(df_train.columns)): ", len(list(df_train.columns)))
+# print(list(df_train.columns))
 
 
 # ======================================== 特征列分类 =====================================
@@ -1313,7 +1313,7 @@ class VotingModel(BaseEstimator, RegressorMixin):
     def fit(self, X, y=None):
         return self
 
-    def predict_proba(self, X, X_scan, fold):
+    def predict_proba(self, X, fold):
         fold = fold -1
         y_preds = []
 
@@ -1323,13 +1323,11 @@ class VotingModel(BaseEstimator, RegressorMixin):
         X[cat_cols] = X[cat_cols].astype("str")
         y_preds += [estimator.predict_proba(X[df_train_829])[:, 1] for estimator in [self.estimators[0+fold]]]
         y_preds += [estimator.predict_proba(X[df_train_386])[:, 1] for estimator in [self.estimators[5+fold]]]
-        # y_preds += [estimator.predict_proba(X[df_train])[:, 1] for estimator in [self.estimators[10+fold]]]
-        
+       
         X[cat_cols] = X[cat_cols].astype("category")
         y_preds += [estimator.predict(X[df_train_829]) for estimator in [self.estimators[15+fold]]]
         y_preds += [estimator.predict(X[df_train_386]) for estimator in [self.estimators[20+fold]]]
-        # y_preds += [estimator.predict(X_scan[df_train]) for estimator in [self.estimators[25+fold]]]
-
+        
         return np.mean(y_preds, axis=0)
     
     def predict_proba_scan(self, X, fold):
@@ -1375,8 +1373,8 @@ for  df_train_idx, df_train_scan_idx in zip(cv.split(df_train, y, groups=weeks),
     X_valid_scan, y_valid_scan = df_train_scan.iloc[idx_valid_scan], y_scan.iloc[idx_valid_scan]       
 
     # X_valid样本顺序=X_valid_scan样本顺序，所以共享一个标签集
-    print(X_valid)
-    print(X_valid_scan)
+    # print(X_valid)
+    # print(X_valid_scan)
 
     valid_preds = model.predict_proba_scan(X_valid, fold)
     valid_preds = valid_preds + model.predict_proba(X_valid_scan, fold)
