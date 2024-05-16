@@ -1378,7 +1378,7 @@ model = VotingModel(fitted_models_cat1 + fitted_models_cat2 +fitted_models_cat3+
 # 5min
 print('开始计算cv')
 valid_score = []
-valid_preds = model.predict_proba_scan(df_train) # df_train消掉了额外的两个特征列
+valid_preds = model.predict_proba_scan(df_train) # df_train消掉了额外的2个特征列
 valid_score += [roc_auc_score(y_scan, valid_preds)]
 print(valid_score)
 # valid_preds = model.predict_proba(df_train)
