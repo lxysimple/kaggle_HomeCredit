@@ -1241,7 +1241,6 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
 # #         early_stopping_rounds = 500,
 #     )
 
-    random_seed=3107
     clf.fit(
         train_pool, 
         eval_set=val_pool,
