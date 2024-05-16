@@ -1227,7 +1227,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
      
 
 #     clf = CatBoostClassifier( 
-#         best_model_min_trees = 1000,
+#         best_model_min_trees = 1200, # 1000
 #         boosting_type = "Plain",
 #         eval_metric = "AUC",
 #         iterations = 6000,
