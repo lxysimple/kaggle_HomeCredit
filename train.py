@@ -1072,6 +1072,17 @@ df_train[cat_cols] = df_train[cat_cols].astype(str)
 
 # ======================================== 特征列分类 =====================================
 
+from IPython import embed
+embed()
+
+res = []
+for i in non_cat_cols_470:
+    t = i.type()
+print(non_cat_cols_470 )
+
+
+non_cat_cols_cat_470
+
 # ======================================== 训练3树模型 =====================================
 
 # fitted_models_cat = []
