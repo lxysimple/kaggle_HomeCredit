@@ -1072,15 +1072,19 @@ print('len(non_cat_cols_829): ', len(non_cat_cols_829))
 
 df_train[cat_cols] = df_train[cat_cols].astype(str)
 
+
+# ==================================================
+# """ 统计所有数据列类型并保存脚本 """
+# from IPython import embed
+# embed()
+# df_train[non_cat_cols_cat_470].dtypes
+# dtypes_list_str = [str(dtype) for dtype in df_train[non_cat_cols_cat_470].dtypes.values]
+# print(dtypes_list_str)
+# ==================================================
+
 # ======================================== 特征列分类 =====================================
 
-from IPython import embed
-embed()
 
-df_train[non_cat_cols_cat_470].dtypes
-
-dtypes_list_str = [str(dtype) for dtype in df_train[non_cat_cols_cat_470].dtypes.values]
-print(dtypes_list_str)
 
 # ======================================== 训练3树模型 =====================================
 
