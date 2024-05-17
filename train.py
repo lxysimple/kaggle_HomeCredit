@@ -58,831 +58,831 @@ from functools import lru_cache
 # df_train = pd.read_csv('/home/xyli/kaggle/kaggle_HomeCredit/train832.csv', nrows=50000)
 # df_train = pd.read_csv('/home/xyli/kaggle/kaggle_HomeCredit/train389FE.csv')
 # df_train = pd.read_csv('/home/xyli/kaggle/kaggle_HomeCredit/train419.csv')
-# df_train = pd.read_csv('/home/xyli/kaggle/kaggle_HomeCredit/train389.csv')
+df_train = pd.read_csv('/home/xyli/kaggle/kaggle_HomeCredit/train389.csv')
 
 
 
 
 
-class Pipeline:
+# class Pipeline:
   
-    def set_table_dtypes(df):
-        for col in df.columns:
-            if col in ["case_id", "WEEK_NUM", "num_group1", "num_group2"]:
-                df = df.with_columns(pl.col(col).cast(pl.Int64))
-            elif col in ["date_decision"]:
-                df = df.with_columns(pl.col(col).cast(pl.Date))
-            elif col[-1] in ("P", "A"):
-                df = df.with_columns(pl.col(col).cast(pl.Float64))
-            elif col[-1] in ("M",):
-                df = df.with_columns(pl.col(col).cast(pl.String))
-            elif col[-1] in ("D",):
-                df = df.with_columns(pl.col(col).cast(pl.Date))
-        return df
+#     def set_table_dtypes(df):
+#         for col in df.columns:
+#             if col in ["case_id", "WEEK_NUM", "num_group1", "num_group2"]:
+#                 df = df.with_columns(pl.col(col).cast(pl.Int64))
+#             elif col in ["date_decision"]:
+#                 df = df.with_columns(pl.col(col).cast(pl.Date))
+#             elif col[-1] in ("P", "A"):
+#                 df = df.with_columns(pl.col(col).cast(pl.Float64))
+#             elif col[-1] in ("M",):
+#                 df = df.with_columns(pl.col(col).cast(pl.String))
+#             elif col[-1] in ("D",):
+#                 df = df.with_columns(pl.col(col).cast(pl.Date))
+#         return df
 
 
 
-    def handle_dates(df):
-        for col in df.columns:
-            if col[-1] in ("D",):
-                # 可能默认替换表达式中第1个列名吧
-                df = df.with_columns(pl.col(col) - pl.col("date_decision"))  #!!?
-                df = df.with_columns(pl.col(col).dt.total_days()) # t - t-1
-        df = df.drop("date_decision", "MONTH")
-        return df
+#     def handle_dates(df):
+#         for col in df.columns:
+#             if col[-1] in ("D",):
+#                 # 可能默认替换表达式中第1个列名吧
+#                 df = df.with_columns(pl.col(col) - pl.col("date_decision"))  #!!?
+#                 df = df.with_columns(pl.col(col).dt.total_days()) # t - t-1
+#         df = df.drop("date_decision", "MONTH")
+#         return df
 
     
 
-    def filter_cols(df):
-        for col in df.columns:
-            if col not in ["target", "case_id", "WEEK_NUM"]:
-                isnull = df[col].is_null().mean()
-                # if isnull > 0.7:
-                # if isnull > 0.95:
-                if isnull == 1:
-#                 if isnull > 0.99:
-                    df = df.drop(col)
+#     def filter_cols(df):
+#         for col in df.columns:
+#             if col not in ["target", "case_id", "WEEK_NUM"]:
+#                 isnull = df[col].is_null().mean()
+#                 # if isnull > 0.7:
+#                 # if isnull > 0.95:
+#                 if isnull == 1:
+# #                 if isnull > 0.99:
+#                     df = df.drop(col)
         
-        for col in df.columns:
-            if (col not in ["target", "case_id", "WEEK_NUM"]) & (df[col].dtype == pl.String):
-                freq = df[col].n_unique()
-                if (freq == 1) | (freq > 200):
-                # if freq > 200:
-#                 if (freq == 1) | (freq > 400):
-#                 if (freq == 1):
-                    df = df.drop(col)
+#         for col in df.columns:
+#             if (col not in ["target", "case_id", "WEEK_NUM"]) & (df[col].dtype == pl.String):
+#                 freq = df[col].n_unique()
+#                 if (freq == 1) | (freq > 200):
+#                 # if freq > 200:
+# #                 if (freq == 1) | (freq > 400):
+# #                 if (freq == 1):
+#                     df = df.drop(col)
         
-        return df
+#         return df
     
-def handle_dates(df: pl.DataFrame) -> pl.DataFrame:
-        """
-        Handles date columns in the DataFrame.
+# def handle_dates(df: pl.DataFrame) -> pl.DataFrame:
+#         """
+#         Handles date columns in the DataFrame.
 
-        Args:
-        - df (pl.DataFrame): Input DataFrame.
+#         Args:
+#         - df (pl.DataFrame): Input DataFrame.
 
-        Returns:
-        - pl.DataFrame: DataFrame with transformed date columns.
-        """
-        for col in df.columns:
-            if col.endswith("D"):
-                df = df.with_columns(pl.col(col) - pl.col("date_decision"))
-                df = df.with_columns(pl.col(col).dt.total_days().cast(pl.Int32))
+#         Returns:
+#         - pl.DataFrame: DataFrame with transformed date columns.
+#         """
+#         for col in df.columns:
+#             if col.endswith("D"):
+#                 df = df.with_columns(pl.col(col) - pl.col("date_decision"))
+#                 df = df.with_columns(pl.col(col).dt.total_days().cast(pl.Int32))
 
-        df = df.rename(
-            {
-                "MONTH": "month",
-                "WEEK_NUM": "week_num"
-            }
-        )
+#         df = df.rename(
+#             {
+#                 "MONTH": "month",
+#                 "WEEK_NUM": "week_num"
+#             }
+#         )
                 
-        df = df.with_columns(
-            [
-                pl.col("date_decision").dt.year().alias("year").cast(pl.Int16),
-                pl.col("date_decision").dt.day().alias("day").cast(pl.UInt8),
-            ]
-        )
+#         df = df.with_columns(
+#             [
+#                 pl.col("date_decision").dt.year().alias("year").cast(pl.Int16),
+#                 pl.col("date_decision").dt.day().alias("day").cast(pl.UInt8),
+#             ]
+#         )
 
-        return df.drop("date_decision")
+#         return df.drop("date_decision")
 
-def filter_cols(df: pl.DataFrame) -> pl.DataFrame:
-    """
-    Filters columns in the DataFrame based on null percentage and unique values for string columns.
+# def filter_cols(df: pl.DataFrame) -> pl.DataFrame:
+#     """
+#     Filters columns in the DataFrame based on null percentage and unique values for string columns.
 
-    Args:
-    - df (pl.DataFrame): Input DataFrame.
+#     Args:
+#     - df (pl.DataFrame): Input DataFrame.
 
-    Returns:
-    - pl.DataFrame: DataFrame with filtered columns.
-    """
-    for col in df.columns:
-        if col not in ["case_id", "year", "month", "week_num", "target"]:
-            null_pct = df[col].is_null().mean()
+#     Returns:
+#     - pl.DataFrame: DataFrame with filtered columns.
+#     """
+#     for col in df.columns:
+#         if col not in ["case_id", "year", "month", "week_num", "target"]:
+#             null_pct = df[col].is_null().mean()
 
-            if null_pct > 0.95:
-            # if null_pct == 1: 
-                df = df.drop(col) 
+#             if null_pct > 0.95:
+#             # if null_pct == 1: 
+#                 df = df.drop(col) 
 
-    for col in df.columns:
-        if (col not in ["case_id", "year", "month", "week_num", "target"]) & (
-            df[col].dtype == pl.String
-        ):
-            freq = df[col].n_unique()
+#     for col in df.columns:
+#         if (col not in ["case_id", "year", "month", "week_num", "target"]) & (
+#             df[col].dtype == pl.String
+#         ):
+#             freq = df[col].n_unique()
 
-            if (freq > 200) | (freq == 1):
-                df = df.drop(col)
+#             if (freq > 200) | (freq == 1):
+#                 df = df.drop(col)
 
-    return df
+#     return df
 
-def transform_cols(df: pl.DataFrame) -> pl.DataFrame:
-    """
-    Transforms columns in the DataFrame according to predefined rules.
+# def transform_cols(df: pl.DataFrame) -> pl.DataFrame:
+#     """
+#     Transforms columns in the DataFrame according to predefined rules.
 
-    Args:
-    - df (pl.DataFrame): Input DataFrame.
+#     Args:
+#     - df (pl.DataFrame): Input DataFrame.
 
-    Returns:
-    - pl.DataFrame: DataFrame with transformed columns.
-    """
-    if "riskassesment_302T" in df.columns:
-        if df["riskassesment_302T"].dtype == pl.Null:
-            df = df.with_columns(
-                [
-                    pl.Series(
-                        "riskassesment_302T_rng", df["riskassesment_302T"], pl.UInt8
-                    ),
-                    pl.Series(
-                        "riskassesment_302T_mean", df["riskassesment_302T"], pl.UInt8
-                    ),
-                ]
-            )
-        else:
-            pct_low: pl.Series = (
-                df["riskassesment_302T"]
-                .str.split(" - ")
-                .apply(lambda x: x[0].replace("%", ""))
-                .cast(pl.UInt8)
-            )
-            pct_high: pl.Series = (
-                df["riskassesment_302T"]
-                .str.split(" - ")
-                .apply(lambda x: x[1].replace("%", ""))
-                .cast(pl.UInt8)
-            )
+#     Returns:
+#     - pl.DataFrame: DataFrame with transformed columns.
+#     """
+#     if "riskassesment_302T" in df.columns:
+#         if df["riskassesment_302T"].dtype == pl.Null:
+#             df = df.with_columns(
+#                 [
+#                     pl.Series(
+#                         "riskassesment_302T_rng", df["riskassesment_302T"], pl.UInt8
+#                     ),
+#                     pl.Series(
+#                         "riskassesment_302T_mean", df["riskassesment_302T"], pl.UInt8
+#                     ),
+#                 ]
+#             )
+#         else:
+#             pct_low: pl.Series = (
+#                 df["riskassesment_302T"]
+#                 .str.split(" - ")
+#                 .apply(lambda x: x[0].replace("%", ""))
+#                 .cast(pl.UInt8)
+#             )
+#             pct_high: pl.Series = (
+#                 df["riskassesment_302T"]
+#                 .str.split(" - ")
+#                 .apply(lambda x: x[1].replace("%", ""))
+#                 .cast(pl.UInt8)
+#             )
 
-            diff: pl.Series = pct_high - pct_low
-            avg: pl.Series = ((pct_low + pct_high) / 2).cast(pl.Float32)
+#             diff: pl.Series = pct_high - pct_low
+#             avg: pl.Series = ((pct_low + pct_high) / 2).cast(pl.Float32)
 
-            del pct_high, pct_low
-            gc.collect()
+#             del pct_high, pct_low
+#             gc.collect()
 
-            df = df.with_columns(
-                [
-                    diff.alias("riskassesment_302T_rng"),
-                    avg.alias("riskassesment_302T_mean"),
-                ]
-            )
+#             df = df.with_columns(
+#                 [
+#                     diff.alias("riskassesment_302T_rng"),
+#                     avg.alias("riskassesment_302T_mean"),
+#                 ]
+#             )
 
-        df.drop("riskassesment_302T")
+#         df.drop("riskassesment_302T")
 
-    return df
+#     return df
 
-class Aggregator2:
-    @staticmethod
-    def max_expr(df: pl.LazyFrame) -> list[pl.Series]:
-        """
-        Generates expressions for calculating maximum values for specific columns.
+# class Aggregator2:
+#     @staticmethod
+#     def max_expr(df: pl.LazyFrame) -> list[pl.Series]:
+#         """
+#         Generates expressions for calculating maximum values for specific columns.
 
-        Args:
-        - df (pl.LazyFrame): Input LazyFrame.
+#         Args:
+#         - df (pl.LazyFrame): Input LazyFrame.
 
-        Returns:
-        - list[pl.Series]: List of expressions for maximum values.
-        """
-        cols: list[str] = [
-            col
-            for col in df.columns
-            if (col[-1] in ("P", "M", "A", "D", "T", "L")) or ("num_group" in col)
-        ]
+#         Returns:
+#         - list[pl.Series]: List of expressions for maximum values.
+#         """
+#         cols: list[str] = [
+#             col
+#             for col in df.columns
+#             if (col[-1] in ("P", "M", "A", "D", "T", "L")) or ("num_group" in col)
+#         ]
 
-        expr_max: list[pl.Series] = [
-            pl.col(col).max().alias(f"max_{col}") for col in cols
-        ]
+#         expr_max: list[pl.Series] = [
+#             pl.col(col).max().alias(f"max_{col}") for col in cols
+#         ]
 
-        return expr_max
+#         return expr_max
 
-    @staticmethod
-    def min_expr(df: pl.LazyFrame) -> list[pl.Series]:
-        """
-        Generates expressions for calculating minimum values for specific columns.
+#     @staticmethod
+#     def min_expr(df: pl.LazyFrame) -> list[pl.Series]:
+#         """
+#         Generates expressions for calculating minimum values for specific columns.
 
-        Args:
-        - df (pl.LazyFrame): Input LazyFrame.
+#         Args:
+#         - df (pl.LazyFrame): Input LazyFrame.
 
-        Returns:
-        - list[pl.Series]: List of expressions for minimum values.
-        """
-        cols: list[str] = [
-            col
-            for col in df.columns
-            if (col[-1] in ("P", "M", "A", "D", "T", "L")) or ("num_group" in col)
-        ]
+#         Returns:
+#         - list[pl.Series]: List of expressions for minimum values.
+#         """
+#         cols: list[str] = [
+#             col
+#             for col in df.columns
+#             if (col[-1] in ("P", "M", "A", "D", "T", "L")) or ("num_group" in col)
+#         ]
 
-        expr_min: list[pl.Series] = [
-            pl.col(col).min().alias(f"min_{col}") for col in cols
-        ]
+#         expr_min: list[pl.Series] = [
+#             pl.col(col).min().alias(f"min_{col}") for col in cols
+#         ]
 
-        return expr_min
+#         return expr_min
 
-    @staticmethod
-    def mean_expr(df: pl.LazyFrame) -> list[pl.Series]:
-        """
-        Generates expressions for calculating mean values for specific columns.
+#     @staticmethod
+#     def mean_expr(df: pl.LazyFrame) -> list[pl.Series]:
+#         """
+#         Generates expressions for calculating mean values for specific columns.
 
-        Args:
-        - df (pl.LazyFrame): Input LazyFrame.
+#         Args:
+#         - df (pl.LazyFrame): Input LazyFrame.
 
-        Returns:
-        - list[pl.Series]: List of expressions for mean values.
-        """
-        cols: list[str] = [col for col in df.columns if col.endswith(("P", "A", "D"))]
+#         Returns:
+#         - list[pl.Series]: List of expressions for mean values.
+#         """
+#         cols: list[str] = [col for col in df.columns if col.endswith(("P", "A", "D"))]
 
-        expr_mean: list[pl.Series] = [
-            pl.col(col).mean().alias(f"mean_{col}") for col in cols
-        ]
+#         expr_mean: list[pl.Series] = [
+#             pl.col(col).mean().alias(f"mean_{col}") for col in cols
+#         ]
 
-        return expr_mean
+#         return expr_mean
 
-    @staticmethod
-    def var_expr(df: pl.LazyFrame) -> list[pl.Series]:
-        """
-        Generates expressions for calculating variance for specific columns.
+#     @staticmethod
+#     def var_expr(df: pl.LazyFrame) -> list[pl.Series]:
+#         """
+#         Generates expressions for calculating variance for specific columns.
 
-        Args:
-        - df (pl.LazyFrame): Input LazyFrame.
+#         Args:
+#         - df (pl.LazyFrame): Input LazyFrame.
 
-        Returns:
-        - list[pl.Series]: List of expressions for variance.
-        """
-        cols: list[str] = [col for col in df.columns if col.endswith(("P", "A", "D"))]
+#         Returns:
+#         - list[pl.Series]: List of expressions for variance.
+#         """
+#         cols: list[str] = [col for col in df.columns if col.endswith(("P", "A", "D"))]
 
-        expr_mean: list[pl.Series] = [
-            pl.col(col).var().alias(f"var_{col}") for col in cols
-        ]
+#         expr_mean: list[pl.Series] = [
+#             pl.col(col).var().alias(f"var_{col}") for col in cols
+#         ]
 
-        return expr_mean
+#         return expr_mean
 
-    @staticmethod
-    def mode_expr(df: pl.LazyFrame) -> list[pl.Series]:
-        """
-        Generates expressions for calculating mode values for specific columns.
+#     @staticmethod
+#     def mode_expr(df: pl.LazyFrame) -> list[pl.Series]:
+#         """
+#         Generates expressions for calculating mode values for specific columns.
 
-        Args:
-        - df (pl.LazyFrame): Input LazyFrame.
+#         Args:
+#         - df (pl.LazyFrame): Input LazyFrame.
 
-        Returns:
-        - list[pl.Series]: List of expressions for mode values.
-        """
-        cols: list[str] = [col for col in df.columns if col.endswith("M")]
+#         Returns:
+#         - list[pl.Series]: List of expressions for mode values.
+#         """
+#         cols: list[str] = [col for col in df.columns if col.endswith("M")]
 
-        expr_mode: list[pl.Series] = [
-            pl.col(col).drop_nulls().mode().first().alias(f"mode_{col}") for col in cols
-        ]
+#         expr_mode: list[pl.Series] = [
+#             pl.col(col).drop_nulls().mode().first().alias(f"mode_{col}") for col in cols
+#         ]
 
-        return expr_mode
+#         return expr_mode
 
-    @staticmethod
-    def get_exprs(df: pl.LazyFrame) -> list[pl.Series]:
-        """
-        Combines expressions for maximum, mean, and variance calculations.
+#     @staticmethod
+#     def get_exprs(df: pl.LazyFrame) -> list[pl.Series]:
+#         """
+#         Combines expressions for maximum, mean, and variance calculations.
 
-        Args:
-        - df (pl.LazyFrame): Input LazyFrame.
+#         Args:
+#         - df (pl.LazyFrame): Input LazyFrame.
 
-        Returns:
-        - list[pl.Series]: List of combined expressions.
-        """
-        exprs = (
-            Aggregator2.max_expr(df) + Aggregator2.mean_expr(df) + Aggregator2.var_expr(df)
-        )
+#         Returns:
+#         - list[pl.Series]: List of combined expressions.
+#         """
+#         exprs = (
+#             Aggregator2.max_expr(df) + Aggregator2.mean_expr(df) + Aggregator2.var_expr(df)
+#         )
 
-        return exprs
+#         return exprs
 
 
-class Aggregator:
-    #Please add or subtract features yourself, be aware that too many features will take up too much space.
-    def num_expr(df):
-        # P是逾期天数，A是借贷数目
-        # 感觉1个均值即可
-        cols = [col for col in df.columns if col[-1] in ("P", "A")]
+# class Aggregator:
+#     #Please add or subtract features yourself, be aware that too many features will take up too much space.
+#     def num_expr(df):
+#         # P是逾期天数，A是借贷数目
+#         # 感觉1个均值即可
+#         cols = [col for col in df.columns if col[-1] in ("P", "A")]
         
-        expr_max = [pl.max(col).alias(f"max_{col}") for col in cols]
-        expr_min = [pl.min(col).alias(f"min_{col}") for col in cols] # 原本是忽略的
+#         expr_max = [pl.max(col).alias(f"max_{col}") for col in cols]
+#         expr_min = [pl.min(col).alias(f"min_{col}") for col in cols] # 原本是忽略的
         
-        expr_last = [pl.last(col).alias(f"last_{col}") for col in cols]
-        expr_first = [pl.first(col).alias(f"first_{col}") for col in cols] # 原本是忽略的
+#         expr_last = [pl.last(col).alias(f"last_{col}") for col in cols]
+#         expr_first = [pl.first(col).alias(f"first_{col}") for col in cols] # 原本是忽略的
         
-        expr_mean = [pl.mean(col).alias(f"mean_{col}") for col in cols]
+#         expr_mean = [pl.mean(col).alias(f"mean_{col}") for col in cols]
 
-        # my code
-        expr_std = [pl.std(col).alias(f"std_{col}") for col in cols]
-        expr_sum = [pl.sum(col).alias(f"sum_{col}") for col in cols]
-        expr_var = [pl.var(col).alias(f"var_{col}") for col in cols]
+#         # my code
+#         expr_std = [pl.std(col).alias(f"std_{col}") for col in cols]
+#         expr_sum = [pl.sum(col).alias(f"sum_{col}") for col in cols]
+#         expr_var = [pl.var(col).alias(f"var_{col}") for col in cols]
 
 
-        # 0.754300 排列顺序
-        # return expr_max + expr_min + expr_last + expr_first + expr_mean
+#         # 0.754300 排列顺序
+#         # return expr_max + expr_min + expr_last + expr_first + expr_mean
 
-        # return expr_max + expr_mean + expr_var # notebookv8 
-        return expr_max +expr_last+expr_mean # 829+386 
-        # return expr_max +expr_last+expr_mean+expr_var # 829+386 + notebookv8
+#         # return expr_max + expr_mean + expr_var # notebookv8 
+#         return expr_max +expr_last+expr_mean # 829+386 
+#         # return expr_max +expr_last+expr_mean+expr_var # 829+386 + notebookv8
 
     
     
-    def date_expr(df):
-        # D是借贷日期
-        # 感觉1个均值就行
-        cols = [col for col in df.columns if col[-1] in ("D")]
-        expr_max = [pl.max(col).alias(f"max_{col}") for col in cols]
-        expr_min = [pl.min(col).alias(f"min_{col}") for col in cols] # 原本是忽略的
+#     def date_expr(df):
+#         # D是借贷日期
+#         # 感觉1个均值就行
+#         cols = [col for col in df.columns if col[-1] in ("D")]
+#         expr_max = [pl.max(col).alias(f"max_{col}") for col in cols]
+#         expr_min = [pl.min(col).alias(f"min_{col}") for col in cols] # 原本是忽略的
 
-        expr_last = [pl.last(col).alias(f"last_{col}") for col in cols]
-        expr_first = [pl.first(col).alias(f"first_{col}") for col in cols] # 原本是忽略的
+#         expr_last = [pl.last(col).alias(f"last_{col}") for col in cols]
+#         expr_first = [pl.first(col).alias(f"first_{col}") for col in cols] # 原本是忽略的
         
-        expr_mean = [pl.mean(col).alias(f"mean_{col}") for col in cols]
-        expr_var = [pl.var(col).alias(f"var_{col}") for col in cols]
+#         expr_mean = [pl.mean(col).alias(f"mean_{col}") for col in cols]
+#         expr_var = [pl.var(col).alias(f"var_{col}") for col in cols]
 
-        # 0.754300 排列顺序
-        # return  expr_max + expr_min  +  expr_last + expr_first + expr_mean
+#         # 0.754300 排列顺序
+#         # return  expr_max + expr_min  +  expr_last + expr_first + expr_mean
 
-        # return expr_max + expr_mean + expr_var # notebookv8
-        return  expr_max +expr_last+expr_mean # 829+386
-        # return  expr_max +expr_last+expr_mean+expr_var # 829+386+notebookv8 
+#         # return expr_max + expr_mean + expr_var # notebookv8
+#         return  expr_max +expr_last+expr_mean # 829+386
+#         # return  expr_max +expr_last+expr_mean+expr_var # 829+386+notebookv8 
 
 
     
-    def str_expr(df):
-        # M是地址编号
-        # 1个人最多也就几个地址吧，感觉取2个就可以了
-        cols = [col for col in df.columns if col[-1] in ("M",)]
-        expr_max = [pl.max(col).alias(f"max_{col}") for col in cols]
-        expr_min = [pl.min(col).alias(f"min_{col}") for col in cols] # 原本是忽略的 
-        expr_last = [pl.last(col).alias(f"last_{col}") for col in cols]
-        expr_first = [pl.first(col).alias(f"first_{col}") for col in cols] # 原本是忽略的
-        expr_count = [pl.count(col).alias(f"count_{col}") for col in cols]
+#     def str_expr(df):
+#         # M是地址编号
+#         # 1个人最多也就几个地址吧，感觉取2个就可以了
+#         cols = [col for col in df.columns if col[-1] in ("M",)]
+#         expr_max = [pl.max(col).alias(f"max_{col}") for col in cols]
+#         expr_min = [pl.min(col).alias(f"min_{col}") for col in cols] # 原本是忽略的 
+#         expr_last = [pl.last(col).alias(f"last_{col}") for col in cols]
+#         expr_first = [pl.first(col).alias(f"first_{col}") for col in cols] # 原本是忽略的
+#         expr_count = [pl.count(col).alias(f"count_{col}") for col in cols]
 
-        # my code
-        expr_mean = [pl.mean(col).alias(f"mean_{col}") for col in cols]
-        expr_mode = [pl.col(col).drop_nulls().mode().first().alias(f'mode_{col}') for col in cols]
+#         # my code
+#         expr_mean = [pl.mean(col).alias(f"mean_{col}") for col in cols]
+#         expr_mode = [pl.col(col).drop_nulls().mode().first().alias(f'mode_{col}') for col in cols]
 
-        # 0.754300 排列顺序
-        # return  expr_max + expr_min + expr_last + expr_first + expr_count
-        
-
-        # return expr_max # notebookv8
-        return expr_max +expr_last # 829+386
-        # return  expr_max +expr_last # 829+386+notebookv8
-
-
-    def other_expr(df):
-        # T、L代表各种杂七杂八的信息
-        # 这一块可做特征工程提分，但粗略的来说1个均值更合适
-        cols = [col for col in df.columns if col[-1] in ("T", "L")]
-        expr_max = [pl.max(col).alias(f"max_{col}") for col in cols]
-        expr_min = [pl.min(col).alias(f"min_{col}") for col in cols] # 原本是忽略的
-        expr_last = [pl.last(col).alias(f"last_{col}") for col in cols]
-        expr_first = [pl.first(col).alias(f"first_{col}") for col in cols] # 原本是忽略的
+#         # 0.754300 排列顺序
+#         # return  expr_max + expr_min + expr_last + expr_first + expr_count
         
 
-        # my code 
-        expr_mean = [pl.mean(col).alias(f"mean_{col}") for col in cols]
-        expr_std = [pl.std(col).alias(f"std_{col}") for col in cols]
-        expr_sum = [pl.sum(col).alias(f"sum_{col}") for col in cols]
-        expr_var = [pl.var(col).alias(f"var_{col}") for col in cols]
-
-        # expr_product = [pl.product(col).alias(f"product_{col}") for col in cols]
-
-        # 0.754300 排列顺序
-        # return  expr_max + expr_min + expr_last + expr_first
+#         # return expr_max # notebookv8
+#         return expr_max +expr_last # 829+386
+#         # return  expr_max +expr_last # 829+386+notebookv8
 
 
-
-        # return expr_max # notebookv8
-        return  expr_max +expr_last # 829+386
-        # return  expr_max +expr_last # 829+386+notebookv8
-
-
-
-    
-    def count_expr(df):
+#     def other_expr(df):
+#         # T、L代表各种杂七杂八的信息
+#         # 这一块可做特征工程提分，但粗略的来说1个均值更合适
+#         cols = [col for col in df.columns if col[-1] in ("T", "L")]
+#         expr_max = [pl.max(col).alias(f"max_{col}") for col in cols]
+#         expr_min = [pl.min(col).alias(f"min_{col}") for col in cols] # 原本是忽略的
+#         expr_last = [pl.last(col).alias(f"last_{col}") for col in cols]
+#         expr_first = [pl.first(col).alias(f"first_{col}") for col in cols] # 原本是忽略的
         
-        # 其他一个case_id对应多条信息的，由于不知道具体是啥意思，所以统计特征用mean是比较好的感觉
-        cols = [col for col in df.columns if "num_group" in col]
-        expr_max = [pl.max(col).alias(f"max_{col}") for col in cols] 
-        expr_min = [pl.min(col).alias(f"min_{col}") for col in cols] # 原本是忽略的
-        expr_last = [pl.last(col).alias(f"last_{col}") for col in cols]
-        expr_first = [pl.first(col).alias(f"first_{col}") for col in cols] # 原本是忽略的
 
-        # my code 
-        expr_mean = [pl.mean(col).alias(f"mean_{col}") for col in cols]
-        expr_count = [pl.count(col).alias(f"count_{col}") for col in cols]
-        expr_var = [pl.var(col).alias(f"var_{col}") for col in cols]
+#         # my code 
+#         expr_mean = [pl.mean(col).alias(f"mean_{col}") for col in cols]
+#         expr_std = [pl.std(col).alias(f"std_{col}") for col in cols]
+#         expr_sum = [pl.sum(col).alias(f"sum_{col}") for col in cols]
+#         expr_var = [pl.var(col).alias(f"var_{col}") for col in cols]
 
-        # 0.755666 排列顺序
-        # return  expr_max + expr_min + expr_last + expr_first + expr_count
+#         # expr_product = [pl.product(col).alias(f"product_{col}") for col in cols]
+
+#         # 0.754300 排列顺序
+#         # return  expr_max + expr_min + expr_last + expr_first
 
 
-        # return expr_max # notebookv8
-        return  expr_max +expr_last # 829+386
-        # return  expr_max +expr_last # 829+386+notebookv8
+
+#         # return expr_max # notebookv8
+#         return  expr_max +expr_last # 829+386
+#         # return  expr_max +expr_last # 829+386+notebookv8
+
+
+
     
-    def get_exprs(df):
-        exprs = Aggregator.num_expr(df) + \
-                Aggregator.date_expr(df) + \
-                Aggregator.str_expr(df) + \
-                Aggregator.other_expr(df) + \
-                Aggregator.count_expr(df)
-
-        return exprs
-
-def read_file(path, depth=None):
-    df = pl.read_parquet(path)
-    df = df.pipe(Pipeline.set_table_dtypes)
-    if depth in [1,2]:
-        df = df.group_by("case_id").agg(Aggregator.get_exprs(df)) 
-    return df
-
-def read_files(regex_path, depth=None):
-    chunks = []
-    
-    for path in glob(str(regex_path)):
-        df = pl.read_parquet(path)
-        df = df.pipe(Pipeline.set_table_dtypes)
-        if depth in [1, 2]:
-            df = df.group_by("case_id").agg(Aggregator.get_exprs(df))
-        chunks.append(df)
-    
-    df = pl.concat(chunks, how="vertical_relaxed")
-    df = df.unique(subset=["case_id"])
-    return df
-
-def feature_eng(df_base, depth_0, depth_1, depth_2):
-    df_base = (
-        df_base
-        .with_columns(
-            month_decision = pl.col("date_decision").dt.month(),
-            weekday_decision = pl.col("date_decision").dt.weekday(),
-        )
-    )
-
-    for i, df in enumerate(depth_0 + depth_1 + depth_2):
-        df_base = df_base.join(df, how="left", on="case_id", suffix=f"_{i}")
-    
-    # for i, df in enumerate(depth_0):
-    #     df_base = df_base.join(df, how="left", on="case_id", suffix=f"_{i}")
-
-    df_base = df_base.pipe(Pipeline.handle_dates)
-    return df_base
-
-def to_pandas(df_data, cat_cols=None):
-
-    df_data = df_data.to_pandas()
-
-    if cat_cols is None:
-        cat_cols = list(df_data.select_dtypes("object").columns)
-    df_data[cat_cols] = df_data[cat_cols].astype("category")
-    return df_data, cat_cols
-
-
-def reduce_mem_usage(df):
-    """ iterate through all the columns of a dataframe and modify the data type
-        to reduce memory usage.        
-    """
-    start_mem = df.memory_usage().sum() / 1024**2
-    print('Memory usage of dataframe is {:.2f} MB'.format(start_mem))
-    
-    for col in df.columns:
-        col_type = df[col].dtype
-        if str(col_type)=="category":
-            continue
+#     def count_expr(df):
         
-        if col_type != object:
-            c_min = df[col].min()
-            c_max = df[col].max()
-            if str(col_type)[:3] == 'int':
-                if c_min > np.iinfo(np.int8).min and c_max < np.iinfo(np.int8).max:
-                    df[col] = df[col].astype(np.int8)
-                elif c_min > np.iinfo(np.int16).min and c_max < np.iinfo(np.int16).max:
-                    df[col] = df[col].astype(np.int16)
-                elif c_min > np.iinfo(np.int32).min and c_max < np.iinfo(np.int32).max:
-                    df[col] = df[col].astype(np.int32)
-                elif c_min > np.iinfo(np.int64).min and c_max < np.iinfo(np.int64).max:
-                    df[col] = df[col].astype(np.int64)  
-            else:
-                if c_min > np.finfo(np.float16).min and c_max < np.finfo(np.float16).max:
-                    df[col] = df[col].astype(np.float16)
-                elif c_min > np.finfo(np.float32).min and c_max < np.finfo(np.float32).max:
-                    df[col] = df[col].astype(np.float32)
-                else:
-                    df[col] = df[col].astype(np.float64)
-        else:
-            continue
-    end_mem = df.memory_usage().sum() / 1024**2
-    print('Memory usage after optimization is: {:.2f} MB'.format(end_mem))
-    print('Decreased by {:.1f}%'.format(100 * (start_mem - end_mem) / start_mem))
+#         # 其他一个case_id对应多条信息的，由于不知道具体是啥意思，所以统计特征用mean是比较好的感觉
+#         cols = [col for col in df.columns if "num_group" in col]
+#         expr_max = [pl.max(col).alias(f"max_{col}") for col in cols] 
+#         expr_min = [pl.min(col).alias(f"min_{col}") for col in cols] # 原本是忽略的
+#         expr_last = [pl.last(col).alias(f"last_{col}") for col in cols]
+#         expr_first = [pl.first(col).alias(f"first_{col}") for col in cols] # 原本是忽略的
+
+#         # my code 
+#         expr_mean = [pl.mean(col).alias(f"mean_{col}") for col in cols]
+#         expr_count = [pl.count(col).alias(f"count_{col}") for col in cols]
+#         expr_var = [pl.var(col).alias(f"var_{col}") for col in cols]
+
+#         # 0.755666 排列顺序
+#         # return  expr_max + expr_min + expr_last + expr_first + expr_count
+
+
+#         # return expr_max # notebookv8
+#         return  expr_max +expr_last # 829+386
+#         # return  expr_max +expr_last # 829+386+notebookv8
     
-    return df
+#     def get_exprs(df):
+#         exprs = Aggregator.num_expr(df) + \
+#                 Aggregator.date_expr(df) + \
+#                 Aggregator.str_expr(df) + \
+#                 Aggregator.other_expr(df) + \
+#                 Aggregator.count_expr(df)
 
+#         return exprs
 
-class SchemaGen:
-    @staticmethod
-    def change_dtypes(df: pl.LazyFrame) -> pl.LazyFrame:
-        """
-        Changes the data types of columns in the DataFrame.
+# def read_file(path, depth=None):
+#     df = pl.read_parquet(path)
+#     df = df.pipe(Pipeline.set_table_dtypes)
+#     if depth in [1,2]:
+#         df = df.group_by("case_id").agg(Aggregator.get_exprs(df)) 
+#     return df
 
-        Args:
-        - df (pl.LazyFrame): Input LazyFrame.
-
-        Returns:
-        - pl.LazyFrame: LazyFrame with modified data types.
-        """
-        for col in df.columns:
-            if col == "case_id":
-                df = df.with_columns(pl.col(col).cast(pl.UInt32).alias(col))
-            elif col in ["WEEK_NUM", "num_group1", "num_group2"]:
-                df = df.with_columns(pl.col(col).cast(pl.UInt16).alias(col))
-            elif col == "date_decision" or col[-1] == "D":
-                df = df.with_columns(pl.col(col).cast(pl.Date).alias(col))
-            elif col[-1] in ["P", "A"]:
-                df = df.with_columns(pl.col(col).cast(pl.Float64).alias(col))
-            elif col[-1] in ("M",):
-                df = df.with_columns(pl.col(col).cast(pl.String))
-        return df
-
-    @staticmethod
-    def scan_files(glob_path: str, depth: int = None) -> pl.LazyFrame:
-        """
-        Scans Parquet files matching the glob pattern and combines them into a LazyFrame.
-
-        Args:
-        - glob_path (str): Glob pattern to match Parquet files.
-        - depth (int, optional): Depth level for data aggregation. Defaults to None.
-
-        Returns:
-        - pl.LazyFrame: Combined LazyFrame.
-        """
-        chunks: list[pl.LazyFrame] = []
-        for path in glob(str(glob_path)):
-            df: pl.LazyFrame = pl.scan_parquet(
-                path, low_memory=True, rechunk=True
-            ).pipe(SchemaGen.change_dtypes)
-
-
-            print(f"File {Path(path).stem} loaded into memory.")
-
-            if depth in (1, 2):
-                exprs: list[pl.Series] = Aggregator.get_exprs(df)
-                df = df.group_by("case_id").agg(exprs)
-
-                del exprs
-                gc.collect()
-
-            chunks.append(df)
-
-        df = pl.concat(chunks, how="vertical_relaxed")
-
-        del chunks
-        gc.collect()
-
-        df = df.unique(subset=["case_id"])
-
-        return df
-
-    @staticmethod
-    def join_dataframes(
-        df_base: pl.LazyFrame,
-        depth_0: list[pl.LazyFrame],
-        depth_1: list[pl.LazyFrame],
-        depth_2: list[pl.LazyFrame],
-    ) -> pl.DataFrame:
-        """
-        Joins multiple LazyFrames with a base LazyFrame.
-
-        Args:
-        - df_base (pl.LazyFrame): Base LazyFrame.
-        - depth_0 (list[pl.LazyFrame]): List of LazyFrames for depth 0.
-        - depth_1 (list[pl.LazyFrame]): List of LazyFrames for depth 1.
-        - depth_2 (list[pl.LazyFrame]): List of LazyFrames for depth 2.
-
-        Returns:
-        - pl.DataFrame: Joined DataFrame.
-        """
-
-        # ===============================================================
-        # """ 为了兼容0.592的模型，我自己加上去的 """
-        # df_base = (
-        #     df_base
-        #     .with_columns(
-        #         month_decision = pl.col("date_decision").dt.month(),
-        #         weekday_decision = pl.col("date_decision").dt.weekday(),
-        #     )
-        # )
-        # ===============================================================
-
-        for i, df in enumerate(depth_0 + depth_1 + depth_2):
-            df_base = df_base.join(df, how="left", on="case_id", suffix=f"_{i}")
-
-        try: # 如果是lazyframe对象，则collect转化为dataframe
-            return df_base.collect().pipe(Utility.reduce_memory_usage, "df_train")
-        except: # 如果是dataframe则无需转化
-            return df_base.pipe(Utility.reduce_memory_usage, "df_train")
-
-
-class Utility:
+# def read_files(regex_path, depth=None):
+#     chunks = []
     
-    def reduce_memory_usage(df: pl.DataFrame, name) -> pl.DataFrame:
-        """
-        Reduces memory usage of a DataFrame by converting column types.
+#     for path in glob(str(regex_path)):
+#         df = pl.read_parquet(path)
+#         df = df.pipe(Pipeline.set_table_dtypes)
+#         if depth in [1, 2]:
+#             df = df.group_by("case_id").agg(Aggregator.get_exprs(df))
+#         chunks.append(df)
+    
+#     df = pl.concat(chunks, how="vertical_relaxed")
+#     df = df.unique(subset=["case_id"])
+#     return df
 
-        Args:
-        - df (pl.DataFrame): DataFrame to optimize.
-        - name (str): Name of the DataFrame.
+# def feature_eng(df_base, depth_0, depth_1, depth_2):
+#     df_base = (
+#         df_base
+#         .with_columns(
+#             month_decision = pl.col("date_decision").dt.month(),
+#             weekday_decision = pl.col("date_decision").dt.weekday(),
+#         )
+#     )
 
-        Returns:
-        - pl.DataFrame: Optimized DataFrame.
-        """
-        # print(
-        #     f"Memory usage of dataframe \"{name}\" is {round(df.estimated_size('mb'), 4)} MB."
-        # )
+#     for i, df in enumerate(depth_0 + depth_1 + depth_2):
+#         df_base = df_base.join(df, how="left", on="case_id", suffix=f"_{i}")
+    
+#     # for i, df in enumerate(depth_0):
+#     #     df_base = df_base.join(df, how="left", on="case_id", suffix=f"_{i}")
 
-        int_types = [
-            pl.Int8,
-            pl.Int16,
-            pl.Int32,
-            pl.Int64,
-            pl.UInt8,
-            pl.UInt16,
-            pl.UInt32,
-            pl.UInt64,
-        ]
-        float_types = [pl.Float32, pl.Float64]
+#     df_base = df_base.pipe(Pipeline.handle_dates)
+#     return df_base
 
-        for col in df.columns:
-            col_type = df[col].dtype
-            if col_type in int_types + float_types:
-                c_min = df[col].min()
-                c_max = df[col].max()
+# def to_pandas(df_data, cat_cols=None):
 
-                if c_min is not None and c_max is not None:
-                    if col_type in int_types:
-                        if c_min >= 0:
-                            if (
-                                c_min >= np.iinfo(np.uint8).min
-                                and c_max <= np.iinfo(np.uint8).max
-                            ):
-                                df = df.with_columns(df[col].cast(pl.UInt8))
-                            elif (
-                                c_min >= np.iinfo(np.uint16).min
-                                and c_max <= np.iinfo(np.uint16).max
-                            ):
-                                df = df.with_columns(df[col].cast(pl.UInt16))
-                            elif (
-                                c_min >= np.iinfo(np.uint32).min
-                                and c_max <= np.iinfo(np.uint32).max
-                            ):
-                                df = df.with_columns(df[col].cast(pl.UInt32))
-                            elif (
-                                c_min >= np.iinfo(np.uint64).min
-                                and c_max <= np.iinfo(np.uint64).max
-                            ):
-                                df = df.with_columns(df[col].cast(pl.UInt64))
-                        else:
-                            if (
-                                c_min >= np.iinfo(np.int8).min
-                                and c_max <= np.iinfo(np.int8).max
-                            ):
-                                df = df.with_columns(df[col].cast(pl.Int8))
-                            elif (
-                                c_min >= np.iinfo(np.int16).min
-                                and c_max <= np.iinfo(np.int16).max
-                            ):
-                                df = df.with_columns(df[col].cast(pl.Int16))
-                            elif (
-                                c_min >= np.iinfo(np.int32).min
-                                and c_max <= np.iinfo(np.int32).max
-                            ):
-                                df = df.with_columns(df[col].cast(pl.Int32))
-                            elif (
-                                c_min >= np.iinfo(np.int64).min
-                                and c_max <= np.iinfo(np.int64).max
-                            ):
-                                df = df.with_columns(df[col].cast(pl.Int64))
-                    elif col_type in float_types:
-                        if (
-                            c_min > np.finfo(np.float32).min
-                            and c_max < np.finfo(np.float32).max
-                        ):
-                            df = df.with_columns(df[col].cast(pl.Float32))
+#     df_data = df_data.to_pandas()
 
-        # print(
-        #     f"Memory usage of dataframe \"{name}\" became {round(df.estimated_size('mb'), 4)} MB."
-        # )
-
-        return df
+#     if cat_cols is None:
+#         cat_cols = list(df_data.select_dtypes("object").columns)
+#     df_data[cat_cols] = df_data[cat_cols].astype("category")
+#     return df_data, cat_cols
 
 
+# def reduce_mem_usage(df):
+#     """ iterate through all the columns of a dataframe and modify the data type
+#         to reduce memory usage.        
+#     """
+#     start_mem = df.memory_usage().sum() / 1024**2
+#     print('Memory usage of dataframe is {:.2f} MB'.format(start_mem))
+    
+#     for col in df.columns:
+#         col_type = df[col].dtype
+#         if str(col_type)=="category":
+#             continue
+        
+#         if col_type != object:
+#             c_min = df[col].min()
+#             c_max = df[col].max()
+#             if str(col_type)[:3] == 'int':
+#                 if c_min > np.iinfo(np.int8).min and c_max < np.iinfo(np.int8).max:
+#                     df[col] = df[col].astype(np.int8)
+#                 elif c_min > np.iinfo(np.int16).min and c_max < np.iinfo(np.int16).max:
+#                     df[col] = df[col].astype(np.int16)
+#                 elif c_min > np.iinfo(np.int32).min and c_max < np.iinfo(np.int32).max:
+#                     df[col] = df[col].astype(np.int32)
+#                 elif c_min > np.iinfo(np.int64).min and c_max < np.iinfo(np.int64).max:
+#                     df[col] = df[col].astype(np.int64)  
+#             else:
+#                 if c_min > np.finfo(np.float16).min and c_max < np.finfo(np.float16).max:
+#                     df[col] = df[col].astype(np.float16)
+#                 elif c_min > np.finfo(np.float32).min and c_max < np.finfo(np.float32).max:
+#                     df[col] = df[col].astype(np.float32)
+#                 else:
+#                     df[col] = df[col].astype(np.float64)
+#         else:
+#             continue
+#     end_mem = df.memory_usage().sum() / 1024**2
+#     print('Memory usage after optimization is: {:.2f} MB'.format(end_mem))
+#     print('Decreased by {:.1f}%'.format(100 * (start_mem - end_mem) / start_mem))
+    
+#     return df
 
-    def to_pandas(df: pl.DataFrame, cat_cols: list[str] = None) -> (pd.DataFrame, list[str]):  # type: ignore
-        """
-        Converts a Polars DataFrame to a Pandas DataFrame.
 
-        Args:
-        - df (pl.DataFrame): Polars DataFrame to convert.
-        - cat_cols (list[str]): List of categorical columns. Default is None.
+# class SchemaGen:
+#     @staticmethod
+#     def change_dtypes(df: pl.LazyFrame) -> pl.LazyFrame:
+#         """
+#         Changes the data types of columns in the DataFrame.
 
-        Returns:
-        - (pd.DataFrame, list[str]): Tuple containing the converted Pandas DataFrame and categorical columns.
-        """
-        df: pd.DataFrame = df.to_pandas()
+#         Args:
+#         - df (pl.LazyFrame): Input LazyFrame.
 
-        if cat_cols is None:
-            cat_cols = list(df.select_dtypes("object").columns)
+#         Returns:
+#         - pl.LazyFrame: LazyFrame with modified data types.
+#         """
+#         for col in df.columns:
+#             if col == "case_id":
+#                 df = df.with_columns(pl.col(col).cast(pl.UInt32).alias(col))
+#             elif col in ["WEEK_NUM", "num_group1", "num_group2"]:
+#                 df = df.with_columns(pl.col(col).cast(pl.UInt16).alias(col))
+#             elif col == "date_decision" or col[-1] == "D":
+#                 df = df.with_columns(pl.col(col).cast(pl.Date).alias(col))
+#             elif col[-1] in ["P", "A"]:
+#                 df = df.with_columns(pl.col(col).cast(pl.Float64).alias(col))
+#             elif col[-1] in ("M",):
+#                 df = df.with_columns(pl.col(col).cast(pl.String))
+#         return df
 
-        df[cat_cols] = df[cat_cols].astype("str")
+#     @staticmethod
+#     def scan_files(glob_path: str, depth: int = None) -> pl.LazyFrame:
+#         """
+#         Scans Parquet files matching the glob pattern and combines them into a LazyFrame.
 
-        return df, cat_cols
+#         Args:
+#         - glob_path (str): Glob pattern to match Parquet files.
+#         - depth (int, optional): Depth level for data aggregation. Defaults to None.
+
+#         Returns:
+#         - pl.LazyFrame: Combined LazyFrame.
+#         """
+#         chunks: list[pl.LazyFrame] = []
+#         for path in glob(str(glob_path)):
+#             df: pl.LazyFrame = pl.scan_parquet(
+#                 path, low_memory=True, rechunk=True
+#             ).pipe(SchemaGen.change_dtypes)
+
+
+#             print(f"File {Path(path).stem} loaded into memory.")
+
+#             if depth in (1, 2):
+#                 exprs: list[pl.Series] = Aggregator.get_exprs(df)
+#                 df = df.group_by("case_id").agg(exprs)
+
+#                 del exprs
+#                 gc.collect()
+
+#             chunks.append(df)
+
+#         df = pl.concat(chunks, how="vertical_relaxed")
+
+#         del chunks
+#         gc.collect()
+
+#         df = df.unique(subset=["case_id"])
+
+#         return df
+
+#     @staticmethod
+#     def join_dataframes(
+#         df_base: pl.LazyFrame,
+#         depth_0: list[pl.LazyFrame],
+#         depth_1: list[pl.LazyFrame],
+#         depth_2: list[pl.LazyFrame],
+#     ) -> pl.DataFrame:
+#         """
+#         Joins multiple LazyFrames with a base LazyFrame.
+
+#         Args:
+#         - df_base (pl.LazyFrame): Base LazyFrame.
+#         - depth_0 (list[pl.LazyFrame]): List of LazyFrames for depth 0.
+#         - depth_1 (list[pl.LazyFrame]): List of LazyFrames for depth 1.
+#         - depth_2 (list[pl.LazyFrame]): List of LazyFrames for depth 2.
+
+#         Returns:
+#         - pl.DataFrame: Joined DataFrame.
+#         """
+
+#         # ===============================================================
+#         # """ 为了兼容0.592的模型，我自己加上去的 """
+#         # df_base = (
+#         #     df_base
+#         #     .with_columns(
+#         #         month_decision = pl.col("date_decision").dt.month(),
+#         #         weekday_decision = pl.col("date_decision").dt.weekday(),
+#         #     )
+#         # )
+#         # ===============================================================
+
+#         for i, df in enumerate(depth_0 + depth_1 + depth_2):
+#             df_base = df_base.join(df, how="left", on="case_id", suffix=f"_{i}")
+
+#         try: # 如果是lazyframe对象，则collect转化为dataframe
+#             return df_base.collect().pipe(Utility.reduce_memory_usage, "df_train")
+#         except: # 如果是dataframe则无需转化
+#             return df_base.pipe(Utility.reduce_memory_usage, "df_train")
+
+
+# class Utility:
+    
+#     def reduce_memory_usage(df: pl.DataFrame, name) -> pl.DataFrame:
+#         """
+#         Reduces memory usage of a DataFrame by converting column types.
+
+#         Args:
+#         - df (pl.DataFrame): DataFrame to optimize.
+#         - name (str): Name of the DataFrame.
+
+#         Returns:
+#         - pl.DataFrame: Optimized DataFrame.
+#         """
+#         # print(
+#         #     f"Memory usage of dataframe \"{name}\" is {round(df.estimated_size('mb'), 4)} MB."
+#         # )
+
+#         int_types = [
+#             pl.Int8,
+#             pl.Int16,
+#             pl.Int32,
+#             pl.Int64,
+#             pl.UInt8,
+#             pl.UInt16,
+#             pl.UInt32,
+#             pl.UInt64,
+#         ]
+#         float_types = [pl.Float32, pl.Float64]
+
+#         for col in df.columns:
+#             col_type = df[col].dtype
+#             if col_type in int_types + float_types:
+#                 c_min = df[col].min()
+#                 c_max = df[col].max()
+
+#                 if c_min is not None and c_max is not None:
+#                     if col_type in int_types:
+#                         if c_min >= 0:
+#                             if (
+#                                 c_min >= np.iinfo(np.uint8).min
+#                                 and c_max <= np.iinfo(np.uint8).max
+#                             ):
+#                                 df = df.with_columns(df[col].cast(pl.UInt8))
+#                             elif (
+#                                 c_min >= np.iinfo(np.uint16).min
+#                                 and c_max <= np.iinfo(np.uint16).max
+#                             ):
+#                                 df = df.with_columns(df[col].cast(pl.UInt16))
+#                             elif (
+#                                 c_min >= np.iinfo(np.uint32).min
+#                                 and c_max <= np.iinfo(np.uint32).max
+#                             ):
+#                                 df = df.with_columns(df[col].cast(pl.UInt32))
+#                             elif (
+#                                 c_min >= np.iinfo(np.uint64).min
+#                                 and c_max <= np.iinfo(np.uint64).max
+#                             ):
+#                                 df = df.with_columns(df[col].cast(pl.UInt64))
+#                         else:
+#                             if (
+#                                 c_min >= np.iinfo(np.int8).min
+#                                 and c_max <= np.iinfo(np.int8).max
+#                             ):
+#                                 df = df.with_columns(df[col].cast(pl.Int8))
+#                             elif (
+#                                 c_min >= np.iinfo(np.int16).min
+#                                 and c_max <= np.iinfo(np.int16).max
+#                             ):
+#                                 df = df.with_columns(df[col].cast(pl.Int16))
+#                             elif (
+#                                 c_min >= np.iinfo(np.int32).min
+#                                 and c_max <= np.iinfo(np.int32).max
+#                             ):
+#                                 df = df.with_columns(df[col].cast(pl.Int32))
+#                             elif (
+#                                 c_min >= np.iinfo(np.int64).min
+#                                 and c_max <= np.iinfo(np.int64).max
+#                             ):
+#                                 df = df.with_columns(df[col].cast(pl.Int64))
+#                     elif col_type in float_types:
+#                         if (
+#                             c_min > np.finfo(np.float32).min
+#                             and c_max < np.finfo(np.float32).max
+#                         ):
+#                             df = df.with_columns(df[col].cast(pl.Float32))
+
+#         # print(
+#         #     f"Memory usage of dataframe \"{name}\" became {round(df.estimated_size('mb'), 4)} MB."
+#         # )
+
+#         return df
+
+
+
+#     def to_pandas(df: pl.DataFrame, cat_cols: list[str] = None) -> (pd.DataFrame, list[str]):  # type: ignore
+#         """
+#         Converts a Polars DataFrame to a Pandas DataFrame.
+
+#         Args:
+#         - df (pl.DataFrame): Polars DataFrame to convert.
+#         - cat_cols (list[str]): List of categorical columns. Default is None.
+
+#         Returns:
+#         - (pd.DataFrame, list[str]): Tuple containing the converted Pandas DataFrame and categorical columns.
+#         """
+#         df: pd.DataFrame = df.to_pandas()
+
+#         if cat_cols is None:
+#             cat_cols = list(df.select_dtypes("object").columns)
+
+#         df[cat_cols] = df[cat_cols].astype("str")
+
+#         return df, cat_cols
 
 
 
 
 
-ROOT            = Path("/home/xyli/kaggle")
+# ROOT            = Path("/home/xyli/kaggle")
 
-TRAIN_DIR       = ROOT / "parquet_files" / "train"
-TEST_DIR        = ROOT / "parquet_files" / "test"
+# TRAIN_DIR       = ROOT / "parquet_files" / "train"
+# TEST_DIR        = ROOT / "parquet_files" / "test"
 
-print('开始读取数据!')
+# print('开始读取数据!')
 
-# data_store = {
-#     "df_base": read_file(TRAIN_DIR / "train_base.parquet"),
-#     "depth_0": [
-#         read_file(TRAIN_DIR / "train_static_cb_0.parquet"),
-#         read_files(TRAIN_DIR / "train_static_0_*.parquet"),
+# # data_store = {
+# #     "df_base": read_file(TRAIN_DIR / "train_base.parquet"),
+# #     "depth_0": [
+# #         read_file(TRAIN_DIR / "train_static_cb_0.parquet"),
+# #         read_files(TRAIN_DIR / "train_static_0_*.parquet"),
+# #     ],
+# #     "depth_1": [
+# #         read_files(TRAIN_DIR / "train_applprev_1_*.parquet", 1),
+# #         read_file(TRAIN_DIR / "train_tax_registry_a_1.parquet", 1),
+# #         read_file(TRAIN_DIR / "train_tax_registry_b_1.parquet", 1),
+# #         read_file(TRAIN_DIR / "train_tax_registry_c_1.parquet", 1),
+# #         read_files(TRAIN_DIR / "train_credit_bureau_a_1_*.parquet", 1),
+# #         read_file(TRAIN_DIR / "train_credit_bureau_b_1.parquet", 1),
+# #         read_file(TRAIN_DIR / "train_other_1.parquet", 1),
+# #         read_file(TRAIN_DIR / "train_person_1.parquet", 1),
+# #         read_file(TRAIN_DIR / "train_deposit_1.parquet", 1),
+# #         read_file(TRAIN_DIR / "train_debitcard_1.parquet", 1),
+# #     ],
+# #     "depth_2": [
+# #         read_file(TRAIN_DIR / "train_credit_bureau_b_2.parquet", 2),
+# #         read_files(TRAIN_DIR / "train_credit_bureau_a_2_*.parquet", 2),
+
+# #         # 829+386
+# #         read_file(TRAIN_DIR / "train_applprev_2.parquet", 2),
+# #         read_file(TRAIN_DIR / "train_person_2.parquet", 2)
+# #     ]
+# # }
+
+# data_store:dict = {
+#     'df_base': SchemaGen.scan_files(TRAIN_DIR / 'train_base.parquet'),
+#     'depth_0': [
+#         SchemaGen.scan_files(TRAIN_DIR / 'train_static_cb_0.parquet'),
+#         SchemaGen.scan_files(TRAIN_DIR / 'train_static_0_*.parquet'),
 #     ],
-#     "depth_1": [
-#         read_files(TRAIN_DIR / "train_applprev_1_*.parquet", 1),
-#         read_file(TRAIN_DIR / "train_tax_registry_a_1.parquet", 1),
-#         read_file(TRAIN_DIR / "train_tax_registry_b_1.parquet", 1),
-#         read_file(TRAIN_DIR / "train_tax_registry_c_1.parquet", 1),
-#         read_files(TRAIN_DIR / "train_credit_bureau_a_1_*.parquet", 1),
-#         read_file(TRAIN_DIR / "train_credit_bureau_b_1.parquet", 1),
-#         read_file(TRAIN_DIR / "train_other_1.parquet", 1),
-#         read_file(TRAIN_DIR / "train_person_1.parquet", 1),
-#         read_file(TRAIN_DIR / "train_deposit_1.parquet", 1),
-#         read_file(TRAIN_DIR / "train_debitcard_1.parquet", 1),
+#     'depth_1': [
+#         SchemaGen.scan_files(TRAIN_DIR / 'train_applprev_1_*.parquet', 1),
+#         SchemaGen.scan_files(TRAIN_DIR / 'train_tax_registry_a_1.parquet', 1),
+#         SchemaGen.scan_files(TRAIN_DIR / 'train_tax_registry_b_1.parquet', 1),
+#         SchemaGen.scan_files(TRAIN_DIR / 'train_tax_registry_c_1.parquet', 1),
+#         SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_a_1_*.parquet', 1),
+#         SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_b_1.parquet', 1),
+#         SchemaGen.scan_files(TRAIN_DIR / 'train_other_1.parquet', 1),
+#         SchemaGen.scan_files(TRAIN_DIR / 'train_person_1.parquet', 1),
+#         SchemaGen.scan_files(TRAIN_DIR / 'train_deposit_1.parquet', 1),
+#         SchemaGen.scan_files(TRAIN_DIR / 'train_debitcard_1.parquet', 1),
 #     ],
-#     "depth_2": [
-#         read_file(TRAIN_DIR / "train_credit_bureau_b_2.parquet", 2),
-#         read_files(TRAIN_DIR / "train_credit_bureau_a_2_*.parquet", 2),
-
+#     'depth_2': [
+#         SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_a_2_*.parquet', 2),
+#         SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_b_2.parquet', 2),
+   
 #         # 829+386
-#         read_file(TRAIN_DIR / "train_applprev_2.parquet", 2),
-#         read_file(TRAIN_DIR / "train_person_2.parquet", 2)
+#         SchemaGen.scan_files(TRAIN_DIR / 'train_applprev_2.parquet', 2), 
+#         SchemaGen.scan_files(TRAIN_DIR / 'train_person_2.parquet', 2), 
 #     ]
 # }
 
-data_store:dict = {
-    'df_base': SchemaGen.scan_files(TRAIN_DIR / 'train_base.parquet'),
-    'depth_0': [
-        SchemaGen.scan_files(TRAIN_DIR / 'train_static_cb_0.parquet'),
-        SchemaGen.scan_files(TRAIN_DIR / 'train_static_0_*.parquet'),
-    ],
-    'depth_1': [
-        SchemaGen.scan_files(TRAIN_DIR / 'train_applprev_1_*.parquet', 1),
-        SchemaGen.scan_files(TRAIN_DIR / 'train_tax_registry_a_1.parquet', 1),
-        SchemaGen.scan_files(TRAIN_DIR / 'train_tax_registry_b_1.parquet', 1),
-        SchemaGen.scan_files(TRAIN_DIR / 'train_tax_registry_c_1.parquet', 1),
-        SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_a_1_*.parquet', 1),
-        SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_b_1.parquet', 1),
-        SchemaGen.scan_files(TRAIN_DIR / 'train_other_1.parquet', 1),
-        SchemaGen.scan_files(TRAIN_DIR / 'train_person_1.parquet', 1),
-        SchemaGen.scan_files(TRAIN_DIR / 'train_deposit_1.parquet', 1),
-        SchemaGen.scan_files(TRAIN_DIR / 'train_debitcard_1.parquet', 1),
-    ],
-    'depth_2': [
-        SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_a_2_*.parquet', 2),
-        SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_b_2.parquet', 2),
-   
-        # 829+386
-        SchemaGen.scan_files(TRAIN_DIR / 'train_applprev_2.parquet', 2), 
-        SchemaGen.scan_files(TRAIN_DIR / 'train_person_2.parquet', 2), 
-    ]
-}
-
-print('读取数据完毕！')
+# print('读取数据完毕！')
 
 
-df_eric = ['last_apprcommoditytypec_5251766M_encoded', 'max_debtoutstand_525A', 'max_actualdpd_943P', 'avg_lnamtstart24m_4525187A', 'sum_outstandtotalest_4493215A', 'max_pmts_overdue_1140A', 'max_employedfrom_700D', 'max_numberofoverdueinstlmax_1039L', 'mean_outstandingdebt_522A', 'sellerplacescnt_216L', 'max_credacc_credlmt_575A', 'max_pmtnum_8L', 'mean_monthlyinstlamount_674A', 'avg_installast24m_3658937A', 'responsedate_4917613D', 'numinstregularpaidest_4493210L', 'last_rejectcredamount_222A', 'nunique_empl_employedtotal_800L', 'nunique_collater_valueofguarantee_876L', 'totalsettled_863A', 'nunique_numberofinstls_229L', 'maxdpdinstldate_3546855D', 'annuitynextmonth_57A', 'mean_actualdpd_943P', 'last_credamount_590A', 'max_totaloutstanddebtvalue_39A', 'mastercontrexist_109L', 'last_collaterals_typeofguarante_359M_encoded', 'avg_pmtlast12m_4525200A', 'inittransactionamount_650A', 'nunique_numberofoverdueinstls_834L', 'max_pmts_overdue_1152A', 'downpmt_116A', 'weekday_decision', 'last_annuity_853A', 'clientscnt_533L', 'nunique_isbidproduct_390L', 'mean_credacc_credlmt_575A', 'max_isbidproduct_390L', 'nunique_numberofoverdueinstls_725L', 'last_contaddr_matchlist_1032L', 'firstdatedue_489D', 'posfstqpd30lastmonth_3976962P', 'max_outstandingamount_362A', 'nunique_credacc_status_367L', 'last_rejectcommodtypec_5251769M_encoded', 'sellerplacecnt_915L', 'last_tenor_203L', 'interestrategrace_34L', 'max_pmts_year_507T', 'numinstpaidearly5dobd_4499205L', 'equalityempfrom_62L', 'clientscnt_136L', 'opencred_647L', 'numinstlswithdpd10_728L', 'last_registaddr_zipcode_184M_encoded', 'last_pmts_month_706T', 'description_5085714M_encoded', 'max_subjectroles_name_541M_encoded', 'nunique_overdueamountmaxdateyear_2T', 'cntpmts24_3658933L', 'nunique_childnum_21L', 'lastrejectreasonclient_4145040M_encoded', 'last_subjectroles_name_838M_encoded', 'max_numberofoutstandinstls_520L', 'mean_pmts_overdue_1140A', 'max_overdueamountmax_155A', 'max_remitter_829L', 'max_relationshiptoclient_642T_encoded', 'totaldebt_9A', 'max_instlamount_768A', 'last_collater_typofvalofguarant_298M_encoded', 'max_subjectroles_name_838M_encoded', 'max_dateofcredstart_181D', 'last_cancelreason_561M_encoded', 'max_dpdmaxdatemonth_442T', 'last_rejectreasonclient_4145042M_encoded', 'fortoday_1092L', 'max_overdueamountmaxdatemonth_284T', 'typesuite_864L_encoded', 'numinstls_657L', 'nunique_periodicityofpmts_837L', 'mean_overdueamountmax_35A', 'nunique_prolongationcount_599L', 'last_conts_role_79M_encoded', 'last_postype_4733339M_encoded', 'nunique_pmts_month_706T', 'forquarter_462L', 'nunique_nominalrate_281L', 'month_decision', 'mindbddpdlast24m_3658935P', 'clientscnt_493L', 'max_dateofcredstart_739D', 'max_rejectreason_755M_encoded', 'mean_totalamount_996A', 'max_firstnonzeroinstldate_307D', 'max_overdueamount_659A', 'mean_dpdmax_757P', 'mean_outstandingamount_362A', 'max_dpdmax_139P', 'maxdpdlast12m_727P', 'last_activateddate_801D', 'last_rejectdate_50D', 'forweek_1077L', 'annuity_780A', 'max_dtlastpmt_581D', 'mean_debtoutstand_525A', 'max_postype_4733339M_encoded', 'mean_dpdmax_139P', 'pctinstlsallpaidearl3d_427L', 'numinstpaidlastcontr_4325080L', 'nunique_conts_type_509L', 'max_familystate_726L_encoded', 'days180_256L', 'pmtcount_4955617L', 'max_overdueamount_31A', 'max_conts_type_509L_encoded', 'last_downpmt_134A', 'max_num_group2_1', 'maritalst_893M_encoded', 'mean_totaloutstanddebtvalue_39A', 'fourthquarter_440L', 'mean_currdebt_94A', 'nunique_pmts_year_507T', 'max_debtoverdue_47A', 'max_dateactivated_425D', 'max_tenor_203L', 'max_conts_role_79M_encoded', 'clientscnt6m_3712949L', 'clientscnt_1130L', 'max_totaldebtoverduevalue_178A', 'max_currdebt_94A', 'validfrom_1069D', 'disbursementtype_67L_encoded', 'pmtaverage_3A', 'numrejects9m_859L', 'nunique_status_219L', 'max_dpdmaxdateyear_596T', 'assignmentdate_4955616D', 'pctinstlsallpaidlate4d_3546849L', 'last_num_group1', 'nunique_annualeffectiverate_63L', 'last_education_1138M_encoded', 'maxdbddpdtollast12m_3658940P', 'maxinstallast24m_3658928A', 'forweek_528L', 'mean_totaldebtoverduevalue_718A', 'numinstregularpaid_973L', 'max_num_group1_2', 'avg_dbddpdlast3m_4187120P', 'max_overdueamountmax2_398A', 'numinsttopaygrest_4493213L', 'nunique_overdueamountmaxdatemonth_284T', 'birthdate_574D', 'foryear_618L', 'avg_dpdtolclosure24_3658938P', 'max_overdueamountmaxdateyear_994T', 'maxdpdinstlnum_3546846P', 'max_empls_economicalst_849M_encoded', 'numinstpaidearly3d_3546850L', 'nunique_persontype_792L_encoded', 'mean_overdueamount_31A', 'disbursedcredamount_1113A', 'max_credtype_587L_encoded', 'max_familystate_447L_encoded', 'nunique_tenor_203L', 'max_cacccardblochreas_147M_encoded', 'max_numberofoverdueinstlmax_1151L', 'nunique_isreference_387L', 'pmtaverage_4955615A', 'max_collaterals_typeofguarante_669M_encoded', 'dateofbirth_337D', 'max_annuity_853A', 'interestrate_311L', 'days90_310L', 'totinstallast1m_4525188A', 'max_monthlyinstlamount_332A', 'last_empls_employer_name_740M_encoded', 'nunique_dpdmaxdateyear_896T', 'nunique_collater_valueofguarantee_1124L', 'max_overdueamountmax_35A', 'max_monthlyinstlamount_674A', 'nunique_pmts_month_158T', 'dateofbirth_342D', 'max_totaldebtoverduevalue_718A', 'max_dateofcredend_289D', 'lastapprcredamount_781A', 'mean_totaldebtoverduevalue_178A', 'nunique_credacc_cards_status_52L', 'sumoutstandtotal_3546847A', 'lastst_736L_encoded', 'clientscnt_946L', 'nunique_numberofoutstandinstls_520L', 'forquarter_1017L', 'paytype1st_925L_encoded', 'max_relationshiptoclient_415T_encoded', 'pctinstlsallpaidlate6d_3546844L', 'pmtaverage_4527227A', 'numinstpaidearly3dest_4493216L', 'max_periodicityofpmts_837L', 'clientscnt_1071L', 'isdebitcard_729L', 'max_personindex_1023L', 'last_contaddr_zipcode_807M_encoded', 'maxannuity_159A', 'mean_overdueamountmax2_398A', 'numinstpaid_4499208L', 'numinstlallpaidearly3d_817L', 'mean_annuity_853A', 'max_num_group2_2', 'last_mainoccupationinc_384A', 'riskassesment_940T', 'last_language1_981M_encoded', 'max_birth_259D', 'nunique_gender_992L', 'dtlastpmtallstes_4499206D', 'max_num_group1', 'mean_totalamount_6A', 'clientscnt_887L', 'credamount_770A', 'mean_downpmt_134A', 'max_numberofinstls_229L', 'last_cacccardblochreas_147M_encoded', 'max_numberofoverdueinstls_834L', 'avg_outstandbalancel6m_4187114A', 'clientscnt_157L', 'for3years_128L', 'max_lastupdate_388D', 'numinstlswithdpd5_4187116L', 'max_num_group2_3', 'max_overdueamountmax2date_1142D', 'max_type_25L_encoded', 'max_totaloutstanddebtvalue_668A', 'forweek_601L', 'max_numberofoutstandinstls_59L', 'max_collater_typofvalofguarant_407M_encoded', 'max_overdueamountmaxdatemonth_365T', 'numinstpaidearly_338L', 'max_pmts_dpd_303P', 'numactivecreds_622L', 'max_numberofoverdueinstlmaxdat_148D', 'max_persontype_1072L_encoded', 'last_contaddr_smempladdr_334L', 'max_totalamount_6A', 'last_credtype_587L_encoded', 'max_num_group1_7', 'last_district_544M_encoded', 'mastercontrelectronic_519L', 'max_residualamount_856A', 'nunique_numberofoverdueinstlmax_1039L', 'numactivecredschannel_414L', 'max_empl_industry_691L_encoded', 'responsedate_4527233D', 'payvacationpostpone_4187118D', 'clientscnt_257L', 'currdebt_22A', 'last_cancelreason_3545846M_encoded', 'max_periodicityofpmts_1102L', 'max_nominalrate_498L', 'max_numberofinstls_320L', 'nunique_dpdmaxdateyear_596T', 'assignmentdate_238D', 'nunique_inittransactioncode_279L', 'last_otherinc_902A', 'clientscnt_1022L', 'last_sex_738L_encoded', 'monthsannuity_845L', 'max_numberofcontrsvalue_258L', 'last_personindex_1023L', 'max_education_1138M_encoded', 'last_conts_type_509L_encoded', 'mean_overdueamountmax_155A', 'last_collaterals_typeofguarante_669M_encoded', 'clientscnt_304L', 'nunique_numberofcontrsvalue_358L', 'nunique_overdueamountmaxdateyear_994T', 'last_incometype_1044T_encoded', 'max_dpdmaxdatemonth_89T', 'last_pmts_year_507T', 'twobodfilling_608L_encoded', 'nunique_annualeffectiverate_199L', 'mean_debtoverdue_47A', 'last_num_group1_7', 'last_otherlnsexpense_631A', 'max_incometype_1044T_encoded', 'max_pmts_month_158T', 'numinstpaidearly5dest_4493211L', 'max_collaterals_typeofguarante_359M_encoded', 'last_actualdpd_943P', 'max_empl_employedtotal_800L_encoded', 'maxdpdlast9m_1059P', 'mean_pmts_dpd_1073P', 'numnotactivated_1143L', 'firstclxcampaign_1125D', 'last_empls_economicalst_849M_encoded', 'numinstunpaidmax_3546851L', 'amtinstpaidbefduel24m_4187115A', 'clientscnt_360L', 'last_num_group1_1', 'max_persontype_792L_encoded', 'maxdpdlast3m_392P', 'last_pmts_month_158T', 'max_sex_738L_encoded', 'pmtssum_45A', 'numinsttopaygr_769L', 'last_apprdate_640D', 'max_numberofoverdueinstlmaxdat_641D', 'last_delinqdate_224D', 'maritalst_385M_encoded', 'paytype_783L_encoded', 'numcontrs3months_479L', 'mobilephncnt_593L', 'last_persontype_1072L_encoded', 'max_pmts_dpd_1073P', 'max_num_group1_3', 'datelastinstal40dpd_247D', 'numinstunpaidmaxest_4493212L', 'credtype_322L_encoded', 'maxoutstandbalancel12m_4187113A', 'max_dpdmax_757P', 'max_profession_152M_encoded', 'mean_pmts_overdue_1152A', 'max_district_544M_encoded', 'nunique_dpdmaxdatemonth_89T', 'nunique_pmts_year_1139T', 'max_outstandingamount_354A', 'mean_totaloutstanddebtvalue_668A', 'nunique_role_993L', 'actualdpdtolerance_344P', 'isbidproduct_1095L', 'max_rejectreasonclient_4145042M_encoded', 'nunique_familystate_726L', 'max_classificationofcontr_400M_encoded', 'numinstpaidlate1d_3546852L', 'last_pmtnum_8L', 'nunique_addres_role_871L', 'clientscnt_100L', 'datefirstoffer_1144D', 'last_rejectreason_759M_encoded', 'clientscnt3m_3712950L', 'isbidproductrequest_292L', 'max_credamount_590A', 'max_purposeofcred_874M_encoded', 'last_isbidproduct_390L', 'last_registaddr_district_1083M_encoded', 'mean_mainoccupationinc_437A', 'avg_dbdtollast24m_4525197P', 'max_outstandingdebt_522A', 'numincomingpmts_3546848L', 'nunique_numberofcontrsvalue_258L', 'responsedate_1012D', 'maxdbddpdtollast6m_4187119P', 'last_mainoccupationinc_437A', 'education_1103M_encoded', 'for3years_504L', 'mean_outstandingamount_354A', 'cardtype_51L_encoded', 'max_pmts_month_706T', 'maxdpdfrom6mto36m_3546853P', 'mean_credamount_590A', 'nunique_periodicityofpmts_1102L', 'max_mainoccupationinc_384A', 'last_profession_152M_encoded', 'last_num_group2_1', 'maxdebt4_972A', 'last_num_group1_2', 'nunique_byoccupationinc_3656910L', 'posfpd30lastmonth_3976960P', 'max_numberofoverdueinstls_725L', 'commnoinclast6m_3546845L', 'nunique_childnum_185L', 'max_overdueamountmax2_14A', 'forquarter_634L', 'numinstpaidearly5d_1087L', 'max_dateofcredend_353D', 'numinstlsallpaid_934L', 'avg_maxdpdlast9m_3716943P', 'last_num_group2_3', 'requesttype_4525192L_encoded', 'max_nominalrate_281L', 'max_empls_employer_name_740M_encoded', 'posfpd10lastmonth_333P', 'mean_overdueamount_659A', 'avg_dbddpdlast24m_3658932P', 'max_contractst_545M_encoded', 'max_isdebitcard_527L', 'nunique_isdebitcard_527L', 'nunique_remitter_829L', 'last_rejectreason_755M_encoded', 'previouscontdistrict_112M_encoded', 'max_mainoccupationinc_437A', 'max_inittransactioncode_279L_encoded', 'last_pmts_year_1139T', 'max_totalamount_996A', 'riskassesment_302T_encoded', 'secondquarter_766L', 'applications30d_658L', 'applicationscnt_464L', 'maxdpdtolerance_374P', 'applicationscnt_629L', 'last_type_25L_encoded', 'mean_monthlyinstlamount_332A', 'last_role_1084L_encoded', 'nunique_maritalst_703L', 'nunique_prolongationcount_1120L', 'last_contaddr_district_15M_encoded', 'max_collater_typofvalofguarant_298M_encoded', 'numinstpaidearlyest_4493214L', 'nunique_numberofoverdueinstlmax_1151L', 'max_overdueamountmax2date_1002D', 'max_credlmt_935A', 'max_creationdate_885D', 'last_num_group1_3', 'maxdpdlast24m_143P', 'maininc_215A', 'nunique_nominalrate_498L', 'max_collater_valueofguarantee_1124L', 'days360_512L', 'formonth_206L', 'firstquarter_103L', 'formonth_118L', 'max_collater_valueofguarantee_876L', 'max_overdueamountmaxdateyear_2T', 'last_collater_typofvalofguarant_407M_encoded', 'last_num_group2_2', 'cntincpaycont9m_3716944L', 'max_subjectrole_93M_encoded', 'last_status_219L_encoded', 'mean_overdueamountmax2_14A', 'last_dependentsnum_448L', 'nunique_credtype_587L', 'last_apprcommoditycat_1041M_encoded', 'last_familystate_726L_encoded', 'max_num_group1_1', 'pmtnum_254L', 'thirdquarter_1082L', 'max_lastupdate_1112D', 'for3years_584L', 'nunique_relationshiptoclient_642T', 'last_relationshiptoclient_642T_encoded', 'last_repayingdate_696D', 'max_pmts_year_1139T', 'mean_pmts_dpd_303P', 'nunique_pmtnum_8L', 'nunique_relationshiptoclient_415T', 'max_dpdmaxdateyear_896T', 'maxdbddpdlast1m_3658939P', 'price_1097A', 'mean_credlmt_935A', 'max_subjectrole_182M_encoded', 'nunique_personindex_1023L', 'max_cancelreason_3545846M_encoded', 'applicationscnt_867L', 'datelastunpaid_3546854D', 'bankacctype_710L_encoded', 'eir_270L', 'last_safeguarantyflag_411L', 'last_subjectroles_name_541M_encoded', 'mean_instlamount_768A', 'last_persontype_792L_encoded', 'mindbdtollast24m_4525191P', 'mean_mainoccupationinc_384A', 'numpmtchanneldd_318L', 'clientscnt12m_3712952L', 'formonth_535L', 'max_empl_employedfrom_271D', 'pmtcount_4527229L', 'maxlnamtstart6m_4525199A', 'nunique_credacc_transactions_402L', 'maxpmtlast3m_4525190A', 'nunique_persontype_1072L_encoded', 'days120_123L', 'max_numberofcontrsvalue_358L', 'max_status_219L_encoded', 'currdebtcredtyperange_828A', 'nunique_housingtype_772L', 'inittransactioncode_186L_encoded', 'foryear_818L', 'numinstlswithoutdpd_562L', 'max_downpmt_134A', 'applicationscnt_1086L', 'last_rejectcommoditycat_161M_encoded', 'contractssum_5085716L', 'nunique_role_1084L', 'nunique_dpdmaxdatemonth_442T', 'equalitydataagreement_891L', 'last_credacc_credlmt_575A', 'foryear_850L', 'assignmentdate_4527235D', 'pctinstlsallpaidlate1d_3546856L', 'education_88M_encoded', 'numberofqueries_373L', 'pmtscount_423L', 'maxannuity_4075009A', 'nunique_relatedpersons_role_762T', 'homephncnt_628L', 'maxdpdlast6m_474P', 'pmtcount_693L', 'last_inittransactioncode_279L_encoded', 'numinstmatpaidtearly2d_4499204L', 'numactiverelcontr_750L', 'max_dateofrealrepmt_138D', 'pctinstlsallpaidlat10d_839L', 'daysoverduetolerancedd_3976961L', 'max_role_1084L_encoded', 'nunique_empl_industry_691L', 'days30_165L', 'last_applicationdate_877D']
+# df_eric = ['last_apprcommoditytypec_5251766M_encoded', 'max_debtoutstand_525A', 'max_actualdpd_943P', 'avg_lnamtstart24m_4525187A', 'sum_outstandtotalest_4493215A', 'max_pmts_overdue_1140A', 'max_employedfrom_700D', 'max_numberofoverdueinstlmax_1039L', 'mean_outstandingdebt_522A', 'sellerplacescnt_216L', 'max_credacc_credlmt_575A', 'max_pmtnum_8L', 'mean_monthlyinstlamount_674A', 'avg_installast24m_3658937A', 'responsedate_4917613D', 'numinstregularpaidest_4493210L', 'last_rejectcredamount_222A', 'nunique_empl_employedtotal_800L', 'nunique_collater_valueofguarantee_876L', 'totalsettled_863A', 'nunique_numberofinstls_229L', 'maxdpdinstldate_3546855D', 'annuitynextmonth_57A', 'mean_actualdpd_943P', 'last_credamount_590A', 'max_totaloutstanddebtvalue_39A', 'mastercontrexist_109L', 'last_collaterals_typeofguarante_359M_encoded', 'avg_pmtlast12m_4525200A', 'inittransactionamount_650A', 'nunique_numberofoverdueinstls_834L', 'max_pmts_overdue_1152A', 'downpmt_116A', 'weekday_decision', 'last_annuity_853A', 'clientscnt_533L', 'nunique_isbidproduct_390L', 'mean_credacc_credlmt_575A', 'max_isbidproduct_390L', 'nunique_numberofoverdueinstls_725L', 'last_contaddr_matchlist_1032L', 'firstdatedue_489D', 'posfstqpd30lastmonth_3976962P', 'max_outstandingamount_362A', 'nunique_credacc_status_367L', 'last_rejectcommodtypec_5251769M_encoded', 'sellerplacecnt_915L', 'last_tenor_203L', 'interestrategrace_34L', 'max_pmts_year_507T', 'numinstpaidearly5dobd_4499205L', 'equalityempfrom_62L', 'clientscnt_136L', 'opencred_647L', 'numinstlswithdpd10_728L', 'last_registaddr_zipcode_184M_encoded', 'last_pmts_month_706T', 'description_5085714M_encoded', 'max_subjectroles_name_541M_encoded', 'nunique_overdueamountmaxdateyear_2T', 'cntpmts24_3658933L', 'nunique_childnum_21L', 'lastrejectreasonclient_4145040M_encoded', 'last_subjectroles_name_838M_encoded', 'max_numberofoutstandinstls_520L', 'mean_pmts_overdue_1140A', 'max_overdueamountmax_155A', 'max_remitter_829L', 'max_relationshiptoclient_642T_encoded', 'totaldebt_9A', 'max_instlamount_768A', 'last_collater_typofvalofguarant_298M_encoded', 'max_subjectroles_name_838M_encoded', 'max_dateofcredstart_181D', 'last_cancelreason_561M_encoded', 'max_dpdmaxdatemonth_442T', 'last_rejectreasonclient_4145042M_encoded', 'fortoday_1092L', 'max_overdueamountmaxdatemonth_284T', 'typesuite_864L_encoded', 'numinstls_657L', 'nunique_periodicityofpmts_837L', 'mean_overdueamountmax_35A', 'nunique_prolongationcount_599L', 'last_conts_role_79M_encoded', 'last_postype_4733339M_encoded', 'nunique_pmts_month_706T', 'forquarter_462L', 'nunique_nominalrate_281L', 'month_decision', 'mindbddpdlast24m_3658935P', 'clientscnt_493L', 'max_dateofcredstart_739D', 'max_rejectreason_755M_encoded', 'mean_totalamount_996A', 'max_firstnonzeroinstldate_307D', 'max_overdueamount_659A', 'mean_dpdmax_757P', 'mean_outstandingamount_362A', 'max_dpdmax_139P', 'maxdpdlast12m_727P', 'last_activateddate_801D', 'last_rejectdate_50D', 'forweek_1077L', 'annuity_780A', 'max_dtlastpmt_581D', 'mean_debtoutstand_525A', 'max_postype_4733339M_encoded', 'mean_dpdmax_139P', 'pctinstlsallpaidearl3d_427L', 'numinstpaidlastcontr_4325080L', 'nunique_conts_type_509L', 'max_familystate_726L_encoded', 'days180_256L', 'pmtcount_4955617L', 'max_overdueamount_31A', 'max_conts_type_509L_encoded', 'last_downpmt_134A', 'max_num_group2_1', 'maritalst_893M_encoded', 'mean_totaloutstanddebtvalue_39A', 'fourthquarter_440L', 'mean_currdebt_94A', 'nunique_pmts_year_507T', 'max_debtoverdue_47A', 'max_dateactivated_425D', 'max_tenor_203L', 'max_conts_role_79M_encoded', 'clientscnt6m_3712949L', 'clientscnt_1130L', 'max_totaldebtoverduevalue_178A', 'max_currdebt_94A', 'validfrom_1069D', 'disbursementtype_67L_encoded', 'pmtaverage_3A', 'numrejects9m_859L', 'nunique_status_219L', 'max_dpdmaxdateyear_596T', 'assignmentdate_4955616D', 'pctinstlsallpaidlate4d_3546849L', 'last_num_group1', 'nunique_annualeffectiverate_63L', 'last_education_1138M_encoded', 'maxdbddpdtollast12m_3658940P', 'maxinstallast24m_3658928A', 'forweek_528L', 'mean_totaldebtoverduevalue_718A', 'numinstregularpaid_973L', 'max_num_group1_2', 'avg_dbddpdlast3m_4187120P', 'max_overdueamountmax2_398A', 'numinsttopaygrest_4493213L', 'nunique_overdueamountmaxdatemonth_284T', 'birthdate_574D', 'foryear_618L', 'avg_dpdtolclosure24_3658938P', 'max_overdueamountmaxdateyear_994T', 'maxdpdinstlnum_3546846P', 'max_empls_economicalst_849M_encoded', 'numinstpaidearly3d_3546850L', 'nunique_persontype_792L_encoded', 'mean_overdueamount_31A', 'disbursedcredamount_1113A', 'max_credtype_587L_encoded', 'max_familystate_447L_encoded', 'nunique_tenor_203L', 'max_cacccardblochreas_147M_encoded', 'max_numberofoverdueinstlmax_1151L', 'nunique_isreference_387L', 'pmtaverage_4955615A', 'max_collaterals_typeofguarante_669M_encoded', 'dateofbirth_337D', 'max_annuity_853A', 'interestrate_311L', 'days90_310L', 'totinstallast1m_4525188A', 'max_monthlyinstlamount_332A', 'last_empls_employer_name_740M_encoded', 'nunique_dpdmaxdateyear_896T', 'nunique_collater_valueofguarantee_1124L', 'max_overdueamountmax_35A', 'max_monthlyinstlamount_674A', 'nunique_pmts_month_158T', 'dateofbirth_342D', 'max_totaldebtoverduevalue_718A', 'max_dateofcredend_289D', 'lastapprcredamount_781A', 'mean_totaldebtoverduevalue_178A', 'nunique_credacc_cards_status_52L', 'sumoutstandtotal_3546847A', 'lastst_736L_encoded', 'clientscnt_946L', 'nunique_numberofoutstandinstls_520L', 'forquarter_1017L', 'paytype1st_925L_encoded', 'max_relationshiptoclient_415T_encoded', 'pctinstlsallpaidlate6d_3546844L', 'pmtaverage_4527227A', 'numinstpaidearly3dest_4493216L', 'max_periodicityofpmts_837L', 'clientscnt_1071L', 'isdebitcard_729L', 'max_personindex_1023L', 'last_contaddr_zipcode_807M_encoded', 'maxannuity_159A', 'mean_overdueamountmax2_398A', 'numinstpaid_4499208L', 'numinstlallpaidearly3d_817L', 'mean_annuity_853A', 'max_num_group2_2', 'last_mainoccupationinc_384A', 'riskassesment_940T', 'last_language1_981M_encoded', 'max_birth_259D', 'nunique_gender_992L', 'dtlastpmtallstes_4499206D', 'max_num_group1', 'mean_totalamount_6A', 'clientscnt_887L', 'credamount_770A', 'mean_downpmt_134A', 'max_numberofinstls_229L', 'last_cacccardblochreas_147M_encoded', 'max_numberofoverdueinstls_834L', 'avg_outstandbalancel6m_4187114A', 'clientscnt_157L', 'for3years_128L', 'max_lastupdate_388D', 'numinstlswithdpd5_4187116L', 'max_num_group2_3', 'max_overdueamountmax2date_1142D', 'max_type_25L_encoded', 'max_totaloutstanddebtvalue_668A', 'forweek_601L', 'max_numberofoutstandinstls_59L', 'max_collater_typofvalofguarant_407M_encoded', 'max_overdueamountmaxdatemonth_365T', 'numinstpaidearly_338L', 'max_pmts_dpd_303P', 'numactivecreds_622L', 'max_numberofoverdueinstlmaxdat_148D', 'max_persontype_1072L_encoded', 'last_contaddr_smempladdr_334L', 'max_totalamount_6A', 'last_credtype_587L_encoded', 'max_num_group1_7', 'last_district_544M_encoded', 'mastercontrelectronic_519L', 'max_residualamount_856A', 'nunique_numberofoverdueinstlmax_1039L', 'numactivecredschannel_414L', 'max_empl_industry_691L_encoded', 'responsedate_4527233D', 'payvacationpostpone_4187118D', 'clientscnt_257L', 'currdebt_22A', 'last_cancelreason_3545846M_encoded', 'max_periodicityofpmts_1102L', 'max_nominalrate_498L', 'max_numberofinstls_320L', 'nunique_dpdmaxdateyear_596T', 'assignmentdate_238D', 'nunique_inittransactioncode_279L', 'last_otherinc_902A', 'clientscnt_1022L', 'last_sex_738L_encoded', 'monthsannuity_845L', 'max_numberofcontrsvalue_258L', 'last_personindex_1023L', 'max_education_1138M_encoded', 'last_conts_type_509L_encoded', 'mean_overdueamountmax_155A', 'last_collaterals_typeofguarante_669M_encoded', 'clientscnt_304L', 'nunique_numberofcontrsvalue_358L', 'nunique_overdueamountmaxdateyear_994T', 'last_incometype_1044T_encoded', 'max_dpdmaxdatemonth_89T', 'last_pmts_year_507T', 'twobodfilling_608L_encoded', 'nunique_annualeffectiverate_199L', 'mean_debtoverdue_47A', 'last_num_group1_7', 'last_otherlnsexpense_631A', 'max_incometype_1044T_encoded', 'max_pmts_month_158T', 'numinstpaidearly5dest_4493211L', 'max_collaterals_typeofguarante_359M_encoded', 'last_actualdpd_943P', 'max_empl_employedtotal_800L_encoded', 'maxdpdlast9m_1059P', 'mean_pmts_dpd_1073P', 'numnotactivated_1143L', 'firstclxcampaign_1125D', 'last_empls_economicalst_849M_encoded', 'numinstunpaidmax_3546851L', 'amtinstpaidbefduel24m_4187115A', 'clientscnt_360L', 'last_num_group1_1', 'max_persontype_792L_encoded', 'maxdpdlast3m_392P', 'last_pmts_month_158T', 'max_sex_738L_encoded', 'pmtssum_45A', 'numinsttopaygr_769L', 'last_apprdate_640D', 'max_numberofoverdueinstlmaxdat_641D', 'last_delinqdate_224D', 'maritalst_385M_encoded', 'paytype_783L_encoded', 'numcontrs3months_479L', 'mobilephncnt_593L', 'last_persontype_1072L_encoded', 'max_pmts_dpd_1073P', 'max_num_group1_3', 'datelastinstal40dpd_247D', 'numinstunpaidmaxest_4493212L', 'credtype_322L_encoded', 'maxoutstandbalancel12m_4187113A', 'max_dpdmax_757P', 'max_profession_152M_encoded', 'mean_pmts_overdue_1152A', 'max_district_544M_encoded', 'nunique_dpdmaxdatemonth_89T', 'nunique_pmts_year_1139T', 'max_outstandingamount_354A', 'mean_totaloutstanddebtvalue_668A', 'nunique_role_993L', 'actualdpdtolerance_344P', 'isbidproduct_1095L', 'max_rejectreasonclient_4145042M_encoded', 'nunique_familystate_726L', 'max_classificationofcontr_400M_encoded', 'numinstpaidlate1d_3546852L', 'last_pmtnum_8L', 'nunique_addres_role_871L', 'clientscnt_100L', 'datefirstoffer_1144D', 'last_rejectreason_759M_encoded', 'clientscnt3m_3712950L', 'isbidproductrequest_292L', 'max_credamount_590A', 'max_purposeofcred_874M_encoded', 'last_isbidproduct_390L', 'last_registaddr_district_1083M_encoded', 'mean_mainoccupationinc_437A', 'avg_dbdtollast24m_4525197P', 'max_outstandingdebt_522A', 'numincomingpmts_3546848L', 'nunique_numberofcontrsvalue_258L', 'responsedate_1012D', 'maxdbddpdtollast6m_4187119P', 'last_mainoccupationinc_437A', 'education_1103M_encoded', 'for3years_504L', 'mean_outstandingamount_354A', 'cardtype_51L_encoded', 'max_pmts_month_706T', 'maxdpdfrom6mto36m_3546853P', 'mean_credamount_590A', 'nunique_periodicityofpmts_1102L', 'max_mainoccupationinc_384A', 'last_profession_152M_encoded', 'last_num_group2_1', 'maxdebt4_972A', 'last_num_group1_2', 'nunique_byoccupationinc_3656910L', 'posfpd30lastmonth_3976960P', 'max_numberofoverdueinstls_725L', 'commnoinclast6m_3546845L', 'nunique_childnum_185L', 'max_overdueamountmax2_14A', 'forquarter_634L', 'numinstpaidearly5d_1087L', 'max_dateofcredend_353D', 'numinstlsallpaid_934L', 'avg_maxdpdlast9m_3716943P', 'last_num_group2_3', 'requesttype_4525192L_encoded', 'max_nominalrate_281L', 'max_empls_employer_name_740M_encoded', 'posfpd10lastmonth_333P', 'mean_overdueamount_659A', 'avg_dbddpdlast24m_3658932P', 'max_contractst_545M_encoded', 'max_isdebitcard_527L', 'nunique_isdebitcard_527L', 'nunique_remitter_829L', 'last_rejectreason_755M_encoded', 'previouscontdistrict_112M_encoded', 'max_mainoccupationinc_437A', 'max_inittransactioncode_279L_encoded', 'last_pmts_year_1139T', 'max_totalamount_996A', 'riskassesment_302T_encoded', 'secondquarter_766L', 'applications30d_658L', 'applicationscnt_464L', 'maxdpdtolerance_374P', 'applicationscnt_629L', 'last_type_25L_encoded', 'mean_monthlyinstlamount_332A', 'last_role_1084L_encoded', 'nunique_maritalst_703L', 'nunique_prolongationcount_1120L', 'last_contaddr_district_15M_encoded', 'max_collater_typofvalofguarant_298M_encoded', 'numinstpaidearlyest_4493214L', 'nunique_numberofoverdueinstlmax_1151L', 'max_overdueamountmax2date_1002D', 'max_credlmt_935A', 'max_creationdate_885D', 'last_num_group1_3', 'maxdpdlast24m_143P', 'maininc_215A', 'nunique_nominalrate_498L', 'max_collater_valueofguarantee_1124L', 'days360_512L', 'formonth_206L', 'firstquarter_103L', 'formonth_118L', 'max_collater_valueofguarantee_876L', 'max_overdueamountmaxdateyear_2T', 'last_collater_typofvalofguarant_407M_encoded', 'last_num_group2_2', 'cntincpaycont9m_3716944L', 'max_subjectrole_93M_encoded', 'last_status_219L_encoded', 'mean_overdueamountmax2_14A', 'last_dependentsnum_448L', 'nunique_credtype_587L', 'last_apprcommoditycat_1041M_encoded', 'last_familystate_726L_encoded', 'max_num_group1_1', 'pmtnum_254L', 'thirdquarter_1082L', 'max_lastupdate_1112D', 'for3years_584L', 'nunique_relationshiptoclient_642T', 'last_relationshiptoclient_642T_encoded', 'last_repayingdate_696D', 'max_pmts_year_1139T', 'mean_pmts_dpd_303P', 'nunique_pmtnum_8L', 'nunique_relationshiptoclient_415T', 'max_dpdmaxdateyear_896T', 'maxdbddpdlast1m_3658939P', 'price_1097A', 'mean_credlmt_935A', 'max_subjectrole_182M_encoded', 'nunique_personindex_1023L', 'max_cancelreason_3545846M_encoded', 'applicationscnt_867L', 'datelastunpaid_3546854D', 'bankacctype_710L_encoded', 'eir_270L', 'last_safeguarantyflag_411L', 'last_subjectroles_name_541M_encoded', 'mean_instlamount_768A', 'last_persontype_792L_encoded', 'mindbdtollast24m_4525191P', 'mean_mainoccupationinc_384A', 'numpmtchanneldd_318L', 'clientscnt12m_3712952L', 'formonth_535L', 'max_empl_employedfrom_271D', 'pmtcount_4527229L', 'maxlnamtstart6m_4525199A', 'nunique_credacc_transactions_402L', 'maxpmtlast3m_4525190A', 'nunique_persontype_1072L_encoded', 'days120_123L', 'max_numberofcontrsvalue_358L', 'max_status_219L_encoded', 'currdebtcredtyperange_828A', 'nunique_housingtype_772L', 'inittransactioncode_186L_encoded', 'foryear_818L', 'numinstlswithoutdpd_562L', 'max_downpmt_134A', 'applicationscnt_1086L', 'last_rejectcommoditycat_161M_encoded', 'contractssum_5085716L', 'nunique_role_1084L', 'nunique_dpdmaxdatemonth_442T', 'equalitydataagreement_891L', 'last_credacc_credlmt_575A', 'foryear_850L', 'assignmentdate_4527235D', 'pctinstlsallpaidlate1d_3546856L', 'education_88M_encoded', 'numberofqueries_373L', 'pmtscount_423L', 'maxannuity_4075009A', 'nunique_relatedpersons_role_762T', 'homephncnt_628L', 'maxdpdlast6m_474P', 'pmtcount_693L', 'last_inittransactioncode_279L_encoded', 'numinstmatpaidtearly2d_4499204L', 'numactiverelcontr_750L', 'max_dateofrealrepmt_138D', 'pctinstlsallpaidlat10d_839L', 'daysoverduetolerancedd_3976961L', 'max_role_1084L_encoded', 'nunique_empl_industry_691L', 'days30_165L', 'last_applicationdate_877D']
 
-# df_train_scan: pl.LazyFrame = (
-#     SchemaGen.join_dataframes(**data_store) # 别忘记829+386要多加载2个文件+改新增的统计特征
-#     .pipe(filter_cols)
-#     .pipe(transform_cols) # 兼容0.592
-#     .pipe(handle_dates)
-#     .pipe(Utility.reduce_memory_usage, "df_train") 
-# )
-# df_train_scan, cat_cols = Utility.to_pandas(df_train_scan) # 这个是把字符串转化为str
-# print("df_train_scan shape:\t", df_train_scan.shape)
-# df_train = df_train_scan
+# # df_train_scan: pl.LazyFrame = (
+# #     SchemaGen.join_dataframes(**data_store) # 别忘记829+386要多加载2个文件+改新增的统计特征
+# #     .pipe(filter_cols)
+# #     .pipe(transform_cols) # 兼容0.592
+# #     .pipe(handle_dates)
+# #     .pipe(Utility.reduce_memory_usage, "df_train") 
+# # )
+# # df_train_scan, cat_cols = Utility.to_pandas(df_train_scan) # 这个是把字符串转化为str
+# # print("df_train_scan shape:\t", df_train_scan.shape)
+# # df_train = df_train_scan
 
-df_train = feature_eng(**data_store).collect() # 别忘记829+386要多加载2个文件
-df_train = df_train.pipe(Pipeline.filter_cols)
-df_train, cat_cols = to_pandas(df_train)    
-df_train = Utility.reduce_memory_usage(df_train, "df_train")
-print("df_train shape:\t", df_train.shape)
+# df_train = feature_eng(**data_store).collect() # 别忘记829+386要多加载2个文件
+# df_train = df_train.pipe(Pipeline.filter_cols)
+# df_train, cat_cols = to_pandas(df_train)    
+# df_train = Utility.reduce_memory_usage(df_train, "df_train")
+# print("df_train shape:\t", df_train.shape)
 
-del data_store
-gc.collect()
+# del data_store
+# gc.collect()
 
 
 """ 可理解为相关性处理，去掉相关性大致相同的列 """ 
@@ -1083,11 +1083,11 @@ df_train[cat_cols] = df_train[cat_cols].astype(str)
 # ======================================== 特征列分类 =====================================
 
 # ======================================== 二分类模型训练 =====================================
-df_train = df_train[:20000]
-weeks = weeks[:20000]
+# df_train = df_train[:20000]
+# weeks = weeks[:20000]
 
-df_train.loc[0:10000, 'is_test'] = 0
-df_train.loc[10000:20000, 'is_test'] = 1
+df_train.loc[0:len(df_train)//2, 'is_test'] = 0
+df_train.loc[len(df_train)//2:len(df_train), 'is_test'] = 1
 
 y = df_train["is_test"]
 
@@ -1102,8 +1102,8 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     
 
     # ===============================
-    X_train[cat_cols_829] = X_train[cat_cols_829].astype("category")
-    X_valid[cat_cols_829] = X_valid[cat_cols_829].astype("category")
+    X_train[cat_cols_386] = X_train[cat_cols_386].astype("category")
+    X_valid[cat_cols_386] = X_valid[cat_cols_386].astype("category")
 
     params = {
         "boosting_type": "gbdt",
