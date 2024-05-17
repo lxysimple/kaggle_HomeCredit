@@ -876,8 +876,7 @@ df_eric = ['last_apprcommoditytypec_5251766M_encoded', 'max_debtoutstand_525A', 
 # df_train = df_train_scan
 
 df_train = feature_eng(**data_store).collect() # 别忘记829+386要多加载2个文件
-# df_train = df_train.pipe(Pipeline.filter_cols)
-df_train = df_train[df_eric]
+df_train = df_train.pipe(Pipeline.filter_cols)
 df_train, cat_cols = to_pandas(df_train)    
 df_train = Utility.reduce_memory_usage(df_train, "df_train")
 print("df_train shape:\t", df_train.shape)
