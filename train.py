@@ -1009,10 +1009,10 @@ try:
 except:
     weeks = df_train["WEEK_NUM"] 
 
-try:
-    weeks_scan = df_train_scan["week_num"]
-except:
-    weeks_scan = df_train_scan["WEEK_NUM"] 
+# try:
+#     weeks_scan = df_train_scan["week_num"]
+# except:
+#     weeks_scan = df_train_scan["WEEK_NUM"] 
 
 
 try:
