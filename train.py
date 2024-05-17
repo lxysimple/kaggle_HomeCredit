@@ -1083,11 +1083,11 @@ df_train[cat_cols] = df_train[cat_cols].astype(str)
 # ======================================== 特征列分类 =====================================
 
 # ======================================== 二分类模型训练 =====================================
-df_train = df_train[:200000]
-weeks = weeks[:200000]
+df_train = df_train[:20000]
+weeks = weeks[:20000]
 
-df_train.loc[0:100000, 'is_test'] = 0
-df_train.loc[100000:200000, 'is_test'] = 1
+df_train.loc[0:10000, 'is_test'] = 0
+df_train.loc[10000:20000, 'is_test'] = 1
 
 y = df_train["is_test"]
 
@@ -1128,8 +1128,8 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     # 一次训练
     model = lgb.LGBMClassifier(**params)
     model.fit(
-        X_train[df_train_829], y_train,
-        eval_set = [(X_valid[df_train_829], y_valid)],
+        X_train[df_train_386], y_train,
+        eval_set = [(X_valid[df_train_386], y_valid)],
         callbacks = [lgb.log_evaluation(200), lgb.early_stopping(100)],
         # init_model = f"/home/xyli/kaggle/kaggle_HomeCredit/dataset/lgbm_fold{fold}.txt",
     )
@@ -1138,7 +1138,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
 
 
     fitted_models_lgb.append(model2)
-    y_pred_valid = model2.predict_proba(X_valid[df_train_829])[:,1]
+    y_pred_valid = model2.predict_proba(X_valid[df_train_386])[:,1]
     auc_score = roc_auc_score(y_valid, y_pred_valid)
     print('auc_score: ', auc_score)
     cv_scores_lgb.append(auc_score)
