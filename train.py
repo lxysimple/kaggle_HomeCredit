@@ -875,6 +875,7 @@ print('读取数据完毕！')
 
 df_train = feature_eng(**data_store).collect() # 别忘记829+386要多加载2个文件
 df_train = df_train.pipe(Pipeline.filter_cols)
+df_train = df_train[df_eric]
 df_train, cat_cols = to_pandas(df_train)    
 df_train = Utility.reduce_memory_usage(df_train, "df_train")
 print("df_train shape:\t", df_train.shape)
@@ -885,76 +886,76 @@ gc.collect()
 
 """ 可理解为相关性处理，去掉相关性大致相同的列 """ 
 
-nums=df_train.select_dtypes(exclude='category').columns
-from itertools import combinations, permutations
-#df_train=df_train[nums]
-# 计算nums列（数值列）是否是nan的一个对应掩码矩阵
-nans_df = df_train[nums].isna()
-nans_groups={}
-for col in nums:
-    # 统计每列是nan的个数
-    cur_group = nans_df[col].sum()
-    try: 
-        nans_groups[cur_group].append(col)
-    except: # 可默认永不执行
-        nans_groups[cur_group]=[col]
-del nans_df; x=gc.collect()
+# nums=df_train.select_dtypes(exclude='category').columns
+# from itertools import combinations, permutations
+# #df_train=df_train[nums]
+# # 计算nums列（数值列）是否是nan的一个对应掩码矩阵
+# nans_df = df_train[nums].isna()
+# nans_groups={}
+# for col in nums:
+#     # 统计每列是nan的个数
+#     cur_group = nans_df[col].sum()
+#     try: 
+#         nans_groups[cur_group].append(col)
+#     except: # 可默认永不执行
+#         nans_groups[cur_group]=[col]
+# del nans_df; x=gc.collect()
 
-def reduce_group(grps):
-    use = []
-    for g in grps:
-        mx = 0; vx = g[0]
-        for gg in g:
-            n = df_train[gg].nunique()
-            if n>mx:
-                mx = n
-                vx = gg
-            #print(str(gg)+'-'+str(n),', ',end='')
-        use.append(vx)
-        #print()
-    # print('Use these',use)
-    return use
+# def reduce_group(grps):
+#     use = []
+#     for g in grps:
+#         mx = 0; vx = g[0]
+#         for gg in g:
+#             n = df_train[gg].nunique()
+#             if n>mx:
+#                 mx = n
+#                 vx = gg
+#             #print(str(gg)+'-'+str(n),', ',end='')
+#         use.append(vx)
+#         #print()
+#     # print('Use these',use)
+#     return use
 
-def group_columns_by_correlation(matrix, threshold=0.95):
-    # 计算列之间的相关性
-    correlation_matrix = matrix.corr()
+# def group_columns_by_correlation(matrix, threshold=0.95):
+#     # 计算列之间的相关性
+#     correlation_matrix = matrix.corr()
 
-    # 分组列
-    groups = []
-    remaining_cols = list(matrix.columns)
-    while remaining_cols:
-        col = remaining_cols.pop(0)
-        group = [col]
-        correlated_cols = [col]
-        for c in remaining_cols:
-            if correlation_matrix.loc[col, c] >= threshold:
-                group.append(c)
-                correlated_cols.append(c)
-        groups.append(group)
-        remaining_cols = [c for c in remaining_cols if c not in correlated_cols]
+#     # 分组列
+#     groups = []
+#     remaining_cols = list(matrix.columns)
+#     while remaining_cols:
+#         col = remaining_cols.pop(0)
+#         group = [col]
+#         correlated_cols = [col]
+#         for c in remaining_cols:
+#             if correlation_matrix.loc[col, c] >= threshold:
+#                 group.append(c)
+#                 correlated_cols.append(c)
+#         groups.append(group)
+#         remaining_cols = [c for c in remaining_cols if c not in correlated_cols]
     
-    return groups
+#     return groups
 
-uses=[]
-for k,v in nans_groups.items():
-    if len(v)>1:
-            Vs = nans_groups[k] # 是按照每列nunique的个数来分组的
-            #cross_features=list(combinations(Vs, 2))
-            #make_corr(Vs)
-            grps= group_columns_by_correlation(df_train[Vs], threshold=0.8)
-            use=reduce_group(grps)
-            uses=uses+use
-            #make_corr(use)
-    else:
-        uses=uses+v
-    # print('####### NAN count =',k)
-print(uses)
-print(len(uses))
-# 选则[处理后数值列+非数值列]做最终列
-uses=uses+list(df_train.select_dtypes(include='category').columns)
-print(len(uses))
-df_train=df_train[uses]
-print("train data shape:\t", df_train.shape)
+# uses=[]
+# for k,v in nans_groups.items():
+#     if len(v)>1:
+#             Vs = nans_groups[k] # 是按照每列nunique的个数来分组的
+#             #cross_features=list(combinations(Vs, 2))
+#             #make_corr(Vs)
+#             grps= group_columns_by_correlation(df_train[Vs], threshold=0.8)
+#             use=reduce_group(grps)
+#             uses=uses+use
+#             #make_corr(use)
+#     else:
+#         uses=uses+v
+#     # print('####### NAN count =',k)
+# print(uses)
+# print(len(uses))
+# # 选则[处理后数值列+非数值列]做最终列
+# uses=uses+list(df_train.select_dtypes(include='category').columns)
+# print(len(uses))
+# df_train=df_train[uses]
+# print("train data shape:\t", df_train.shape)
 
 
 # print('cat_cols: ', cat_cols)
@@ -1069,6 +1070,8 @@ print('len(non_cat_cols_829): ', len(non_cat_cols_829))
 df_train[cat_cols] = df_train[cat_cols].astype(str)
 
 
+df_eric = ['month_decision', 'weekday_decision', 'max_pmts_dpd_1073P', 'max_pmts_dpd_303P', 'max_pmts_overdue_1140A', 'max_pmts_overdue_1152A', 'mean_pmts_dpd_1073P', 'mean_pmts_dpd_303P', 'mean_pmts_overdue_1140A', 'mean_pmts_overdue_1152A', 'max_collater_valueofguarantee_1124L', 'max_collater_valueofguarantee_876L', 'max_pmts_month_158T', 'max_pmts_month_706T', 'max_pmts_year_1139T', 'max_pmts_year_507T', 'last_pmts_month_158T', 'last_pmts_month_706T', 'last_pmts_year_1139T', 'last_pmts_year_507T', 'nunique_collater_valueofguarantee_1124L', 'nunique_collater_valueofguarantee_876L', 'nunique_pmts_month_158T', 'nunique_pmts_month_706T', 'nunique_pmts_year_1139T', 'nunique_pmts_year_507T', 'max_num_group1_1', 'max_num_group2_1', 'last_num_group1_1', 'last_num_group2_1', 'nunique_conts_type_509L', 'nunique_credacc_cards_status_52L', 'max_num_group1_2', 'max_num_group2_2', 'last_num_group1_2', 'last_num_group2_2', 'nunique_addres_role_871L', 'nunique_relatedpersons_role_762T', 'max_num_group1_3', 'max_num_group2_3', 'last_num_group1_3', 'last_num_group2_3', 'max_collater_typofvalofguarant_298M_encoded', 'max_collater_typofvalofguarant_407M_encoded', 'max_collaterals_typeofguarante_359M_encoded', 'max_collaterals_typeofguarante_669M_encoded', 'max_subjectroles_name_541M_encoded', 'max_subjectroles_name_838M_encoded', 'last_collater_typofvalofguarant_298M_encoded', 'last_collater_typofvalofguarant_407M_encoded', 'last_collaterals_typeofguarante_359M_encoded', 'last_collaterals_typeofguarante_669M_encoded', 'last_subjectroles_name_541M_encoded', 'last_subjectroles_name_838M_encoded', 'max_conts_type_509L_encoded', 'last_conts_type_509L_encoded', 'max_cacccardblochreas_147M_encoded', 'last_cacccardblochreas_147M_encoded', 'max_conts_role_79M_encoded', 'max_empls_economicalst_849M_encoded', 'max_empls_employer_name_740M_encoded', 'last_conts_role_79M_encoded', 'last_empls_economicalst_849M_encoded', 'last_empls_employer_name_740M_encoded', 'month_decision', 'max_actualdpd_943P', 'max_annuity_853A', 'max_credacc_credlmt_575A', 'max_credamount_590A', 'max_currdebt_94A', 'max_downpmt_134A', 'max_mainoccupationinc_437A', 'max_outstandingdebt_522A', 'last_actualdpd_943P', 'last_annuity_853A', 'last_credacc_credlmt_575A', 'last_credamount_590A', 'last_downpmt_134A', 'last_mainoccupationinc_437A', 'mean_actualdpd_943P', 'mean_annuity_853A', 'mean_credacc_credlmt_575A', 'mean_credamount_590A', 'mean_currdebt_94A', 'mean_downpmt_134A', 'mean_mainoccupationinc_437A', 'mean_outstandingdebt_522A', 'max_creationdate_885D', 'max_dateactivated_425D', 'max_dtlastpmt_581D', 'max_employedfrom_700D', 'max_firstnonzeroinstldate_307D', 'max_isbidproduct_390L', 'max_isdebitcard_527L', 'max_pmtnum_8L', 'max_tenor_203L', 'last_isbidproduct_390L', 'last_pmtnum_8L', 'last_tenor_203L', 'nunique_byoccupationinc_3656910L', 'nunique_childnum_21L', 'nunique_credacc_status_367L', 'nunique_credacc_transactions_402L', 'nunique_credtype_587L', 'nunique_familystate_726L', 'nunique_inittransactioncode_279L', 'nunique_isbidproduct_390L', 'nunique_isdebitcard_527L', 'nunique_pmtnum_8L', 'nunique_status_219L', 'nunique_tenor_203L', 'max_num_group1', 'last_num_group1', 'max_credlmt_935A', 'max_debtoutstand_525A', 'max_debtoverdue_47A', 'max_dpdmax_139P', 'max_dpdmax_757P', 'max_instlamount_768A', 'max_monthlyinstlamount_332A', 'max_monthlyinstlamount_674A', 'max_outstandingamount_354A', 'max_outstandingamount_362A', 'max_overdueamount_31A', 'max_overdueamount_659A', 'max_overdueamountmax2_14A', 'max_overdueamountmax2_398A', 'max_overdueamountmax_155A', 'max_overdueamountmax_35A', 'max_residualamount_856A', 'max_totalamount_6A', 'max_totalamount_996A', 'max_totaldebtoverduevalue_178A', 'max_totaldebtoverduevalue_718A', 'max_totaloutstanddebtvalue_39A', 'max_totaloutstanddebtvalue_668A', 'mean_credlmt_935A', 'mean_debtoutstand_525A', 'mean_debtoverdue_47A', 'mean_dpdmax_139P', 'mean_dpdmax_757P', 'mean_instlamount_768A', 'mean_monthlyinstlamount_332A', 'mean_monthlyinstlamount_674A', 'mean_outstandingamount_354A', 'mean_outstandingamount_362A', 'mean_overdueamount_31A', 'mean_overdueamount_659A', 'mean_overdueamountmax2_14A', 'mean_overdueamountmax2_398A', 'mean_overdueamountmax_155A', 'mean_overdueamountmax_35A', 'mean_totalamount_6A', 'mean_totalamount_996A', 'mean_totaldebtoverduevalue_178A', 'mean_totaldebtoverduevalue_718A', 'mean_totaloutstanddebtvalue_39A', 'mean_totaloutstanddebtvalue_668A', 'max_dateofcredend_289D', 'max_dateofcredend_353D', 'max_dateofcredstart_181D', 'max_dateofcredstart_739D', 'max_dateofrealrepmt_138D', 'max_lastupdate_1112D', 'max_lastupdate_388D', 'max_numberofoverdueinstlmaxdat_148D', 'max_numberofoverdueinstlmaxdat_641D', 'max_overdueamountmax2date_1002D', 'max_overdueamountmax2date_1142D', 'max_dpdmaxdatemonth_442T', 'max_dpdmaxdatemonth_89T', 'max_dpdmaxdateyear_596T', 'max_dpdmaxdateyear_896T', 'max_nominalrate_281L', 'max_nominalrate_498L', 'max_numberofcontrsvalue_258L', 'max_numberofcontrsvalue_358L', 'max_numberofinstls_229L', 'max_numberofinstls_320L', 'max_numberofoutstandinstls_520L', 'max_numberofoutstandinstls_59L', 'max_numberofoverdueinstlmax_1039L', 'max_numberofoverdueinstlmax_1151L', 'max_numberofoverdueinstls_725L', 'max_numberofoverdueinstls_834L', 'max_overdueamountmaxdatemonth_284T', 'max_overdueamountmaxdatemonth_365T', 'max_overdueamountmaxdateyear_2T', 'max_overdueamountmaxdateyear_994T', 'max_periodicityofpmts_1102L', 'max_periodicityofpmts_837L', 'nunique_annualeffectiverate_199L', 'nunique_annualeffectiverate_63L', 'nunique_dpdmaxdatemonth_442T', 'nunique_dpdmaxdatemonth_89T', 'nunique_dpdmaxdateyear_596T', 'nunique_dpdmaxdateyear_896T', 'nunique_nominalrate_281L', 'nunique_nominalrate_498L', 'nunique_numberofcontrsvalue_258L', 'nunique_numberofcontrsvalue_358L', 'nunique_numberofinstls_229L', 'nunique_numberofoutstandinstls_520L', 'nunique_numberofoverdueinstlmax_1039L', 'nunique_numberofoverdueinstlmax_1151L', 'nunique_numberofoverdueinstls_725L', 'nunique_numberofoverdueinstls_834L', 'nunique_overdueamountmaxdatemonth_284T', 'nunique_overdueamountmaxdateyear_2T', 'nunique_overdueamountmaxdateyear_994T', 'nunique_periodicityofpmts_1102L', 'nunique_periodicityofpmts_837L', 'nunique_prolongationcount_1120L', 'nunique_prolongationcount_599L', 'max_mainoccupationinc_384A', 'last_mainoccupationinc_384A', 'mean_mainoccupationinc_384A', 'max_birth_259D', 'max_empl_employedfrom_271D', 'max_personindex_1023L', 'max_remitter_829L', 'last_contaddr_matchlist_1032L', 'last_contaddr_smempladdr_334L', 'last_personindex_1023L', 'last_safeguarantyflag_411L', 'nunique_childnum_185L', 'nunique_empl_employedtotal_800L', 'nunique_empl_industry_691L', 'nunique_gender_992L', 'nunique_housingtype_772L', 'nunique_isreference_387L', 'nunique_maritalst_703L', 'nunique_personindex_1023L', 'nunique_relationshiptoclient_415T', 'nunique_relationshiptoclient_642T', 'nunique_remitter_829L', 'nunique_role_1084L', 'nunique_role_993L', 'max_num_group1_7', 'last_num_group1_7', 'max_credtype_587L_encoded', 'max_familystate_726L_encoded', 'max_inittransactioncode_279L_encoded', 'max_status_219L_encoded', 'last_credtype_587L_encoded', 'last_familystate_726L_encoded', 'last_inittransactioncode_279L_encoded', 'last_status_219L_encoded', 'max_cancelreason_3545846M_encoded', 'max_district_544M_encoded', 'max_education_1138M_encoded', 'max_postype_4733339M_encoded', 'max_profession_152M_encoded', 'max_rejectreason_755M_encoded', 'max_rejectreasonclient_4145042M_encoded', 'last_cancelreason_3545846M_encoded', 'last_district_544M_encoded', 'last_education_1138M_encoded', 'last_postype_4733339M_encoded', 'last_profession_152M_encoded', 'last_rejectreason_755M_encoded', 'last_rejectreasonclient_4145042M_encoded', 'max_classificationofcontr_400M_encoded', 'max_contractst_545M_encoded', 'max_purposeofcred_874M_encoded', 'max_subjectrole_182M_encoded', 'max_subjectrole_93M_encoded', 'max_empl_employedtotal_800L_encoded', 'max_empl_industry_691L_encoded', 'max_familystate_447L_encoded', 'max_incometype_1044T_encoded', 'max_persontype_1072L_encoded', 'max_persontype_792L_encoded', 'max_relationshiptoclient_415T_encoded', 'max_relationshiptoclient_642T_encoded', 'max_role_1084L_encoded', 'max_sex_738L_encoded', 'max_type_25L_encoded', 'last_incometype_1044T_encoded', 'last_persontype_1072L_encoded', 'last_persontype_792L_encoded', 'last_relationshiptoclient_642T_encoded', 'last_role_1084L_encoded', 'last_sex_738L_encoded', 'last_type_25L_encoded', 'nunique_persontype_1072L_encoded', 'nunique_persontype_792L_encoded', 'last_contaddr_district_15M_encoded', 'last_contaddr_zipcode_807M_encoded', 'last_language1_981M_encoded', 'last_registaddr_district_1083M_encoded', 'last_registaddr_zipcode_184M_encoded', 'month_decision', 'weekday_decision', 'assignmentdate_238D', 'assignmentdate_4527235D', 'assignmentdate_4955616D', 'birthdate_574D', 'contractssum_5085716L', 'dateofbirth_337D', 'dateofbirth_342D', 'days120_123L', 'days180_256L', 'days30_165L', 'days360_512L', 'days90_310L', 'firstquarter_103L', 'for3years_128L', 'for3years_504L', 'for3years_584L', 'formonth_118L', 'formonth_206L', 'formonth_535L', 'forquarter_1017L', 'forquarter_462L', 'forquarter_634L', 'fortoday_1092L', 'forweek_1077L', 'forweek_528L', 'forweek_601L', 'foryear_618L', 'foryear_818L', 'foryear_850L', 'fourthquarter_440L', 'numberofqueries_373L', 'pmtaverage_3A', 'pmtaverage_4527227A', 'pmtaverage_4955615A', 'pmtcount_4527229L', 'pmtcount_4955617L', 'pmtcount_693L', 'pmtscount_423L', 'pmtssum_45A', 'responsedate_1012D', 'responsedate_4527233D', 'responsedate_4917613D', 'riskassesment_940T', 'secondquarter_766L', 'thirdquarter_1082L', 'actualdpdtolerance_344P', 'amtinstpaidbefduel24m_4187115A', 'annuity_780A', 'annuitynextmonth_57A', 'applications30d_658L', 'applicationscnt_1086L', 'applicationscnt_464L', 'applicationscnt_629L', 'applicationscnt_867L', 'avgdbddpdlast24m_3658932P', 'avgdbddpdlast3m_4187120P', 'avgdbdtollast24m_4525197P', 'avgdpdtolclosure24_3658938P', 'avginstallast24m_3658937A', 'avglnamtstart24m_4525187A', 'avgmaxdpdlast9m_3716943P', 'avgoutstandbalancel6m_4187114A', 'avgpmtlast12m_4525200A', 'clientscnt12m_3712952L', 'clientscnt3m_3712950L', 'clientscnt6m_3712949L', 'clientscnt_100L', 'clientscnt_1022L', 'clientscnt_1071L', 'clientscnt_1130L', 'clientscnt_136L', 'clientscnt_157L', 'clientscnt_257L', 'clientscnt_304L', 'clientscnt_360L', 'clientscnt_493L', 'clientscnt_533L', 'clientscnt_887L', 'clientscnt_946L', 'cntincpaycont9m_3716944L', 'cntpmts24_3658933L', 'commnoinclast6m_3546845L', 'credamount_770A', 'currdebt_22A', 'currdebtcredtyperange_828A', 'datefirstoffer_1144D', 'datelastinstal40dpd_247D', 'datelastunpaid_3546854D', 'daysoverduetolerancedd_3976961L', 'disbursedcredamount_1113A', 'downpmt_116A', 'dtlastpmtallstes_4499206D', 'eir_270L', 'equalitydataagreement_891L', 'equalityempfrom_62L', 'firstclxcampaign_1125D', 'firstdatedue_489D', 'homephncnt_628L', 'inittransactionamount_650A', 'interestrate_311L', 'interestrategrace_34L', 'isbidproduct_1095L', 'isbidproductrequest_292L', 'isdebitcard_729L', 'lastactivateddate_801D', 'lastapplicationdate_877D', 'lastapprcredamount_781A', 'lastapprdate_640D', 'lastdelinqdate_224D', 'lastdependentsnum_448L', 'lastotherinc_902A', 'lastotherlnsexpense_631A', 'lastrejectcredamount_222A', 'lastrejectdate_50D', 'lastrepayingdate_696D', 'maininc_215A', 'mastercontrelectronic_519L', 'mastercontrexist_109L', 'maxannuity_159A', 'maxannuity_4075009A', 'maxdbddpdlast1m_3658939P', 'maxdbddpdtollast12m_3658940P', 'maxdbddpdtollast6m_4187119P', 'maxdebt4_972A', 'maxdpdfrom6mto36m_3546853P', 'maxdpdinstldate_3546855D', 'maxdpdinstlnum_3546846P', 'maxdpdlast12m_727P', 'maxdpdlast24m_143P', 'maxdpdlast3m_392P', 'maxdpdlast6m_474P', 'maxdpdlast9m_1059P', 'maxdpdtolerance_374P', 'maxinstallast24m_3658928A', 'maxlnamtstart6m_4525199A', 'maxoutstandbalancel12m_4187113A', 'maxpmtlast3m_4525190A', 'mindbddpdlast24m_3658935P', 'mindbdtollast24m_4525191P', 'mobilephncnt_593L', 'monthsannuity_845L', 'numactivecreds_622L', 'numactivecredschannel_414L', 'numactiverelcontr_750L', 'numcontrs3months_479L', 'numincomingpmts_3546848L', 'numinstlallpaidearly3d_817L', 'numinstls_657L', 'numinstlsallpaid_934L', 'numinstlswithdpd10_728L', 'numinstlswithdpd5_4187116L', 'numinstlswithoutdpd_562L', 'numinstmatpaidtearly2d_4499204L', 'numinstpaid_4499208L', 'numinstpaidearly3d_3546850L', 'numinstpaidearly3dest_4493216L', 'numinstpaidearly5d_1087L', 'numinstpaidearly5dest_4493211L', 'numinstpaidearly5dobd_4499205L', 'numinstpaidearly_338L', 'numinstpaidearlyest_4493214L', 'numinstpaidlastcontr_4325080L', 'numinstpaidlate1d_3546852L', 'numinstregularpaid_973L', 'numinstregularpaidest_4493210L', 'numinsttopaygr_769L', 'numinsttopaygrest_4493213L', 'numinstunpaidmax_3546851L', 'numinstunpaidmaxest_4493212L', 'numnotactivated_1143L', 'numpmtchanneldd_318L', 'numrejects9m_859L', 'opencred_647L', 'payvacationpostpone_4187118D', 'pctinstlsallpaidearl3d_427L', 'pctinstlsallpaidlat10d_839L', 'pctinstlsallpaidlate1d_3546856L', 'pctinstlsallpaidlate4d_3546849L', 'pctinstlsallpaidlate6d_3546844L', 'pmtnum_254L', 'posfpd10lastmonth_333P', 'posfpd30lastmonth_3976960P', 'posfstqpd30lastmonth_3976962P', 'price_1097A', 'sellerplacecnt_915L', 'sellerplacescnt_216L', 'sumoutstandtotal_3546847A', 'sumoutstandtotalest_4493215A', 'totaldebt_9A', 'totalsettled_863A', 'totinstallast1m_4525188A', 'validfrom_1069D', 'description_5085714M_encoded', 'education_1103M_encoded', 'education_88M_encoded', 'maritalst_385M_encoded', 'maritalst_893M_encoded', 'requesttype_4525192L_encoded', 'riskassesment_302T_encoded', 'bankacctype_710L_encoded', 'cardtype_51L_encoded', 'credtype_322L_encoded', 'disbursementtype_67L_encoded', 'inittransactioncode_186L_encoded', 'lastapprcommoditycat_1041M_encoded', 'lastapprcommoditytypec_5251766M_encoded', 'lastcancelreason_561M_encoded', 'lastrejectcommoditycat_161M_encoded', 'lastrejectcommodtypec_5251769M_encoded', 'lastrejectreason_759M_encoded', 'lastrejectreasonclient_4145040M_encoded', 'lastst_736L_encoded', 'paytype1st_925L_encoded', 'paytype_783L_encoded', 'previouscontdistrict_112M_encoded', 'twobodfilling_608L_encoded', 'typesuite_864L_encoded']
+
 # ==================================================
 # """ 统计所有数据列类型并保存脚本 """
 # from IPython import embed
@@ -1084,299 +1087,299 @@ df_train[cat_cols] = df_train[cat_cols].astype(str)
 
 # ======================================== 训练3树模型 =====================================
 
-# fitted_models_cat = []
-# fitted_models_lgb = []
-# fitted_models_xgb = []
-# fitted_models_rf = []
-# fitted_models_cat_dw = []
-# fitted_models_cat_lg = []
-# fitted_models_lgb_dart = []
-# fitted_models_lgb_rf = []
+fitted_models_cat = []
+fitted_models_lgb = []
+fitted_models_xgb = []
+fitted_models_rf = []
+fitted_models_cat_dw = []
+fitted_models_cat_lg = []
+fitted_models_lgb_dart = []
+fitted_models_lgb_rf = []
 
 
-# cv_scores_cat = []
-# cv_scores_lgb = []
-# cv_scores_xgb = []
-# cv_scores_rf = []
-# cv_scores_cat_dw = []
-# cv_scores_cat_lg = []
-# cv_scores_lgb_dart = []
-# cv_scores_lgb_rf = []
+cv_scores_cat = []
+cv_scores_lgb = []
+cv_scores_xgb = []
+cv_scores_rf = []
+cv_scores_cat_dw = []
+cv_scores_cat_lg = []
+cv_scores_lgb_dart = []
+cv_scores_lgb_rf = []
 
 
-# print(df_train.head())
+print(df_train.head())
 
-# fold = 1
-# for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环5次
+fold = 1
+for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环5次
 
-#     # X_train(≈40000,386), y_train(≈40000)
-#     X_train, y_train = df_train.iloc[idx_train], y.iloc[idx_train] 
-#     X_valid, y_valid = df_train.iloc[idx_valid], y.iloc[idx_valid]    
+    # X_train(≈40000,386), y_train(≈40000)
+    X_train, y_train = df_train.iloc[idx_train], y.iloc[idx_train] 
+    X_valid, y_valid = df_train.iloc[idx_valid], y.iloc[idx_valid]    
     
 
-#     # ===============================
-#     X_train[cat_cols] = X_train[cat_cols].astype("category")
-#     X_valid[cat_cols] = X_valid[cat_cols].astype("category")
+    # ===============================
+    X_train[cat_cols] = X_train[cat_cols].astype("category")
+    X_valid[cat_cols] = X_valid[cat_cols].astype("category")
 
-#     # if fold%2 ==1:
-#     #     params = {
-#     #         "boosting_type": "gbdt",
-#     #         "colsample_bynode": 0.8,
-#     #         "colsample_bytree": 0.8,
-#     #         "device": device,
-#     #         "extra_trees": True,
-#     #         "learning_rate": 0.05,
-#     #         "l1_regularization": 0.1,
-#     #         "l2_regularization": 10,
-#     #         "max_depth": 20,
-#     #         "metric": "auc",
-#     #         "n_estimators": 2000,
-#     #         "num_leaves": 64,
-#     #         "objective": "binary",
-#     #         "random_state": 42,
-#     #         "verbose": -1,
-#     #     }
-#     # else:
-#     #     params = {
-#     #         "boosting_type": "gbdt",
-#     #         "colsample_bynode": 0.8,
-#     #         "colsample_bytree": 0.8,
-#     #         "device": device,
-#     #         "extra_trees": True,
-#     #         "learning_rate": 0.03,
-#     #         "l1_regularization": 0.1,
-#     #         "l2_regularization": 10,
-#     #         "max_depth": 16,
-#     #         "metric": "auc",
-#     #         "n_estimators": 2000,
-#     #         "num_leaves": 72,
-#     #         "objective": "binary",
-#     #         "random_state": 42,
-#     #         "verbose": -1,
-#     #     }
+    # if fold%2 ==1:
+    #     params = {
+    #         "boosting_type": "gbdt",
+    #         "colsample_bynode": 0.8,
+    #         "colsample_bytree": 0.8,
+    #         "device": device,
+    #         "extra_trees": True,
+    #         "learning_rate": 0.05,
+    #         "l1_regularization": 0.1,
+    #         "l2_regularization": 10,
+    #         "max_depth": 20,
+    #         "metric": "auc",
+    #         "n_estimators": 2000,
+    #         "num_leaves": 64,
+    #         "objective": "binary",
+    #         "random_state": 42,
+    #         "verbose": -1,
+    #     }
+    # else:
+    #     params = {
+    #         "boosting_type": "gbdt",
+    #         "colsample_bynode": 0.8,
+    #         "colsample_bytree": 0.8,
+    #         "device": device,
+    #         "extra_trees": True,
+    #         "learning_rate": 0.03,
+    #         "l1_regularization": 0.1,
+    #         "l2_regularization": 10,
+    #         "max_depth": 16,
+    #         "metric": "auc",
+    #         "n_estimators": 2000,
+    #         "num_leaves": 72,
+    #         "objective": "binary",
+    #         "random_state": 42,
+    #         "verbose": -1,
+    #     }
 
 
 
-#     params = {
-#         "boosting_type": "gbdt",
-#         "objective": "binary",
-#         "metric": "auc",
-#         "max_depth": 10,  
-#         "learning_rate": 0.05,
-#         "n_estimators": 2000,  
-#         # 则每棵树在构建时会随机选择 80% 的特征进行训练，剩下的 20% 特征将不参与训练，从而增加模型的泛化能力和稳定性
-#         "colsample_bytree": 0.8, 
-#         "colsample_bynode": 0.8, # 控制每个节点的特征采样比例
-#         "verbose": -1,
-#         "random_state": 42,
-#         "reg_alpha": 0.1,
-#         "reg_lambda": 10,
-#         "extra_trees":True,
-#         'num_leaves':64,
-#         "device": 'gpu', # gpu
-#         'gpu_use_dp' : True, # 转化float为64精度
+    params = {
+        "boosting_type": "gbdt",
+        "objective": "binary",
+        "metric": "auc",
+        "max_depth": 10,  
+        "learning_rate": 0.05,
+        "n_estimators": 2000,  
+        # 则每棵树在构建时会随机选择 80% 的特征进行训练，剩下的 20% 特征将不参与训练，从而增加模型的泛化能力和稳定性
+        "colsample_bytree": 0.8, 
+        "colsample_bynode": 0.8, # 控制每个节点的特征采样比例
+        "verbose": -1,
+        "random_state": 42,
+        "reg_alpha": 0.1,
+        "reg_lambda": 10,
+        "extra_trees":True,
+        'num_leaves':64,
+        "device": 'gpu', # gpu
+        'gpu_use_dp' : True, # 转化float为64精度
 
-#         # # 平衡类别之间的权重  损失函数不会因为样本不平衡而被“推向”样本量偏少的类别中
-#         # "sample_weight":'balanced',
-#     }
+        # # 平衡类别之间的权重  损失函数不会因为样本不平衡而被“推向”样本量偏少的类别中
+        # "sample_weight":'balanced',
+    }
 
-#     # 一次训练
-#     model = lgb.LGBMClassifier(**params)
-#     model.fit(
-#         X_train, y_train,
-#         eval_set = [(X_valid, y_valid)],
-#         callbacks = [lgb.log_evaluation(200), lgb.early_stopping(100)],
-#         # init_model = f"/home/xyli/kaggle/kaggle_HomeCredit/dataset/lgbm_fold{fold}.txt",
+    # 一次训练
+    model = lgb.LGBMClassifier(**params)
+    model.fit(
+        X_train, y_train,
+        eval_set = [(X_valid, y_valid)],
+        callbacks = [lgb.log_evaluation(200), lgb.early_stopping(100)],
+        # init_model = f"/home/xyli/kaggle/kaggle_HomeCredit/dataset/lgbm_fold{fold}.txt",
+    )
+    model.booster_.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/lgbm_fold{fold}.txt')
+    model2 = model
+
+    # # 二次优化
+    # params['learning_rate'] = 0.01
+    # model2 = lgb.LGBMClassifier(**params)
+    # model2.fit(
+    #     X_train, y_train,
+    #     eval_set = [(X_valid, y_valid)],
+    #     callbacks = [lgb.log_evaluation(200), lgb.early_stopping(200)],
+    #     init_model = f"/home/xyli/kaggle/kaggle_HomeCredit/dataset8/lgbm_fold{fold}.txt",
+    # )
+    # model2.booster_.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/lgbm_fold{fold}.txt')
+    
+
+    fitted_models_lgb.append(model2)
+    y_pred_valid = model2.predict_proba(X_valid)[:,1]
+    auc_score = roc_auc_score(y_valid, y_pred_valid)
+    print('auc_score: ', auc_score)
+    cv_scores_lgb.append(auc_score)
+    print()
+    print("分隔符")
+    print()
+    # ===========================
+
+
+    # ======================================
+#     train_pool = Pool(X_train, y_train,cat_features=cat_cols)
+#     val_pool = Pool(X_valid, y_valid,cat_features=cat_cols)
+
+#     clf = CatBoostClassifier( 
+#         best_model_min_trees = 1200, # 1000
+#         boosting_type = "Plain",
+#         eval_metric = "AUC",
+#         iterations = 6000,
+#         learning_rate = 0.05,
+#         l2_leaf_reg = 10,
+#         max_leaves = 64,
+#         random_seed = 42,
+#         task_type = "GPU",
+#         use_best_model = True
+#     ) 
+
+# #     clf = CatBoostClassifier(
+# #         eval_metric='AUC',
+# #         task_type='GPU',
+# #         learning_rate=0.03, # 0.03
+# #         iterations=6000, # n_est
+# # #         early_stopping_rounds = 500,
+# #     )
+
+#     clf.fit(
+#         train_pool, 
+#         eval_set=val_pool,
+#         verbose=300,
+# #         # 保证调试的时候不需要重新训练
+# #         save_snapshot = True, 
+# #         snapshot_file = '/kaggle/working/catboost.cbsnapshot',
+# #         snapshot_interval = 10
 #     )
-#     model.booster_.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/lgbm_fold{fold}.txt')
-#     model2 = model
-
-#     # # 二次优化
-#     # params['learning_rate'] = 0.01
-#     # model2 = lgb.LGBMClassifier(**params)
-#     # model2.fit(
-#     #     X_train, y_train,
-#     #     eval_set = [(X_valid, y_valid)],
-#     #     callbacks = [lgb.log_evaluation(200), lgb.early_stopping(200)],
-#     #     init_model = f"/home/xyli/kaggle/kaggle_HomeCredit/dataset8/lgbm_fold{fold}.txt",
-#     # )
-#     # model2.booster_.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/lgbm_fold{fold}.txt')
-    
-
-#     fitted_models_lgb.append(model2)
-#     y_pred_valid = model2.predict_proba(X_valid)[:,1]
+#     clf.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/catboost_fold{fold}.cbm')
+#     fitted_models_cat.append(clf)
+#     y_pred_valid = clf.predict_proba(X_valid)[:,1]
 #     auc_score = roc_auc_score(y_valid, y_pred_valid)
 #     print('auc_score: ', auc_score)
-#     cv_scores_lgb.append(auc_score)
-#     print()
-#     print("分隔符")
-#     print()
-#     # ===========================
-
-
-#     # ======================================
-# #     train_pool = Pool(X_train, y_train,cat_features=cat_cols)
-# #     val_pool = Pool(X_valid, y_valid,cat_features=cat_cols)
-
-# #     clf = CatBoostClassifier( 
-# #         best_model_min_trees = 1200, # 1000
-# #         boosting_type = "Plain",
-# #         eval_metric = "AUC",
-# #         iterations = 6000,
-# #         learning_rate = 0.05,
-# #         l2_leaf_reg = 10,
-# #         max_leaves = 64,
-# #         random_seed = 42,
-# #         task_type = "GPU",
-# #         use_best_model = True
-# #     ) 
-
-# # #     clf = CatBoostClassifier(
-# # #         eval_metric='AUC',
-# # #         task_type='GPU',
-# # #         learning_rate=0.03, # 0.03
-# # #         iterations=6000, # n_est
-# # # #         early_stopping_rounds = 500,
-# # #     )
-
-# #     clf.fit(
-# #         train_pool, 
-# #         eval_set=val_pool,
-# #         verbose=300,
-# # #         # 保证调试的时候不需要重新训练
-# # #         save_snapshot = True, 
-# # #         snapshot_file = '/kaggle/working/catboost.cbsnapshot',
-# # #         snapshot_interval = 10
-# #     )
-# #     clf.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/catboost_fold{fold}.cbm')
-# #     fitted_models_cat.append(clf)
-# #     y_pred_valid = clf.predict_proba(X_valid)[:,1]
-# #     auc_score = roc_auc_score(y_valid, y_pred_valid)
-# #     print('auc_score: ', auc_score)
-# #     cv_scores_cat.append(auc_score)
+#     cv_scores_cat.append(auc_score)
     
-#     # =================================
+    # =================================
 
-#     fold = fold+1
+    fold = fold+1
 
-# print("CV AUC scores: ", cv_scores_cat)
-# print("Mean CV AUC score: ", np.mean(cv_scores_cat))
+print("CV AUC scores: ", cv_scores_cat)
+print("Mean CV AUC score: ", np.mean(cv_scores_cat))
 
-# print("CV AUC scores: ", cv_scores_lgb)
-# print("Mean CV AUC score: ", np.mean(cv_scores_lgb))
+print("CV AUC scores: ", cv_scores_lgb)
+print("Mean CV AUC score: ", np.mean(cv_scores_lgb))
 
-# print("CV AUC scores: ", cv_scores_xgb)
-# print("Mean CV AUC score: ", np.mean(cv_scores_xgb))
+print("CV AUC scores: ", cv_scores_xgb)
+print("Mean CV AUC score: ", np.mean(cv_scores_xgb))
 
-# print("CV AUC scores: ", cv_scores_cat_dw)
-# print("Mean CV AUC score: ", np.mean(cv_scores_cat_dw))
+print("CV AUC scores: ", cv_scores_cat_dw)
+print("Mean CV AUC score: ", np.mean(cv_scores_cat_dw))
 
-# print("CV AUC scores: ", cv_scores_cat_lg)
-# print("Mean CV AUC score: ", np.mean(cv_scores_cat_lg))
+print("CV AUC scores: ", cv_scores_cat_lg)
+print("Mean CV AUC score: ", np.mean(cv_scores_cat_lg))
 
-# print("CV AUC scores: ", cv_scores_lgb_dart)
-# print("Mean CV AUC score: ", np.mean(cv_scores_lgb_dart))
+print("CV AUC scores: ", cv_scores_lgb_dart)
+print("Mean CV AUC score: ", np.mean(cv_scores_lgb_dart))
 
-# print("CV AUC scores: ", cv_scores_lgb_rf)
-# print("Mean CV AUC score: ", np.mean(cv_scores_lgb_rf))
+print("CV AUC scores: ", cv_scores_lgb_rf)
+print("Mean CV AUC score: ", np.mean(cv_scores_lgb_rf))
 
 # ======================================== 训练3树模型 =====================================
 
 # ======================================== 推理验证 =====================================
-fitted_models_cat1 = []
-fitted_models_lgb1 = []
+# fitted_models_cat1 = []
+# fitted_models_lgb1 = []
 
-fitted_models_cat2 = []
-fitted_models_lgb2 = []
+# fitted_models_cat2 = []
+# fitted_models_lgb2 = []
 
-fitted_models_cat3 = []
-fitted_models_lgb3 = []
+# fitted_models_cat3 = []
+# fitted_models_lgb3 = []
 
-for fold in range(1,6):
-    clf = CatBoostClassifier() 
-    clf.load_model(f"/home/xyli/kaggle/kaggle_HomeCredit/dataset9/catboost_fold{fold}.cbm")
-    fitted_models_cat1.append(clf)
+# for fold in range(1,6):
+#     clf = CatBoostClassifier() 
+#     clf.load_model(f"/home/xyli/kaggle/kaggle_HomeCredit/dataset9/catboost_fold{fold}.cbm")
+#     fitted_models_cat1.append(clf)
     
-    model = lgb.LGBMClassifier()
-    model = lgb.Booster(model_file=f"/home/xyli/kaggle/kaggle_HomeCredit/dataset8/lgbm_fold{fold}.txt")
-    fitted_models_lgb1.append(model)
+#     model = lgb.LGBMClassifier()
+#     model = lgb.Booster(model_file=f"/home/xyli/kaggle/kaggle_HomeCredit/dataset8/lgbm_fold{fold}.txt")
+#     fitted_models_lgb1.append(model)
     
-    clf2 = CatBoostClassifier()
-    clf2.load_model(f"/home/xyli/kaggle/kaggle_HomeCredit/dataset5/catboost_fold{fold}.cbm")
-    fitted_models_cat2.append(clf2) 
+#     clf2 = CatBoostClassifier()
+#     clf2.load_model(f"/home/xyli/kaggle/kaggle_HomeCredit/dataset5/catboost_fold{fold}.cbm")
+#     fitted_models_cat2.append(clf2) 
     
-    model2 = lgb.LGBMClassifier()
-    model2 = lgb.Booster(model_file=f"/home/xyli/kaggle/kaggle_HomeCredit/dataset4/lgbm_fold{fold}.txt")
-    fitted_models_lgb2.append(model2)
+#     model2 = lgb.LGBMClassifier()
+#     model2 = lgb.Booster(model_file=f"/home/xyli/kaggle/kaggle_HomeCredit/dataset4/lgbm_fold{fold}.txt")
+#     fitted_models_lgb2.append(model2)
 
-    clf3 = CatBoostClassifier()
-    clf3.load_model(f"/home/xyli/kaggle/kaggle_HomeCredit/dataset20/catboost_fold{fold}.cbm")
-    fitted_models_cat3.append(clf3) 
+#     clf3 = CatBoostClassifier()
+#     clf3.load_model(f"/home/xyli/kaggle/kaggle_HomeCredit/dataset20/catboost_fold{fold}.cbm")
+#     fitted_models_cat3.append(clf3) 
     
-    model3 = lgb.LGBMClassifier()
-    model3 = lgb.Booster(model_file=f"/home/xyli/kaggle/kaggle_HomeCredit/lgbm_fold{fold}.txt")
-    fitted_models_lgb3.append(model3)
+#     model3 = lgb.LGBMClassifier()
+#     model3 = lgb.Booster(model_file=f"/home/xyli/kaggle/kaggle_HomeCredit/lgbm_fold{fold}.txt")
+#     fitted_models_lgb3.append(model3)
 
 
-class VotingModel(BaseEstimator, RegressorMixin):
-    def __init__(self, estimators):
-        super().__init__()
-        self.estimators = estimators
+# class VotingModel(BaseEstimator, RegressorMixin):
+#     def __init__(self, estimators):
+#         super().__init__()
+#         self.estimators = estimators
         
-    def fit(self, X, y=None):
-        return self
+#     def fit(self, X, y=None):
+#         return self
 
-    def predict_proba(self, X):
-        y_preds = []
+#     def predict_proba(self, X):
+#         y_preds = []
 
-        # from IPython import embed
-        # embed()
+#         # from IPython import embed
+#         # embed()
 
-        # X[cat_cols] = X[cat_cols].astype("str")
-        # y_preds += [estimator.predict_proba(X[df_train_829])[:, 1] for estimator in self.estimators[0:5]]
-        # y_preds += [estimator.predict_proba(X[df_train_386])[:, 1] for estimator in self.estimators[5:10]]
+#         # X[cat_cols] = X[cat_cols].astype("str")
+#         # y_preds += [estimator.predict_proba(X[df_train_829])[:, 1] for estimator in self.estimators[0:5]]
+#         # y_preds += [estimator.predict_proba(X[df_train_386])[:, 1] for estimator in self.estimators[5:10]]
        
-        X[cat_cols] = X[cat_cols].astype("category")
-        # y_preds += [estimator.predict(X[df_train]) for estimator in self.estimators[15:20]]
-        y_preds += [estimator.predict(X) for estimator in self.estimators[25:30]]
+#         X[cat_cols] = X[cat_cols].astype("category")
+#         # y_preds += [estimator.predict(X[df_train]) for estimator in self.estimators[15:20]]
+#         y_preds += [estimator.predict(X) for estimator in self.estimators[25:30]]
         
-        return np.mean(y_preds, axis=0)
+#         return np.mean(y_preds, axis=0)
     
-    def predict_proba_scan(self, X):
-        y_preds = []
-        # from IPython import embed
-        # embed()
+#     def predict_proba_scan(self, X):
+#         y_preds = []
+#         # from IPython import embed
+#         # embed()
 
-        # X[cat_cols] = X[cat_cols].astype("str")
-        # y_preds += [estimator.predict_proba(X)[:, 1] for estimator in self.estimators[10:15]]
+#         # X[cat_cols] = X[cat_cols].astype("str")
+#         # y_preds += [estimator.predict_proba(X)[:, 1] for estimator in self.estimators[10:15]]
         
-        X[cat_cols] = X[cat_cols].astype("category")
-        y_preds += [estimator.predict(X) for estimator in self.estimators[25:30]] 
+#         X[cat_cols] = X[cat_cols].astype("category")
+#         y_preds += [estimator.predict(X) for estimator in self.estimators[25:30]] 
        
 
-        # X[cat_cols_470] = X[cat_cols_470].astype("category")
-        # y_preds += [estimator.predict(X[df_train_470]) for estimator in self.estimators[25:30]]
+#         # X[cat_cols_470] = X[cat_cols_470].astype("category")
+#         # y_preds += [estimator.predict(X[df_train_470]) for estimator in self.estimators[25:30]]
 
-        return np.mean(y_preds, axis=0)
-
-
-model = VotingModel(fitted_models_cat1 + fitted_models_cat2 +fitted_models_cat3+ fitted_models_lgb1 + fitted_models_lgb2+fitted_models_lgb3)
+#         return np.mean(y_preds, axis=0)
 
 
-# from IPython import embed
-# embed()
+# model = VotingModel(fitted_models_cat1 + fitted_models_cat2 +fitted_models_cat3+ fitted_models_lgb1 + fitted_models_lgb2+fitted_models_lgb3)
 
-# 5min
-print('开始计算cv')
-valid_score = []
-# valid_preds = model.predict_proba_scan(df_train) # df_train消掉了额外的2个特征列
+
+# # from IPython import embed
+# # embed()
+
+# # 5min
+# print('开始计算cv')
+# valid_score = []
+# # valid_preds = model.predict_proba_scan(df_train) # df_train消掉了额外的2个特征列
+# # valid_score += [roc_auc_score(y, valid_preds)]
+# # print(valid_score)
+# valid_preds = model.predict_proba(df_train)
 # valid_score += [roc_auc_score(y, valid_preds)]
 # print(valid_score)
-valid_preds = model.predict_proba(df_train)
-valid_score += [roc_auc_score(y, valid_preds)]
-print(valid_score)
-# valid_score += [(valid_score[0]+valid_score[1])/2.0]
-# print(valid_score)
+# # valid_score += [(valid_score[0]+valid_score[1])/2.0]
+# # print(valid_score)
 
 
 # ======================================== 推理验证 =====================================
