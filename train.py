@@ -1309,11 +1309,11 @@ for fold in range(1,6):
     fitted_models_lgb2.append(model2)
 
     clf3 = CatBoostClassifier()
-    clf3.load_model(f"/home/xyli/kaggle/kaggle_HomeCredit/catboost_fold{fold}.cbm")
+    clf3.load_model(f"/home/xyli/kaggle/kaggle_HomeCredit/dataset20/catboost_fold{fold}.cbm")
     fitted_models_cat3.append(clf3) 
     
     model3 = lgb.LGBMClassifier()
-    model3 = lgb.Booster(model_file=f"/home/xyli/kaggle/kaggle_HomeCredit/dataset20/lgbm_fold{fold}.txt")
+    model3 = lgb.Booster(model_file=f"/home/xyli/kaggle/kaggle_HomeCredit/lgbm_fold{fold}.txt")
     fitted_models_lgb3.append(model3)
 
 
