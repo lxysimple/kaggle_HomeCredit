@@ -1068,9 +1068,6 @@ non_cat_cols_829 = [i for i in df_train_829 if i not in cat_cols_829]
 print('len(cat_cols_829) : ', len(cat_cols_829))
 print('len(non_cat_cols_829): ', len(non_cat_cols_829))
 
-df_train[cat_cols] = df_train[cat_cols].astype(str)
-
-
 # ==================================================
 # """ 统计所有数据列类型并保存脚本 """
 # from IPython import embed
