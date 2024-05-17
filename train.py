@@ -58,7 +58,7 @@ from functools import lru_cache
 # df_train = pd.read_csv('/home/xyli/kaggle/kaggle_HomeCredit/train832.csv', nrows=50000)
 # df_train = pd.read_csv('/home/xyli/kaggle/kaggle_HomeCredit/train389FE.csv')
 # df_train = pd.read_csv('/home/xyli/kaggle/kaggle_HomeCredit/train419.csv')
-df_train = pd.read_csv('/home/xyli/kaggle/kaggle_HomeCredit/train389.csv')
+df_train = pd.read_csv('/home/xyli/kaggle/kaggle_HomeCredit/train.csv')
 
 
 
