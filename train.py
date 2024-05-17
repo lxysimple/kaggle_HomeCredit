@@ -1083,11 +1083,11 @@ df_train[cat_cols] = df_train[cat_cols].astype(str)
 # ======================================== 特征列分类 =====================================
 
 # ======================================== 二分类模型训练 =====================================
-df_train = df_train[:20000]
-weeks = weeks[:20000]
+df_train = df_train[:200000]
+weeks = weeks[:200000]
 
-df_train.loc[0:10000, 'is_test'] = 0
-df_train.loc[10000:20000, 'is_test'] = 1
+df_train.loc[0:100000, 'is_test'] = 0
+df_train.loc[100000:200000, 'is_test'] = 1
 
 y = df_train["is_test"]
 
