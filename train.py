@@ -159,8 +159,8 @@ def filter_cols(df: pl.DataFrame) -> pl.DataFrame:
         if col not in ["case_id", "year", "month", "week_num", "target"]:
             null_pct = df[col].is_null().mean()
 
-            # if null_pct > 0.95:
-            if null_pct == 1: 
+            if null_pct > 0.95:
+            # if null_pct == 1: 
                 df = df.drop(col) 
 
     for col in df.columns:
