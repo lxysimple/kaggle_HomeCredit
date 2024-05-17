@@ -1091,6 +1091,8 @@ df_train.loc[10000:20000, 'is_test'] = 1
 
 y = df_train["is_test"]
 
+fitted_models_lgb = []
+cv_scores_lgb = []
 fold = 1
 for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环5次
 
@@ -1147,6 +1149,9 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
 
 
     fold = fold+1
+
+print("CV AUC scores: ", cv_scores_lgb)
+print("Mean CV AUC score: ", np.mean(cv_scores_lgb))
 # ======================================== 二分类模型训练 =====================================
 
 
