@@ -54,7 +54,11 @@ from functools import lru_cache
 
 # df_train = pd.read_csv('/home/xyli/kaggle/kaggle_HomeCredit/train419.csv', nrows=5)
 # df_train = pd.read_csv('/home/xyli/kaggle/train.csv', nrows=50001)
-df_train = pl.read_csv('/home/xyli/kaggle/kaggle_HomeCredit/train832.csv').to_pandas() 
+
+# 虽然块，但会导致识别类别很不准，需要手动调整类别
+# df_train = pl.read_csv('/home/xyli/kaggle/kaggle_HomeCredit/train832.csv').to_pandas()
+
+df_train = pd.read_csv('/home/xyli/kaggle/kaggle_HomeCredit/train832.csv') 
 # df_train = pd.read_csv('/home/xyli/kaggle/kaggle_HomeCredit/train832.csv', nrows=50000)
 # df_train = pd.read_csv('/home/xyli/kaggle/kaggle_HomeCredit/train389FE.csv')
 # df_train = pd.read_csv('/home/xyli/kaggle/kaggle_HomeCredit/train419.csv')
