@@ -1091,6 +1091,7 @@ y = df_train["is_test"]
 fitted_models_lgb = []
 cv_scores_lgb = []
 fold = 1
+cv = StratifiedGroupKFold(n_splits=10, shuffle=False)
 for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环5次
 
     # X_train(≈40000,386), y_train(≈40000)
@@ -1144,7 +1145,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     print()
     # ===========================
 
-
+    break
     fold = fold+1
 
 print("CV AUC scores: ", cv_scores_lgb)
