@@ -1138,7 +1138,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
 
 
     fitted_models_lgb.append(model2)
-    y_pred_valid = model2.predict_proba(X_valid)[:,1]
+    y_pred_valid = model2.predict_proba(X_valid[df_train_829])[:,1]
     auc_score = roc_auc_score(y_valid, y_pred_valid)
     print('auc_score: ', auc_score)
     cv_scores_lgb.append(auc_score)
