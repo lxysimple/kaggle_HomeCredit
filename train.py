@@ -1013,7 +1013,7 @@ except:
 #     weeks_scan = df_train_scan["week_num"]
 # except:
 #     weeks_scan = df_train_scan["WEEK_NUM"] 
-
+ 
 
 try:
     # df_train= df_train.drop(columns=["target", "case_id", "WEEK_NUM"])
