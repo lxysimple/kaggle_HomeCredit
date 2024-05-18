@@ -899,7 +899,7 @@ data_store:dict = {
 
         # ZhiXing Jiang
         # SchemaGen.scan_files(TRAIN_DIR / 'train_static_0_*.parquet'),
-        train_static
+        train_static,
         
     ],
     'depth_1': [
@@ -908,13 +908,13 @@ data_store:dict = {
 
         # ZhiXing Jiang
         # SchemaGen.scan_files(TRAIN_DIR / 'train_tax_registry_b_1.parquet', 1),
-        train_credit_bureau_b_1
+        train_credit_bureau_b_1,
 
         SchemaGen.scan_files(TRAIN_DIR / 'train_tax_registry_c_1.parquet', 1),
 
         # ZhiXing Jiang
         # SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_a_1_*.parquet', 1),
-        train_credit_bureau_a_1
+        train_credit_bureau_a_1,
 
         SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_b_1.parquet', 1),
         SchemaGen.scan_files(TRAIN_DIR / 'train_other_1.parquet', 1),
