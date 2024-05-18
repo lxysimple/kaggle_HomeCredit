@@ -1466,7 +1466,7 @@ valid_preds = model.predict_proba(df_train)
 
 threshold_low = 0.01
 threshold_high = 0.99
-y_processed = [0 if val < threshold_low else (1 if val > threshold_high else val) for val in y]
+y_processed = [0 if val < threshold_low else (1 if val > threshold_high else val) for val in valid_preds]
 
 
 valid_score += [roc_auc_score(y, valid_preds)]
