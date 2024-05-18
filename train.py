@@ -1450,7 +1450,7 @@ df_test = df_train.loc[len(df_train)//2:len(df_train)]
 weeks = weeks[len(df_train)//2:len(df_train)]
 df_train = df_train.loc[0:len(df_train)//2] 
 
-df_test.iloc[:len(df_test)//2] = df_test.iloc[:len(df_test)//2] - 0.01
+df_test.loc[:len(df_test)//2, 'score'] = (df_test.loc[:len(df_test)//2, 'score'] - 0.01).clip(0)
 # ================= hacking ======================= 
 
 # # from IPython import embed
