@@ -877,14 +877,22 @@ data_store:dict = {
     'df_base': SchemaGen.scan_files(TRAIN_DIR / 'train_base.parquet'),
     'depth_0': [
         SchemaGen.scan_files(TRAIN_DIR / 'train_static_cb_0.parquet'),
-        SchemaGen.scan_files(TRAIN_DIR / 'train_static_0_*.parquet'),
+
+        # ZhiXing Jiang
+        # SchemaGen.scan_files(TRAIN_DIR / 'train_static_0_*.parquet'),
     ],
     'depth_1': [
         SchemaGen.scan_files(TRAIN_DIR / 'train_applprev_1_*.parquet', 1),
         SchemaGen.scan_files(TRAIN_DIR / 'train_tax_registry_a_1.parquet', 1),
-        SchemaGen.scan_files(TRAIN_DIR / 'train_tax_registry_b_1.parquet', 1),
+
+        # ZhiXing Jiang
+        # SchemaGen.scan_files(TRAIN_DIR / 'train_tax_registry_b_1.parquet', 1),
+
         SchemaGen.scan_files(TRAIN_DIR / 'train_tax_registry_c_1.parquet', 1),
-        SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_a_1_*.parquet', 1),
+
+        # ZhiXing Jiang
+        # SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_a_1_*.parquet', 1),
+
         SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_b_1.parquet', 1),
         SchemaGen.scan_files(TRAIN_DIR / 'train_other_1.parquet', 1),
         SchemaGen.scan_files(TRAIN_DIR / 'train_person_1.parquet', 1),
@@ -892,12 +900,15 @@ data_store:dict = {
         SchemaGen.scan_files(TRAIN_DIR / 'train_debitcard_1.parquet', 1),
     ],
     'depth_2': [
-        SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_a_2_*.parquet', 2),
+        # ZhiXing Jiang
+        # SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_a_2_*.parquet', 2),
+
         SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_b_2.parquet', 2),
    
-        # 829+386
-        SchemaGen.scan_files(TRAIN_DIR / 'train_applprev_2.parquet', 2), 
-        SchemaGen.scan_files(TRAIN_DIR / 'train_person_2.parquet', 2), 
+        # ZhiXing Jiang
+        # # 829+386
+        # SchemaGen.scan_files(TRAIN_DIR / 'train_applprev_2.parquet', 2), 
+        # SchemaGen.scan_files(TRAIN_DIR / 'train_person_2.parquet', 2), 
     ]
 }
 
