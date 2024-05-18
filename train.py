@@ -1505,7 +1505,7 @@ def gini_stability_custom_metric(y_pred: np.array, y_true: np.array, week: np.ar
 
    return 'gini_stability', final_score, True
 
- valid_preds[:len(valid_preds)//2] = valid_preds[:len(valid_preds)//2]-0.01 
+valid_preds[:len(valid_preds)//2] = valid_preds[:len(valid_preds)//2]-0.01 
 score = gini_stability_custom_metric(valid_preds, y, weeks)
 print('gini_stability_custom_metric: ', score)
 
