@@ -1471,6 +1471,9 @@ y_processed = [0 if val < threshold_low else (1 if val > threshold_high else val
 
 valid_score += [roc_auc_score(y, valid_preds)]
 print(valid_score)
+valid_score += [roc_auc_score(y_processed, valid_preds)]
+print(valid_score)
+
 # valid_score += [(valid_score[0]+valid_score[1])/2.0]
 # print(valid_score)
 
