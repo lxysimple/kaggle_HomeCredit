@@ -1462,7 +1462,7 @@ valid_score = []
 # valid_preds = model.predict_proba_scan(df_train) # df_train消掉了额外的2个特征列
 # valid_score += [roc_auc_score(y, valid_preds)]
 # print(valid_score)
-valid_preds = model.predict_proba(df_test)
+valid_preds = model.predict_proba(df_train)
 
 threshold_low = 0.01
 threshold_high = 0.99
