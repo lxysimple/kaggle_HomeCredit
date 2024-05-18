@@ -1521,6 +1521,14 @@ valid_preds[condition] = valid_preds[condition]-0.05
 score = gini_stability_custom_metric(valid_preds, y, weeks)
 print('gini_stability_custom_metric: ', score)
 
+valid_preds[condition] = valid_preds[condition]-0.05
+score = gini_stability_custom_metric(valid_preds, y, weeks)
+print('gini_stability_custom_metric: ', score)
+
+valid_preds[condition] = valid_preds[condition]-0.05
+score = gini_stability_custom_metric(valid_preds, y, weeks)
+print('gini_stability_custom_metric: ', score)
+
 # ================= hacking =======================  
 
 # ======================================== 推理验证 =====================================
