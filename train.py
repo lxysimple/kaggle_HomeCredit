@@ -1496,15 +1496,21 @@ def gini_stability_custom_metric(y_pred: np.array, y_true: np.array, week: np.ar
    x = np.arange(len(gini_in_time))
    y = gini_in_time
    a, b = np.polyfit(x, y, 1)
-   print('a: ', a)
    y_hat = a*x + b
    residuals = y - y_hat
    res_std = np.std(residuals)
    avg_gini = np.mean(gini_in_time)
 
+   print('a: ', a)
+   print('avg_gini: ', avg_gini)
+   print('-0.5*res_std: ', w_resstd * res_std)
+
    final_score = avg_gini + w_fallingrate * min(0, a) + w_resstd * res_std
 
    return 'gini_stability', final_score, True
+
+from IPython import embed
+embed()
 
 # valid_preds[:len(valid_preds)//2] = valid_preds[:len(valid_preds)//2]-0.005 
 score = gini_stability_custom_metric(valid_preds, y, weeks)
