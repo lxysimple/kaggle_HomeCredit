@@ -1469,7 +1469,7 @@ valid_preds = model.predict_proba(df_test)
 
 
 # ================= hacking ======================= 
-def gini_stability_custom_metric(y_pred: np.array, y_true: lgb.Dataset, week: np.array):
+def gini_stability_custom_metric(y_pred: np.array, y_true: np.array, week: np.array):
 
    '''
    :param y_pred:
@@ -1485,7 +1485,7 @@ def gini_stability_custom_metric(y_pred: np.array, y_true: lgb.Dataset, week: np
 
    base = pd.DataFrame()
    base['WEEK_NUM'] = week
-   base['target'] = y_true.get_label()
+   base['target'] = y_true
    base['score'] = y_pred
    gini_in_time = base.loc[:, ["WEEK_NUM", "target", "score"]]\
        .sort_values("WEEK_NUM")\
