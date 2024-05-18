@@ -102,8 +102,8 @@ class Pipeline:
             if col not in ["target", "case_id", "WEEK_NUM"]:
                 isnull = df[col].is_null().mean()
                 # if isnull > 0.7:
-                # if isnull > 0.95:
-                if isnull == 1:
+                if isnull > 0.95: # ZhiXing Jiang
+                # if isnull == 1:
 #                 if isnull > 0.99:
                     df = df.drop(col)
         
@@ -378,9 +378,10 @@ class Aggregator:
         # return expr_max + expr_min + expr_last + expr_first + expr_mean
 
         # return expr_max + expr_mean + expr_var # notebookv8 
-        return expr_max +expr_last+expr_mean # 829+386 
+        # return expr_max +expr_last+expr_mean # 829+386 
         # return expr_max +expr_last+expr_mean+expr_var # 829+386 + notebookv8
 
+        return expr_max # ZhiXing Jiang
     
     
     def date_expr(df):
@@ -400,8 +401,9 @@ class Aggregator:
         # return  expr_max + expr_min  +  expr_last + expr_first + expr_mean
 
         # return expr_max + expr_mean + expr_var # notebookv8
-        return  expr_max +expr_last+expr_mean # 829+386
+        # return  expr_max +expr_last+expr_mean # 829+386
         # return  expr_max +expr_last+expr_mean+expr_var # 829+386+notebookv8 
+        return expr_max # ZhiXing Jiang
 
 
     
@@ -424,8 +426,9 @@ class Aggregator:
         
 
         # return expr_max # notebookv8
-        return expr_max +expr_last # 829+386
+        # return expr_max +expr_last # 829+386
         # return  expr_max +expr_last # 829+386+notebookv8
+        return expr_max # ZhiXing Jiang
 
 
     def other_expr(df):
@@ -452,8 +455,9 @@ class Aggregator:
 
 
         # return expr_max # notebookv8
-        return  expr_max +expr_last # 829+386
+        # return  expr_max +expr_last # 829+386
         # return  expr_max +expr_last # 829+386+notebookv8
+        return expr_max # ZhiXing Jiang
 
 
 
@@ -477,8 +481,9 @@ class Aggregator:
 
 
         # return expr_max # notebookv8
-        return  expr_max +expr_last # 829+386
+        # return  expr_max +expr_last # 829+386
         # return  expr_max +expr_last # 829+386+notebookv8
+        return expr_max # ZhiXing Jiang
     
     def get_exprs(df):
         exprs = Aggregator.num_expr(df) + \
@@ -880,6 +885,52 @@ df_eric = ['last_apprcommoditytypec_5251766M_encoded', 'max_debtoutstand_525A', 
 # df_train = df_train_scan
 
 df_train = feature_eng(**data_store).collect() # 别忘记829+386要多加载2个文件
+
+
+df_train = df_train.with_columns(
+    ((pl.col('max_dateofcredend_289D') - pl.col('max_dateofcredstart_739D')).dt.total_days()).alias('max_credit_duration_daysA')
+).with_columns(
+    ((pl.col('max_dateofcredend_353D') - pl.col('max_dateofcredstart_181D')).dt.total_days()).alias('max_closed_credit_duration_daysA')
+).with_columns(
+    ((pl.col('max_dateofrealrepmt_138D') - pl.col('max_overdueamountmax2date_1002D')).dt.total_days()).alias('max_time_from_overdue_to_closed_realrepmtA')
+).with_columns(
+    ((pl.col('max_dateofrealrepmt_138D') - pl.col('max_overdueamountmax2date_1142D')).dt.total_days()).alias('max_time_from_active_overdue_to_realrepmtA')
+)
+df_train = df_train.with_columns(
+    ((pl.col('max_contractmaturitydate_151D') - pl.col('max_contractdate_551D')).dt.total_days()).alias('contract_duration_days')
+).with_columns(
+    ((pl.col('max_lastupdate_260D') - pl.col('max_contractdate_551D')).dt.total_days()).alias('last_update_duration_days')
+)
+condition_all_nan = (
+    pl.col('maxdbddpdlast1m_3658939P').is_null() &
+    pl.col('maxdbddpdtollast12m_3658940P').is_null() &
+    pl.col('maxdbddpdtollast6m_4187119P').is_null()
+)
+
+condition_exceed_thresholds = (
+    (pl.col('maxdbddpdlast1m_3658939P') > 31) |
+    (pl.col('maxdbddpdtollast12m_3658940P') > 366) |
+    (pl.col('maxdbddpdtollast6m_4187119P') > 184)
+)
+
+df_train = df_train.with_columns(
+    pl.when(condition_all_nan | condition_exceed_thresholds)
+    .then(0)
+    .otherwise(1)
+    .alias('max_dbddpd_boolean')
+)
+
+df_train = df_train.with_columns(
+    pl.when(
+        (pl.col('maxdbddpdlast1m_3658939P') <= 0) &
+        (pl.col('maxdbddpdtollast12m_3658940P') <= 0) &
+        (pl.col('maxdbddpdtollast6m_4187119P') <= 0)
+    )
+    .then(1)
+    .otherwise(0)
+    .alias('max_pays_debt_on_timeP')
+)
+
 df_train = df_train.pipe(Pipeline.filter_cols)
 df_train, cat_cols = to_pandas(df_train)    
 df_train = Utility.reduce_memory_usage(df_train, "df_train")
