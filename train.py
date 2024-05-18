@@ -974,6 +974,7 @@ df_train = df_train.with_columns(
     .otherwise(0)
     .alias('max_pays_debt_on_timeP')
 )
+df_train = df_train.collect()
 
 df_train = df_train.pipe(Pipeline.filter_cols)
 df_train, cat_cols = to_pandas(df_train)    
