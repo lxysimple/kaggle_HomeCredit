@@ -945,6 +945,9 @@ df_train = train_credit_bureau_b_1.with_columns(
 ).with_columns(
     ((pl.col('max_lastupdate_260D') - pl.col('max_contractdate_551D')).dt.total_days()).alias('last_update_duration_days')
 )
+
+
+train_static = SchemaGen.scan_files(TRAIN_DIR / 'train_static_0_*.parquet', 1)
 condition_all_nan = (
     pl.col('maxdbddpdlast1m_3658939P').is_null() &
     pl.col('maxdbddpdtollast12m_3658940P').is_null() &
@@ -957,14 +960,13 @@ condition_exceed_thresholds = (
     (pl.col('maxdbddpdtollast6m_4187119P') > 184)
 )
 
-df_train = df_train.with_columns(
+df_train = train_static.with_columns(
     pl.when(condition_all_nan | condition_exceed_thresholds)
     .then(0)
     .otherwise(1)
     .alias('max_dbddpd_boolean')
 )
-
-df_train = df_train.with_columns(
+df_train = train_static.with_columns(
     pl.when(
         (pl.col('maxdbddpdlast1m_3658939P') <= 0) &
         (pl.col('maxdbddpdtollast12m_3658940P') <= 0) &
