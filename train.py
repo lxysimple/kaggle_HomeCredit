@@ -883,7 +883,7 @@ print('读取数据完毕！')
 # df_train = df_train_scan
 
 df_train = feature_eng(**data_store).collect() # 别忘记829+386要多加载2个文件
-df_train = Utility.reduce_memory_usage(df_train, "df_train")
+df_train = Utility.reduce_memory_usage(df_train, "df_train") # 为了识别各列的类型
 
 
 
