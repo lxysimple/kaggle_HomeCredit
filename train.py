@@ -884,8 +884,6 @@ print('读取数据完毕！')
 
 df_train = feature_eng(**data_store).collect() # 别忘记829+386要多加载2个文件
 
-
-df_train = df_train.pipe(Pipeline.set_table_dtypes) # 给无类型的列赋值类型
 df_train = df_train.with_columns(
     ((pl.col('max_dateofcredend_289D') - pl.col('max_dateofcredstart_739D')).dt.total_days()).alias('max_credit_duration_daysA')
 ).with_columns(
