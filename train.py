@@ -1470,8 +1470,11 @@ valid_preds = model.predict_proba(df_test)
 
 
 # ================= hacking ======================= 
-def gini_stability_custom_metric(y_pred: np.array, y_true: np.array, week: np.array):
 
+from IPython import embed
+embed()
+
+def gini_stability_custom_metric(y_pred: np.array, y_true: np.array, week: np.array):
    '''
    :param y_pred:
    :param y_true:
@@ -1509,10 +1512,13 @@ def gini_stability_custom_metric(y_pred: np.array, y_true: np.array, week: np.ar
 
    return 'gini_stability', final_score, True
 
-from IPython import embed
-embed()
 
-# valid_preds[:len(valid_preds)//2] = valid_preds[:len(valid_preds)//2]-0.005 
+
+max_week = max(weeks)
+min_week = min(weeks)
+condition = weeks < (max_week+min_week)//2
+
+valid_preds[condition] = valid_preds[condition]-10 
 score = gini_stability_custom_metric(valid_preds, y, weeks)
 print('gini_stability_custom_metric: ', score)
 
