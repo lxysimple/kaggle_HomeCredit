@@ -1496,6 +1496,7 @@ def gini_stability_custom_metric(y_pred: np.array, y_true: np.array, week: np.ar
    x = np.arange(len(gini_in_time))
    y = gini_in_time
    a, b = np.polyfit(x, y, 1)
+   print('a: ', a)
    y_hat = a*x + b
    residuals = y - y_hat
    res_std = np.std(residuals)
