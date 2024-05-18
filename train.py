@@ -1518,7 +1518,7 @@ max_week = max(weeks)
 min_week = min(weeks)
 condition = weeks < (max_week+min_week)//2
 
-valid_preds[condition] = valid_preds[condition]-10 
+valid_preds[condition] = valid_preds[condition]-0.02 
 score = gini_stability_custom_metric(valid_preds, y, weeks)
 print('gini_stability_custom_metric: ', score)
 
