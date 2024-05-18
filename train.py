@@ -648,6 +648,38 @@ class SchemaGen:
         return df
 
     @staticmethod
+    def scan_file(glob_path: str, depth: int = None) -> pl.LazyFrame:
+        """
+        Scans Parquet files matching the glob pattern and combines them into a LazyFrame.
+
+        Args:
+        - glob_path (str): Glob pattern to match Parquet files.
+        - depth (int, optional): Depth level for data aggregation. Defaults to None.
+
+        Returns:
+        - pl.LazyFrame: Combined LazyFrame.
+        """
+        chunks: list[pl.LazyFrame] = []
+        for path in glob(str(glob_path)):
+            df: pl.LazyFrame = pl.scan_parquet(
+                path, low_memory=True, rechunk=True
+            ).pipe(SchemaGen.change_dtypes)
+
+
+            print(f"File {Path(path).stem} loaded into memory.")
+
+            chunks.append(df)
+
+        df = pl.concat(chunks, how="vertical_relaxed")
+
+        del chunks
+        gc.collect()
+
+        df = df.unique(subset=["case_id"])
+
+        return df
+
+    @staticmethod
     def join_dataframes(
         df_base: pl.LazyFrame,
         depth_0: list[pl.LazyFrame],
@@ -885,7 +917,8 @@ print('读取数据完毕！')
 df_train = feature_eng(**data_store).collect() # 别忘记829+386要多加载2个文件
 
 
-df_train = df_train.with_columns(
+train_credit_bureau_a_1 = SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_a_1_*.parquet', 1)
+df_train = train_credit_bureau_a_1.with_columns(
     (pd.to_datetime(pl.col('max_dateofcredend_289D') - pl.col('max_dateofcredstart_739D')).dt.total_days()).alias('max_credit_duration_daysA')
 ).with_columns(
     (pd.to_datetime(pl.col('max_dateofcredend_353D') - pl.col('max_dateofcredstart_181D')).dt.total_days()).alias('max_closed_credit_duration_daysA')
@@ -894,7 +927,9 @@ df_train = df_train.with_columns(
 ).with_columns(
     (pd.to_datetime(pl.col('max_dateofrealrepmt_138D') - pl.col('max_overdueamountmax2date_1142D')).dt.total_days()).alias('max_time_from_active_overdue_to_realrepmtA')
 )
-df_train = df_train.with_columns(
+
+train_credit_bureau_b_1 = SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_b_1.parquet', 1)
+df_train = train_credit_bureau_b_1.with_columns(
     (pd.to_datetime(pl.col('max_contractmaturitydate_151D') - pl.col('max_contractdate_551D')).dt.total_days()).alias('contract_duration_days')
 ).with_columns(
     (pd.to_datetime(pl.col('max_lastupdate_260D') - pl.col('max_contractdate_551D')).dt.total_days()).alias('last_update_duration_days')
