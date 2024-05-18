@@ -1513,21 +1513,14 @@ def gini_stability_custom_metric(y_pred: np.array, y_true: np.array, week: np.ar
 
 
 
-max_week = max(weeks)
-min_week = min(weeks)
-condition = weeks < (max_week+min_week)//2
+# max_week = max(weeks)
+# min_week = min(weeks)
+# condition = weeks < (max_week+min_week)//2
 
-valid_preds[condition] = valid_preds[condition]-0.05
+# valid_preds[condition] = valid_preds[condition]-0.05
 score = gini_stability_custom_metric(valid_preds, y, weeks)
 print('gini_stability_custom_metric: ', score)
 
-valid_preds[condition] = valid_preds[condition]-0.05
-score = gini_stability_custom_metric(valid_preds, y, weeks)
-print('gini_stability_custom_metric: ', score)
-
-valid_preds[condition] = valid_preds[condition]-0.05
-score = gini_stability_custom_metric(valid_preds, y, weeks)
-print('gini_stability_custom_metric: ', score)
 
 # ================= hacking =======================  
 
