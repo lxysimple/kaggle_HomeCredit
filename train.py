@@ -1463,8 +1463,14 @@ valid_score = []
 # valid_score += [roc_auc_score(y, valid_preds)]
 # print(valid_score)
 valid_preds = model.predict_proba(df_test)
-# valid_score += [roc_auc_score(y, valid_preds)]
-# print(valid_score)
+
+threshold_low = 0.01
+threshold_high = 0.99
+y_processed = [0 if val < threshold_low else (1 if val > threshold_high else val) for val in y]
+
+
+valid_score += [roc_auc_score(y, valid_preds)]
+print(valid_score)
 # valid_score += [(valid_score[0]+valid_score[1])/2.0]
 # print(valid_score)
 
@@ -1473,53 +1479,53 @@ valid_preds = model.predict_proba(df_test)
 
 
 
-def gini_stability_custom_metric(y_pred: np.array, y_true: np.array, week: np.array):
-   '''
-   :param y_pred:
-   :param y_true:
-   :param week: 
-   :return eval_name: str
-   :return eval_result: float
-   :return is_higher_better: bool
-   '''
+# def gini_stability_custom_metric(y_pred: np.array, y_true: np.array, week: np.array):
+#    '''
+#    :param y_pred:
+#    :param y_true:
+#    :param week: 
+#    :return eval_name: str
+#    :return eval_result: float
+#    :return is_higher_better: bool
+#    '''
 
-   w_fallingrate = 88.0
-   w_resstd = -0.5
+#    w_fallingrate = 88.0
+#    w_resstd = -0.5
 
-   base = pd.DataFrame()
-   base['WEEK_NUM'] = week
-   base['target'] = y_true
-   base['score'] = y_pred
-   gini_in_time = base.loc[:, ["WEEK_NUM", "target", "score"]]\
-       .sort_values("WEEK_NUM")\
-       .groupby("WEEK_NUM")[["target", "score"]]\
-       .apply(lambda x: 2*roc_auc_score(x["target"], x["score"])-1).tolist()
+#    base = pd.DataFrame()
+#    base['WEEK_NUM'] = week
+#    base['target'] = y_true
+#    base['score'] = y_pred
+#    gini_in_time = base.loc[:, ["WEEK_NUM", "target", "score"]]\
+#        .sort_values("WEEK_NUM")\
+#        .groupby("WEEK_NUM")[["target", "score"]]\
+#        .apply(lambda x: 2*roc_auc_score(x["target"], x["score"])-1).tolist()
 
-   x = np.arange(len(gini_in_time))
-   y = gini_in_time
-   a, b = np.polyfit(x, y, 1)
-   y_hat = a*x + b
-   residuals = y - y_hat
-   res_std = np.std(residuals)
-   avg_gini = np.mean(gini_in_time)
+#    x = np.arange(len(gini_in_time))
+#    y = gini_in_time
+#    a, b = np.polyfit(x, y, 1)
+#    y_hat = a*x + b
+#    residuals = y - y_hat
+#    res_std = np.std(residuals)
+#    avg_gini = np.mean(gini_in_time)
 
-   print('a: ', a)
-   print('avg_gini: ', avg_gini)
-   print('-0.5*res_std: ', w_resstd * res_std)
+#    print('a: ', a)
+#    print('avg_gini: ', avg_gini)
+#    print('-0.5*res_std: ', w_resstd * res_std)
 
-   final_score = avg_gini + w_fallingrate * min(0, a) + w_resstd * res_std
+#    final_score = avg_gini + w_fallingrate * min(0, a) + w_resstd * res_std
 
-   return 'gini_stability', final_score, True
+#    return 'gini_stability', final_score, True
 
 
 
-# max_week = max(weeks)
-# min_week = min(weeks)
-# condition = weeks < (max_week+min_week)//2
+# # max_week = max(weeks)
+# # min_week = min(weeks)
+# # condition = weeks < (max_week+min_week)//2
 
-# valid_preds[condition] = valid_preds[condition]-0.05
-score = gini_stability_custom_metric(valid_preds, y, weeks)
-print('gini_stability_custom_metric: ', score)
+# # valid_preds[condition] = valid_preds[condition]-0.05
+# score = gini_stability_custom_metric(valid_preds, y, weeks)
+# print('gini_stability_custom_metric: ', score)
 
 
 # ================= hacking =======================  
