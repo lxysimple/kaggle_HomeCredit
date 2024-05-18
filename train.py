@@ -1464,8 +1464,8 @@ valid_score = []
 # print(valid_score)
 valid_preds = model.predict_proba(df_train)
 
-threshold_low = 0.001
-threshold_high = 0.999
+threshold_low = 0.00001
+threshold_high = 0.99999
 y_processed = [0 if val < threshold_low else (1 if val > threshold_high else val) for val in valid_preds]
 
 
