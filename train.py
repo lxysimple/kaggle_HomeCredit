@@ -648,38 +648,6 @@ class SchemaGen:
         return df
 
     @staticmethod
-    def scan_file(glob_path: str, depth: int = None) -> pl.LazyFrame:
-        """
-        Scans Parquet files matching the glob pattern and combines them into a LazyFrame.
-
-        Args:
-        - glob_path (str): Glob pattern to match Parquet files.
-        - depth (int, optional): Depth level for data aggregation. Defaults to None.
-
-        Returns:
-        - pl.LazyFrame: Combined LazyFrame.
-        """
-        chunks: list[pl.LazyFrame] = []
-        for path in glob(str(glob_path)):
-            df: pl.LazyFrame = pl.scan_parquet(
-                path, low_memory=True, rechunk=True
-            ).pipe(SchemaGen.change_dtypes)
-
-
-            print(f"File {Path(path).stem} loaded into memory.")
-
-            chunks.append(df)
-
-        df = pl.concat(chunks, how="vertical_relaxed")
-
-        del chunks
-        gc.collect()
-
-        df = df.unique(subset=["case_id"])
-
-        return df
-
-    @staticmethod
     def join_dataframes(
         df_base: pl.LazyFrame,
         depth_0: list[pl.LazyFrame],
