@@ -810,7 +810,58 @@ ROOT            = Path("/home/xyli/kaggle")
 TRAIN_DIR       = ROOT / "parquet_files" / "train"
 TEST_DIR        = ROOT / "parquet_files" / "test"
 
+
 print('开始读取数据!')
+
+train_credit_bureau_a_1 = SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_a_1_*.parquet', 1)
+train_credit_bureau_a_1.with_columns(
+    ((pl.col('max_dateofcredend_289D') - pl.col('max_dateofcredstart_739D')).dt.total_days()).alias('max_credit_duration_daysA')
+).with_columns(
+    ((pl.col('max_dateofcredend_353D') - pl.col('max_dateofcredstart_181D')).dt.total_days()).alias('max_closed_credit_duration_daysA')
+).with_columns(
+    ((pl.col('max_dateofrealrepmt_138D') - pl.col('max_overdueamountmax2date_1002D')).dt.total_days()).alias('max_time_from_overdue_to_closed_realrepmtA')
+).with_columns(
+    ((pl.col('max_dateofrealrepmt_138D') - pl.col('max_overdueamountmax2date_1142D')).dt.total_days()).alias('max_time_from_active_overdue_to_realrepmtA')
+)
+
+train_credit_bureau_b_1 = SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_b_1.parquet', 1)
+df_train = train_credit_bureau_b_1.with_columns(
+    ((pl.col('max_contractmaturitydate_151D') - pl.col('max_contractdate_551D')).dt.total_days()).alias('contract_duration_days')
+).with_columns(
+    ((pl.col('max_lastupdate_260D') - pl.col('max_contractdate_551D')).dt.total_days()).alias('last_update_duration_days')
+)
+
+train_static = SchemaGen.scan_files(TRAIN_DIR / 'train_static_0_*.parquet', 1)
+condition_all_nan = (
+    pl.col('maxdbddpdlast1m_3658939P').is_null() &
+    pl.col('maxdbddpdtollast12m_3658940P').is_null() &
+    pl.col('maxdbddpdtollast6m_4187119P').is_null()
+)
+
+condition_exceed_thresholds = (
+    (pl.col('maxdbddpdlast1m_3658939P') > 31) |
+    (pl.col('maxdbddpdtollast12m_3658940P') > 366) |
+    (pl.col('maxdbddpdtollast6m_4187119P') > 184)
+)
+
+train_static.with_columns(
+    pl.when(condition_all_nan | condition_exceed_thresholds)
+    .then(0)
+    .otherwise(1)
+    .alias('max_dbddpd_boolean')
+)
+train_static.with_columns(
+    pl.when(
+        (pl.col('maxdbddpdlast1m_3658939P') <= 0) &
+        (pl.col('maxdbddpdtollast12m_3658940P') <= 0) &
+        (pl.col('maxdbddpdtollast6m_4187119P') <= 0)
+    )
+    .then(1)
+    .otherwise(0)
+    .alias('max_pays_debt_on_timeP')
+)
+
+
 
 # data_store = {
 #     "df_base": read_file(TRAIN_DIR / "train_base.parquet"),
@@ -848,6 +899,8 @@ data_store:dict = {
 
         # ZhiXing Jiang
         # SchemaGen.scan_files(TRAIN_DIR / 'train_static_0_*.parquet'),
+        train_static
+        
     ],
     'depth_1': [
         SchemaGen.scan_files(TRAIN_DIR / 'train_applprev_1_*.parquet', 1),
@@ -855,11 +908,13 @@ data_store:dict = {
 
         # ZhiXing Jiang
         # SchemaGen.scan_files(TRAIN_DIR / 'train_tax_registry_b_1.parquet', 1),
+        train_credit_bureau_b_1
 
         SchemaGen.scan_files(TRAIN_DIR / 'train_tax_registry_c_1.parquet', 1),
 
         # ZhiXing Jiang
         # SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_a_1_*.parquet', 1),
+        train_credit_bureau_a_1
 
         SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_b_1.parquet', 1),
         SchemaGen.scan_files(TRAIN_DIR / 'train_other_1.parquet', 1),
@@ -896,55 +951,8 @@ print('读取数据完毕！')
 df_train = feature_eng(**data_store).collect() # 别忘记829+386要多加载2个文件
 
 
-train_credit_bureau_a_1 = SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_a_1_*.parquet', 1)
-df_train = train_credit_bureau_a_1.with_columns(
-    ((pl.col('max_dateofcredend_289D') - pl.col('max_dateofcredstart_739D')).dt.total_days()).alias('max_credit_duration_daysA')
-).with_columns(
-    ((pl.col('max_dateofcredend_353D') - pl.col('max_dateofcredstart_181D')).dt.total_days()).alias('max_closed_credit_duration_daysA')
-).with_columns(
-    ((pl.col('max_dateofrealrepmt_138D') - pl.col('max_overdueamountmax2date_1002D')).dt.total_days()).alias('max_time_from_overdue_to_closed_realrepmtA')
-).with_columns(
-    ((pl.col('max_dateofrealrepmt_138D') - pl.col('max_overdueamountmax2date_1142D')).dt.total_days()).alias('max_time_from_active_overdue_to_realrepmtA')
-)
-
-train_credit_bureau_b_1 = SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_b_1.parquet', 1)
-df_train = train_credit_bureau_b_1.with_columns(
-    ((pl.col('max_contractmaturitydate_151D') - pl.col('max_contractdate_551D')).dt.total_days()).alias('contract_duration_days')
-).with_columns(
-    ((pl.col('max_lastupdate_260D') - pl.col('max_contractdate_551D')).dt.total_days()).alias('last_update_duration_days')
-)
 
 
-train_static = SchemaGen.scan_files(TRAIN_DIR / 'train_static_0_*.parquet', 1)
-condition_all_nan = (
-    pl.col('maxdbddpdlast1m_3658939P').is_null() &
-    pl.col('maxdbddpdtollast12m_3658940P').is_null() &
-    pl.col('maxdbddpdtollast6m_4187119P').is_null()
-)
-
-condition_exceed_thresholds = (
-    (pl.col('maxdbddpdlast1m_3658939P') > 31) |
-    (pl.col('maxdbddpdtollast12m_3658940P') > 366) |
-    (pl.col('maxdbddpdtollast6m_4187119P') > 184)
-)
-
-df_train = train_static.with_columns(
-    pl.when(condition_all_nan | condition_exceed_thresholds)
-    .then(0)
-    .otherwise(1)
-    .alias('max_dbddpd_boolean')
-)
-df_train = train_static.with_columns(
-    pl.when(
-        (pl.col('maxdbddpdlast1m_3658939P') <= 0) &
-        (pl.col('maxdbddpdtollast12m_3658940P') <= 0) &
-        (pl.col('maxdbddpdtollast6m_4187119P') <= 0)
-    )
-    .then(1)
-    .otherwise(0)
-    .alias('max_pays_debt_on_timeP')
-)
-df_train = df_train.collect()
 
 df_train = df_train.pipe(Pipeline.filter_cols)
 df_train, cat_cols = to_pandas(df_train)    
