@@ -1083,77 +1083,78 @@ print('len(non_cat_cols_829): ', len(non_cat_cols_829))
 
 # ======================================== 特征列分类 =====================================
 
+
 # ======================================== 二分类模型训练 =====================================
-# df_train = df_train[:20000]
-# weeks = weeks[:20000]
+# # df_train = df_train[:20000]
+# # weeks = weeks[:20000]
 
-df_train.loc[0:len(df_train)//2, 'is_test'] = 0
-df_train.loc[len(df_train)//2:len(df_train), 'is_test'] = 1
+# df_train.loc[0:len(df_train)//2, 'is_test'] = 0
+# df_train.loc[len(df_train)//2:len(df_train), 'is_test'] = 1
 
-y = df_train["is_test"]
+# y = df_train["is_test"]
 
-fitted_models_lgb = []
-cv_scores_lgb = []
-fold = 1
-cv = StratifiedGroupKFold(n_splits=10, shuffle=False)
-for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环5次
+# fitted_models_lgb = []
+# cv_scores_lgb = []
+# fold = 1
+# cv = StratifiedGroupKFold(n_splits=10, shuffle=False)
+# for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环5次
 
-    # X_train(≈40000,386), y_train(≈40000)
-    X_train, y_train = df_train.iloc[idx_train], y.iloc[idx_train] 
-    X_valid, y_valid = df_train.iloc[idx_valid], y.iloc[idx_valid]    
+#     # X_train(≈40000,386), y_train(≈40000)
+#     X_train, y_train = df_train.iloc[idx_train], y.iloc[idx_train] 
+#     X_valid, y_valid = df_train.iloc[idx_valid], y.iloc[idx_valid]    
     
 
-    # ===============================
-    X_train[cat_cols_386] = X_train[cat_cols_386].astype("category")
-    X_valid[cat_cols_386] = X_valid[cat_cols_386].astype("category")
+#     # ===============================
+#     X_train[cat_cols_386] = X_train[cat_cols_386].astype("category")
+#     X_valid[cat_cols_386] = X_valid[cat_cols_386].astype("category")
 
-    params = {
-        "boosting_type": "gbdt",
-        "objective": "binary",
-        "metric": "auc",
-        "max_depth": 10,  
-        "learning_rate": 0.05,
-        "n_estimators": 2000,  
-        # 则每棵树在构建时会随机选择 80% 的特征进行训练，剩下的 20% 特征将不参与训练，从而增加模型的泛化能力和稳定性
-        "colsample_bytree": 0.8, 
-        "colsample_bynode": 0.8, # 控制每个节点的特征采样比例
-        "verbose": -1,
-        "random_state": 42,
-        "reg_alpha": 0.1,
-        "reg_lambda": 10,
-        "extra_trees":True,
-        'num_leaves':64,
-        "device": 'gpu', # gpu
-        'gpu_use_dp' : True, # 转化float为64精度
-    }
+#     params = {
+#         "boosting_type": "gbdt",
+#         "objective": "binary",
+#         "metric": "auc",
+#         "max_depth": 10,  
+#         "learning_rate": 0.05,
+#         "n_estimators": 2000,  
+#         # 则每棵树在构建时会随机选择 80% 的特征进行训练，剩下的 20% 特征将不参与训练，从而增加模型的泛化能力和稳定性
+#         "colsample_bytree": 0.8, 
+#         "colsample_bynode": 0.8, # 控制每个节点的特征采样比例
+#         "verbose": -1,
+#         "random_state": 42,
+#         "reg_alpha": 0.1,
+#         "reg_lambda": 10,
+#         "extra_trees":True,
+#         'num_leaves':64,
+#         "device": 'gpu', # gpu
+#         'gpu_use_dp' : True, # 转化float为64精度
+#     }
 
-    # 一次训练
-    model = lgb.LGBMClassifier(**params)
-    model.fit(
-        X_train[df_train_386], y_train,
-        eval_set = [(X_valid[df_train_386], y_valid)],
-        callbacks = [lgb.log_evaluation(200), lgb.early_stopping(100)],
-        # init_model = f"/home/xyli/kaggle/kaggle_HomeCredit/dataset/lgbm_fold{fold}.txt",
-    )
-    model.booster_.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/lgbm2_fold{fold}.txt')
-    model2 = model
+#     # 一次训练
+#     model = lgb.LGBMClassifier(**params)
+#     model.fit(
+#         X_train[df_train_386], y_train,
+#         eval_set = [(X_valid[df_train_386], y_valid)],
+#         callbacks = [lgb.log_evaluation(200), lgb.early_stopping(100)],
+#         # init_model = f"/home/xyli/kaggle/kaggle_HomeCredit/dataset/lgbm_fold{fold}.txt",
+#     )
+#     model.booster_.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/lgbm2_fold{fold}.txt')
+#     model2 = model
 
 
-    fitted_models_lgb.append(model2)
-    y_pred_valid = model2.predict_proba(X_valid[df_train_386])[:,1]
-    auc_score = roc_auc_score(y_valid, y_pred_valid)
-    print('auc_score: ', auc_score)
-    cv_scores_lgb.append(auc_score)
-    print()
-    print("分隔符")
-    print()
-    # ===========================
+#     fitted_models_lgb.append(model2)
+#     y_pred_valid = model2.predict_proba(X_valid[df_train_386])[:,1]
+#     auc_score = roc_auc_score(y_valid, y_pred_valid)
+#     print('auc_score: ', auc_score)
+#     cv_scores_lgb.append(auc_score)
+#     print()
+#     print("分隔符")
+#     print()
+#     # ===========================
 
-    break
-    fold = fold+1
+#     break
+#     fold = fold+1
 
-print("CV AUC scores: ", cv_scores_lgb)
-print("Mean CV AUC score: ", np.mean(cv_scores_lgb))
+# print("CV AUC scores: ", cv_scores_lgb)
+# print("Mean CV AUC score: ", np.mean(cv_scores_lgb))
 # ======================================== 二分类模型训练 =====================================
 
 
@@ -1357,102 +1358,156 @@ print("Mean CV AUC score: ", np.mean(cv_scores_lgb))
 
 # ======================================== 训练3树模型 =====================================
 
+
+
+
+
+
+
 # ======================================== 推理验证 =====================================
-# fitted_models_cat1 = []
-# fitted_models_lgb1 = []
+fitted_models_cat1 = []
+fitted_models_lgb1 = []
 
-# fitted_models_cat2 = []
-# fitted_models_lgb2 = []
+fitted_models_cat2 = []
+fitted_models_lgb2 = []
 
-# fitted_models_cat3 = []
-# fitted_models_lgb3 = []
+fitted_models_cat3 = []
+fitted_models_lgb3 = []
 
-# for fold in range(1,6):
-#     clf = CatBoostClassifier() 
-#     clf.load_model(f"/home/xyli/kaggle/kaggle_HomeCredit/dataset9/catboost_fold{fold}.cbm")
-#     fitted_models_cat1.append(clf)
+for fold in range(1,6):
+    clf = CatBoostClassifier() 
+    clf.load_model(f"/home/xyli/kaggle/kaggle_HomeCredit/dataset9/catboost_fold{fold}.cbm")
+    fitted_models_cat1.append(clf)
     
-#     model = lgb.LGBMClassifier()
-#     model = lgb.Booster(model_file=f"/home/xyli/kaggle/kaggle_HomeCredit/dataset8/lgbm_fold{fold}.txt")
-#     fitted_models_lgb1.append(model)
+    model = lgb.LGBMClassifier()
+    model = lgb.Booster(model_file=f"/home/xyli/kaggle/kaggle_HomeCredit/dataset8/lgbm_fold{fold}.txt")
+    fitted_models_lgb1.append(model)
     
-#     clf2 = CatBoostClassifier()
-#     clf2.load_model(f"/home/xyli/kaggle/kaggle_HomeCredit/dataset5/catboost_fold{fold}.cbm")
-#     fitted_models_cat2.append(clf2) 
+    clf2 = CatBoostClassifier()
+    clf2.load_model(f"/home/xyli/kaggle/kaggle_HomeCredit/dataset5/catboost_fold{fold}.cbm")
+    fitted_models_cat2.append(clf2) 
     
-#     model2 = lgb.LGBMClassifier()
-#     model2 = lgb.Booster(model_file=f"/home/xyli/kaggle/kaggle_HomeCredit/dataset4/lgbm_fold{fold}.txt")
-#     fitted_models_lgb2.append(model2)
+    model2 = lgb.LGBMClassifier()
+    model2 = lgb.Booster(model_file=f"/home/xyli/kaggle/kaggle_HomeCredit/dataset4/lgbm_fold{fold}.txt")
+    fitted_models_lgb2.append(model2)
 
-#     clf3 = CatBoostClassifier()
-#     clf3.load_model(f"/home/xyli/kaggle/kaggle_HomeCredit/dataset20/catboost_fold{fold}.cbm")
-#     fitted_models_cat3.append(clf3) 
+    clf3 = CatBoostClassifier()
+    clf3.load_model(f"/home/xyli/kaggle/kaggle_HomeCredit/dataset20/catboost_fold{fold}.cbm")
+    fitted_models_cat3.append(clf3) 
     
-#     model3 = lgb.LGBMClassifier()
-#     model3 = lgb.Booster(model_file=f"/home/xyli/kaggle/kaggle_HomeCredit/lgbm_fold{fold}.txt")
-#     fitted_models_lgb3.append(model3)
+    model3 = lgb.LGBMClassifier()
+    model3 = lgb.Booster(model_file=f"/home/xyli/kaggle/kaggle_HomeCredit/dataset20/lgbm_fold{fold}.txt")
+    fitted_models_lgb3.append(model3)
 
 
-# class VotingModel(BaseEstimator, RegressorMixin):
-#     def __init__(self, estimators):
-#         super().__init__()
-#         self.estimators = estimators
+class VotingModel(BaseEstimator, RegressorMixin):
+    def __init__(self, estimators):
+        super().__init__()
+        self.estimators = estimators
         
-#     def fit(self, X, y=None):
-#         return self
+    def fit(self, X, y=None):
+        return self
 
-#     def predict_proba(self, X):
-#         y_preds = []
+    def predict_proba(self, X):
+        y_preds = []
 
-#         # from IPython import embed
-#         # embed()
+        # from IPython import embed
+        # embed()
 
-#         # X[cat_cols] = X[cat_cols].astype("str")
-#         # y_preds += [estimator.predict_proba(X[df_train_829])[:, 1] for estimator in self.estimators[0:5]]
-#         # y_preds += [estimator.predict_proba(X[df_train_386])[:, 1] for estimator in self.estimators[5:10]]
+        X[cat_cols] = X[cat_cols].astype("str")
+        # y_preds += [estimator.predict_proba(X[df_train_829])[:, 1] for estimator in self.estimators[0:5]]
+        y_preds += [estimator.predict_proba(X[df_train_386])[:, 1] for estimator in self.estimators[5:10]]
        
-#         X[cat_cols] = X[cat_cols].astype("category")
-#         # y_preds += [estimator.predict(X[df_train]) for estimator in self.estimators[15:20]]
-#         y_preds += [estimator.predict(X) for estimator in self.estimators[25:30]]
+        # X[cat_cols] = X[cat_cols].astype("category")
+        # y_preds += [estimator.predict(X[df_train]) for estimator in self.estimators[15:20]]
+        # y_preds += [estimator.predict(X) for estimator in self.estimators[25:30]]
         
-#         return np.mean(y_preds, axis=0)
+        return np.mean(y_preds, axis=0)
     
-#     def predict_proba_scan(self, X):
-#         y_preds = []
-#         # from IPython import embed
-#         # embed()
+    def predict_proba_scan(self, X):
+        y_preds = []
+        # from IPython import embed
+        # embed()
 
-#         # X[cat_cols] = X[cat_cols].astype("str")
-#         # y_preds += [estimator.predict_proba(X)[:, 1] for estimator in self.estimators[10:15]]
+        # X[cat_cols] = X[cat_cols].astype("str")
+        # y_preds += [estimator.predict_proba(X)[:, 1] for estimator in self.estimators[10:15]]
         
-#         X[cat_cols] = X[cat_cols].astype("category")
-#         y_preds += [estimator.predict(X) for estimator in self.estimators[25:30]] 
+        X[cat_cols] = X[cat_cols].astype("category")
+        y_preds += [estimator.predict(X) for estimator in self.estimators[25:30]] 
        
 
-#         # X[cat_cols_470] = X[cat_cols_470].astype("category")
-#         # y_preds += [estimator.predict(X[df_train_470]) for estimator in self.estimators[25:30]]
+        # X[cat_cols_470] = X[cat_cols_470].astype("category")
+        # y_preds += [estimator.predict(X[df_train_470]) for estimator in self.estimators[25:30]]
 
-#         return np.mean(y_preds, axis=0)
+        return np.mean(y_preds, axis=0)
 
 
-# model = VotingModel(fitted_models_cat1 + fitted_models_cat2 +fitted_models_cat3+ fitted_models_lgb1 + fitted_models_lgb2+fitted_models_lgb3)
+model = VotingModel(fitted_models_cat1 + fitted_models_cat2 +fitted_models_cat3+ fitted_models_lgb1 + fitted_models_lgb2+fitted_models_lgb3)
 
+
+# ================= hacking ======================= 
+df_test = df_train.loc[len(df_train)//2:len(df_train)]
+weeks = weeks[len(df_train)//2:len(df_train)]
+df_train = df_train.loc[0:len(df_train)//2] 
+
+# ================= hacking ======================= 
 
 # # from IPython import embed
 # # embed()
 
-# # 5min
-# print('开始计算cv')
-# valid_score = []
-# # valid_preds = model.predict_proba_scan(df_train) # df_train消掉了额外的2个特征列
-# # valid_score += [roc_auc_score(y, valid_preds)]
-# # print(valid_score)
-# valid_preds = model.predict_proba(df_train)
+# 5min
+print('开始计算cv')
+valid_score = []
+# valid_preds = model.predict_proba_scan(df_train) # df_train消掉了额外的2个特征列
 # valid_score += [roc_auc_score(y, valid_preds)]
 # print(valid_score)
-# # valid_score += [(valid_score[0]+valid_score[1])/2.0]
-# # print(valid_score)
+valid_preds = model.predict_proba(df_test)
+# valid_score += [roc_auc_score(y, valid_preds)]
+# print(valid_score)
+# valid_score += [(valid_score[0]+valid_score[1])/2.0]
+# print(valid_score)
 
+
+# ================= hacking ======================= 
+def gini_stability_custom_metric(y_pred: np.array, y_true: lgb.Dataset, week: np.array):
+
+   '''
+   :param y_pred:
+   :param y_true:
+   :param week: 
+   :return eval_name: str
+   :return eval_result: float
+   :return is_higher_better: bool
+   '''
+
+   w_fallingrate = 88.0
+   w_resstd = -0.5
+
+   base = pd.DataFrame()
+   base['WEEK_NUM'] = week
+   base['target'] = y_true.get_label()
+   base['score'] = y_pred
+   gini_in_time = base.loc[:, ["WEEK_NUM", "target", "score"]]\
+       .sort_values("WEEK_NUM")\
+       .groupby("WEEK_NUM")[["target", "score"]]\
+       .apply(lambda x: 2*roc_auc_score(x["target"], x["score"])-1).tolist()
+
+   x = np.arange(len(gini_in_time))
+   y = gini_in_time
+   a, b = np.polyfit(x, y, 1)
+   y_hat = a*x + b
+   residuals = y - y_hat
+   res_std = np.std(residuals)
+   avg_gini = np.mean(gini_in_time)
+
+   final_score = avg_gini + w_fallingrate * min(0, a) + w_resstd * res_std
+
+   return 'gini_stability', final_score, True
+
+score = gini_stability_custom_metric(valid_preds, y, weeks)
+print('gini_stability_custom_metric: ', score)
+
+# ================= hacking =======================  
 
 # ======================================== 推理验证 =====================================
 
