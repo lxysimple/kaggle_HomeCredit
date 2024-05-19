@@ -861,7 +861,8 @@ train_static.with_columns(
     .alias('max_pays_debt_on_timeP')
 )
 
-
+print(len(train_static))
+print(list(train_static))
 
 # data_store = {
 #     "df_base": read_file(TRAIN_DIR / "train_base.parquet"),
