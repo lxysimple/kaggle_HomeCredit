@@ -814,7 +814,7 @@ TEST_DIR        = ROOT / "parquet_files" / "test"
 print('开始读取数据!')
 
 train_credit_bureau_a_1 = SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_a_1_*.parquet', 1)
-train_credit_bureau_a_1.with_columns(
+train_credit_bureau_a_1 = train_credit_bureau_a_1.with_columns(
     ((pl.col('max_dateofcredend_289D') - pl.col('max_dateofcredstart_739D')).dt.total_days()).alias('max_credit_duration_daysA')
 ).with_columns(
     ((pl.col('max_dateofcredend_353D') - pl.col('max_dateofcredstart_181D')).dt.total_days()).alias('max_closed_credit_duration_daysA')
@@ -825,7 +825,7 @@ train_credit_bureau_a_1.with_columns(
 )
 
 train_credit_bureau_b_1 = SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_b_1.parquet', 1)
-df_train = train_credit_bureau_b_1.with_columns(
+train_credit_bureau_b_1 = train_credit_bureau_b_1.with_columns(
     ((pl.col('max_contractmaturitydate_151D') - pl.col('max_contractdate_551D')).dt.total_days()).alias('contract_duration_days')
 ).with_columns(
     ((pl.col('max_lastupdate_260D') - pl.col('max_contractdate_551D')).dt.total_days()).alias('last_update_duration_days')
@@ -844,13 +844,13 @@ condition_exceed_thresholds = (
     (pl.col('max_maxdbddpdtollast6m_4187119P') > 184)
 )
 
-train_static.with_columns(
+train_static = train_static.with_columns(
     pl.when(condition_all_nan | condition_exceed_thresholds)
     .then(0)
     .otherwise(1)
     .alias('max_dbddpd_boolean')
 )
-train_static.with_columns(
+train_static = train_static.with_columns(
     pl.when(
         (pl.col('max_maxdbddpdlast1m_3658939P') <= 0) &
         (pl.col('max_maxdbddpdtollast12m_3658940P') <= 0) &
