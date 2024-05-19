@@ -1376,9 +1376,9 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
 
 
     # ======================================
-    if fold == 1:
-        fold +=1
-        continue
+    # if fold == 1:
+    #     fold +=1
+    #     continue
     
     X_train[cat_cols] = X_train[cat_cols].astype("str")
     X_valid[cat_cols] = X_valid[cat_cols].astype("str")
