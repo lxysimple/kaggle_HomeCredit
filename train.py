@@ -1376,47 +1376,51 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
 
 
     # ======================================
-#     X_train[cat_cols] = X_train[cat_cols].astype("str")
-#     X_valid[cat_cols] = X_valid[cat_cols].astype("str")
-#     train_pool = Pool(X_train, y_train,cat_features=cat_cols)
-#     val_pool = Pool(X_valid, y_valid,cat_features=cat_cols)
+    if fold == 1:
+        fold +=1
+        continue
+        
+    X_train[cat_cols] = X_train[cat_cols].astype("str")
+    X_valid[cat_cols] = X_valid[cat_cols].astype("str")
+    train_pool = Pool(X_train, y_train,cat_features=cat_cols)
+    val_pool = Pool(X_valid, y_valid,cat_features=cat_cols)
 
-#     # clf = CatBoostClassifier( 
-#     #     best_model_min_trees = 1200, # 1000
-#     #     boosting_type = "Plain",
-#     #     eval_metric = "AUC",
-#     #     iterations = 6000,
-#     #     learning_rate = 0.05,
-#     #     l2_leaf_reg = 10,
-#     #     max_leaves = 64,
-#     #     random_seed = 42,
-#     #     task_type = "GPU",
-#     #     use_best_model = True
-#     # ) 
+    # clf = CatBoostClassifier( 
+    #     best_model_min_trees = 1200, # 1000
+    #     boosting_type = "Plain",
+    #     eval_metric = "AUC",
+    #     iterations = 6000,
+    #     learning_rate = 0.05,
+    #     l2_leaf_reg = 10,
+    #     max_leaves = 64,
+    #     random_seed = 42,
+    #     task_type = "GPU",
+    #     use_best_model = True
+    # ) 
 
-#     clf = CatBoostClassifier(
-#         eval_metric='AUC',
-#         task_type='GPU',
-#         learning_rate=0.03, # 0.03
-#         iterations=6000, # n_est
-# #         early_stopping_rounds = 500,
-#     )
+    clf = CatBoostClassifier(
+        eval_metric='AUC',
+        task_type='GPU',
+        learning_rate=0.03, # 0.03
+        iterations=6000, # n_est
+#         early_stopping_rounds = 500,
+    )
 
-#     clf.fit(
-#         train_pool, 
-#         eval_set=val_pool,
-#         verbose=300,
-# #         # 保证调试的时候不需要重新训练
-# #         save_snapshot = True, 
-# #         snapshot_file = '/kaggle/working/catboost.cbsnapshot',
-# #         snapshot_interval = 10
-#     )
-#     clf.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/catboost_fold{fold}.cbm')
-#     fitted_models_cat.append(clf)
-#     y_pred_valid = clf.predict_proba(X_valid)[:,1]
-#     auc_score = roc_auc_score(y_valid, y_pred_valid)
-#     print('auc_score: ', auc_score)
-#     cv_scores_cat.append(auc_score)
+    clf.fit(
+        train_pool, 
+        eval_set=val_pool,
+        verbose=300,
+#         # 保证调试的时候不需要重新训练
+#         save_snapshot = True, 
+#         snapshot_file = '/kaggle/working/catboost.cbsnapshot',
+#         snapshot_interval = 10
+    )
+    clf.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/catboost_fold{fold}.cbm')
+    fitted_models_cat.append(clf)
+    y_pred_valid = clf.predict_proba(X_valid)[:,1]
+    auc_score = roc_auc_score(y_valid, y_pred_valid)
+    print('auc_score: ', auc_score)
+    cv_scores_cat.append(auc_score)
     
     # =================================
 
@@ -1452,162 +1456,162 @@ print("Mean CV AUC score: ", np.mean(cv_scores_lgb_rf))
 
 
 # ======================================== 推理验证 =====================================
-fitted_models_cat1 = []
-fitted_models_lgb1 = []
+# fitted_models_cat1 = []
+# fitted_models_lgb1 = []
 
-fitted_models_cat2 = []
-fitted_models_lgb2 = []
+# fitted_models_cat2 = []
+# fitted_models_lgb2 = []
 
-fitted_models_cat3 = []
-fitted_models_lgb3 = []
+# fitted_models_cat3 = []
+# fitted_models_lgb3 = []
 
-for fold in range(1,6):
-    clf = CatBoostClassifier() 
-    clf.load_model(f"/home/xyli/kaggle/kaggle_HomeCredit/dataset9/catboost_fold{fold}.cbm")
-    fitted_models_cat1.append(clf)
+# for fold in range(1,6):
+#     clf = CatBoostClassifier() 
+#     clf.load_model(f"/home/xyli/kaggle/kaggle_HomeCredit/dataset9/catboost_fold{fold}.cbm")
+#     fitted_models_cat1.append(clf)
     
-    model = lgb.LGBMClassifier()
-    model = lgb.Booster(model_file=f"/home/xyli/kaggle/kaggle_HomeCredit/dataset8/lgbm_fold{fold}.txt")
-    fitted_models_lgb1.append(model)
+#     model = lgb.LGBMClassifier()
+#     model = lgb.Booster(model_file=f"/home/xyli/kaggle/kaggle_HomeCredit/dataset8/lgbm_fold{fold}.txt")
+#     fitted_models_lgb1.append(model)
     
-    clf2 = CatBoostClassifier()
-    clf2.load_model(f"/home/xyli/kaggle/kaggle_HomeCredit/dataset5/catboost_fold{fold}.cbm")
-    fitted_models_cat2.append(clf2) 
+#     clf2 = CatBoostClassifier()
+#     clf2.load_model(f"/home/xyli/kaggle/kaggle_HomeCredit/dataset5/catboost_fold{fold}.cbm")
+#     fitted_models_cat2.append(clf2) 
     
-    model2 = lgb.LGBMClassifier()
-    model2 = lgb.Booster(model_file=f"/home/xyli/kaggle/kaggle_HomeCredit/dataset4/lgbm_fold{fold}.txt")
-    fitted_models_lgb2.append(model2)
+#     model2 = lgb.LGBMClassifier()
+#     model2 = lgb.Booster(model_file=f"/home/xyli/kaggle/kaggle_HomeCredit/dataset4/lgbm_fold{fold}.txt")
+#     fitted_models_lgb2.append(model2)
 
-    clf3 = CatBoostClassifier()
-    clf3.load_model(f"/home/xyli/kaggle/kaggle_HomeCredit/dataset22/catboost_fold{fold}.cbm")
-    fitted_models_cat3.append(clf3) 
+#     clf3 = CatBoostClassifier()
+#     clf3.load_model(f"/home/xyli/kaggle/kaggle_HomeCredit/dataset22/catboost_fold{fold}.cbm")
+#     fitted_models_cat3.append(clf3) 
     
-    model3 = lgb.LGBMClassifier()
-    model3 = lgb.Booster(model_file=f"/home/xyli/kaggle/kaggle_HomeCredit/dataset23/lgbm_fold{fold}.txt")
-    fitted_models_lgb3.append(model3)
+#     model3 = lgb.LGBMClassifier()
+#     model3 = lgb.Booster(model_file=f"/home/xyli/kaggle/kaggle_HomeCredit/dataset23/lgbm_fold{fold}.txt")
+#     fitted_models_lgb3.append(model3)
 
 
-class VotingModel(BaseEstimator, RegressorMixin):
-    def __init__(self, estimators):
-        super().__init__()
-        self.estimators = estimators
+# class VotingModel(BaseEstimator, RegressorMixin):
+#     def __init__(self, estimators):
+#         super().__init__()
+#         self.estimators = estimators
         
-    def fit(self, X, y=None):
-        return self
+#     def fit(self, X, y=None):
+#         return self
 
-    def predict_proba(self, X):
-        y_preds = []
+#     def predict_proba(self, X):
+#         y_preds = []
 
-        # from IPython import embed
-        # embed()
+#         # from IPython import embed
+#         # embed()
 
-        # X[cat_cols] = X[cat_cols].astype("str")
-        # y_preds += [estimator.predict_proba(X[df_train_829])[:, 1] for estimator in self.estimators[0:5]]
-        # y_preds += [estimator.predict_proba(X[df_train_386])[:, 1] for estimator in self.estimators[5:10]]
-        # y_preds += [estimator.predict_proba(X)[:, 1] for estimator in self.estimators[10:15]]
+#         # X[cat_cols] = X[cat_cols].astype("str")
+#         # y_preds += [estimator.predict_proba(X[df_train_829])[:, 1] for estimator in self.estimators[0:5]]
+#         # y_preds += [estimator.predict_proba(X[df_train_386])[:, 1] for estimator in self.estimators[5:10]]
+#         # y_preds += [estimator.predict_proba(X)[:, 1] for estimator in self.estimators[10:15]]
         
-        X[cat_cols] = X[cat_cols].astype("category")
-        # y_preds += [estimator.predict(X[df_train]) for estimator in self.estimators[15:20]]
-        y_preds += [estimator.predict(X) for estimator in self.estimators[25:30]]
+#         X[cat_cols] = X[cat_cols].astype("category")
+#         # y_preds += [estimator.predict(X[df_train]) for estimator in self.estimators[15:20]]
+#         y_preds += [estimator.predict(X) for estimator in self.estimators[25:30]]
         
-        return np.mean(y_preds, axis=0)
+#         return np.mean(y_preds, axis=0)
     
-    def predict_proba_scan(self, X):
-        y_preds = []
-        # from IPython import embed
-        # embed()
+#     def predict_proba_scan(self, X):
+#         y_preds = []
+#         # from IPython import embed
+#         # embed()
 
-        X[cat_cols] = X[cat_cols].astype("str")
-        y_preds += [estimator.predict_proba(X)[:, 1] for estimator in self.estimators[10:15]]
+#         X[cat_cols] = X[cat_cols].astype("str")
+#         y_preds += [estimator.predict_proba(X)[:, 1] for estimator in self.estimators[10:15]]
         
-        # X[cat_cols] = X[cat_cols].astype("category")
-        # y_preds += [estimator.predict(X) for estimator in self.estimators[25:30]] 
+#         # X[cat_cols] = X[cat_cols].astype("category")
+#         # y_preds += [estimator.predict(X) for estimator in self.estimators[25:30]] 
        
 
-        # X[cat_cols_470] = X[cat_cols_470].astype("category")
-        # y_preds += [estimator.predict(X[df_train_470]) for estimator in self.estimators[25:30]]
+#         # X[cat_cols_470] = X[cat_cols_470].astype("category")
+#         # y_preds += [estimator.predict(X[df_train_470]) for estimator in self.estimators[25:30]]
 
-        return np.mean(y_preds, axis=0)
-
-
-model = VotingModel(fitted_models_cat1 + fitted_models_cat2 +fitted_models_cat3+ fitted_models_lgb1 + fitted_models_lgb2+fitted_models_lgb3)
+#         return np.mean(y_preds, axis=0)
 
 
-# ================= hacking ======================= 
-# df_test = df_train.loc[len(df_train)//2:len(df_train)]
-# weeks = weeks[len(df_train)//2:len(df_train)]
-# df_train = df_train.loc[0:len(df_train)//2] 
+# model = VotingModel(fitted_models_cat1 + fitted_models_cat2 +fitted_models_cat3+ fitted_models_lgb1 + fitted_models_lgb2+fitted_models_lgb3)
 
-# df_test.loc[:len(df_test)//2, 'score'] = (df_test.loc[:len(df_test)//2, 'score'] - 0.01).clip(0)
-# ================= hacking ======================= 
 
-# # from IPython import embed
-# # embed()
+# # ================= hacking ======================= 
+# # df_test = df_train.loc[len(df_train)//2:len(df_train)]
+# # weeks = weeks[len(df_train)//2:len(df_train)]
+# # df_train = df_train.loc[0:len(df_train)//2] 
 
-# 5min
-print('开始计算cv')
-valid_score = []
-# valid_preds = model.predict_proba_scan(df_train) # df_train消掉了额外的2个特征列
+# # df_test.loc[:len(df_test)//2, 'score'] = (df_test.loc[:len(df_test)//2, 'score'] - 0.01).clip(0)
+# # ================= hacking ======================= 
+
+# # # from IPython import embed
+# # # embed()
+
+# # 5min
+# print('开始计算cv')
+# valid_score = []
+# # valid_preds = model.predict_proba_scan(df_train) # df_train消掉了额外的2个特征列
+# # valid_score += [roc_auc_score(y, valid_preds)]
+# # print(valid_score)
+# valid_preds = model.predict_proba(df_train)
 # valid_score += [roc_auc_score(y, valid_preds)]
 # print(valid_score)
-valid_preds = model.predict_proba(df_train)
-valid_score += [roc_auc_score(y, valid_preds)]
-print(valid_score)
 
 
-# valid_score += [(valid_score[0]+valid_score[1])/2.0]
-# print(valid_score)
+# # valid_score += [(valid_score[0]+valid_score[1])/2.0]
+# # print(valid_score)
 
 
-# ================= hacking ======================= 
-# def gini_stability_custom_metric(y_pred: np.array, y_true: np.array, week: np.array):
-#    '''
-#    :param y_pred:
-#    :param y_true:
-#    :param week: 
-#    :return eval_name: str
-#    :return eval_result: float
-#    :return is_higher_better: bool
-#    '''
+# # ================= hacking ======================= 
+# # def gini_stability_custom_metric(y_pred: np.array, y_true: np.array, week: np.array):
+# #    '''
+# #    :param y_pred:
+# #    :param y_true:
+# #    :param week: 
+# #    :return eval_name: str
+# #    :return eval_result: float
+# #    :return is_higher_better: bool
+# #    '''
 
-#    w_fallingrate = 88.0
-#    w_resstd = -0.5
+# #    w_fallingrate = 88.0
+# #    w_resstd = -0.5
 
-#    base = pd.DataFrame()
-#    base['WEEK_NUM'] = week
-#    base['target'] = y_true
-#    base['score'] = y_pred
-#    gini_in_time = base.loc[:, ["WEEK_NUM", "target", "score"]]\
-#        .sort_values("WEEK_NUM")\
-#        .groupby("WEEK_NUM")[["target", "score"]]\
-#        .apply(lambda x: 2*roc_auc_score(x["target"], x["score"])-1).tolist()
+# #    base = pd.DataFrame()
+# #    base['WEEK_NUM'] = week
+# #    base['target'] = y_true
+# #    base['score'] = y_pred
+# #    gini_in_time = base.loc[:, ["WEEK_NUM", "target", "score"]]\
+# #        .sort_values("WEEK_NUM")\
+# #        .groupby("WEEK_NUM")[["target", "score"]]\
+# #        .apply(lambda x: 2*roc_auc_score(x["target"], x["score"])-1).tolist()
 
-#    x = np.arange(len(gini_in_time))
-#    y = gini_in_time
-#    a, b = np.polyfit(x, y, 1)
-#    y_hat = a*x + b
-#    residuals = y - y_hat
-#    res_std = np.std(residuals)
-#    avg_gini = np.mean(gini_in_time)
+# #    x = np.arange(len(gini_in_time))
+# #    y = gini_in_time
+# #    a, b = np.polyfit(x, y, 1)
+# #    y_hat = a*x + b
+# #    residuals = y - y_hat
+# #    res_std = np.std(residuals)
+# #    avg_gini = np.mean(gini_in_time)
 
-#    print('a: ', a)
-#    print('avg_gini: ', avg_gini)
-#    print('-0.5*res_std: ', w_resstd * res_std)
+# #    print('a: ', a)
+# #    print('avg_gini: ', avg_gini)
+# #    print('-0.5*res_std: ', w_resstd * res_std)
 
-#    final_score = avg_gini + w_fallingrate * min(0, a) + w_resstd * res_std
+# #    final_score = avg_gini + w_fallingrate * min(0, a) + w_resstd * res_std
 
-#    return 'gini_stability', final_score, True
+# #    return 'gini_stability', final_score, True
 
 
 
-# # max_week = max(weeks)
-# # min_week = min(weeks)
-# # condition = weeks < (max_week+min_week)//2
+# # # max_week = max(weeks)
+# # # min_week = min(weeks)
+# # # condition = weeks < (max_week+min_week)//2
 
-# # valid_preds[condition] = valid_preds[condition]-0.05
-# score = gini_stability_custom_metric(valid_preds, y, weeks)
-# print('gini_stability_custom_metric: ', score)
-# # ================= hacking =======================  
+# # # valid_preds[condition] = valid_preds[condition]-0.05
+# # score = gini_stability_custom_metric(valid_preds, y, weeks)
+# # print('gini_stability_custom_metric: ', score)
+# # # ================= hacking =======================  
 
 # ======================================== 推理验证 =====================================
 
