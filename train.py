@@ -1366,6 +1366,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
 
 
     # ======================================
+    X_train[cat_cols] = X_train[cat_cols].astype("str")
     train_pool = Pool(X_train, y_train,cat_features=cat_cols)
     val_pool = Pool(X_valid, y_valid,cat_features=cat_cols)
 
