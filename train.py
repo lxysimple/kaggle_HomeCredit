@@ -1107,14 +1107,14 @@ cv = StratifiedGroupKFold(n_splits=5, shuffle=False)
 # cv = StratifiedGroupKFold(n_splits=5, shuffle=True)
 
 
-# # 找到除cat_cols列外的所有列
-# non_cat_cols = df_train.columns.difference(cat_cols) 
-# print('cat_cols:')
-# print('len(cat_cols):',len(cat_cols))
-# print(cat_cols)
-# print('df_train.columns')
-# print("len(list(df_train.columns)): ", len(list(df_train.columns)))
-# print(list(df_train.columns))
+# 找到除cat_cols列外的所有列
+non_cat_cols = df_train.columns.difference(cat_cols) 
+print('cat_cols:')
+print('len(cat_cols):',len(cat_cols))
+print(cat_cols)
+print('df_train.columns')
+print("len(list(df_train.columns)): ", len(list(df_train.columns)))
+print(list(df_train.columns))
 
 
 # ======================================== 特征列分类 =====================================
