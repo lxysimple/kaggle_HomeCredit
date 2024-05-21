@@ -1544,6 +1544,9 @@ model = VotingModel(fitted_models_cat1 + fitted_models_cat2 +fitted_models_cat3+
 # # from IPython import embed
 # # embed()
 
+from IPython import embed
+embed()
+
 # 5min
 print('开始计算cv')
 valid_score = []
@@ -1554,7 +1557,7 @@ valid_preds = model.predict_proba(df_train)
 valid_score += [roc_auc_score(y, valid_preds)]
 print(valid_score)
 
- 
+
 # valid_score += [(valid_score[0]+valid_score[1])/2.0]
 # print(valid_score)
 
