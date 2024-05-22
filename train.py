@@ -1507,7 +1507,7 @@ class VotingModel(BaseEstimator, RegressorMixin):
         # y_preds += [estimator.predict_proba(X)[:, 1] for estimator in self.estimators[10:15]]
         
         X[cat_cols] = X[cat_cols].astype("category")
-        y_preds += [estimator.predict(X[df_train_386]) for estimator in self.estimators[15:20]]
+        y_preds += [estimator.predict(X[df_train_386]) for estimator in self.estimators[20:25]]
         # y_preds += [estimator.predict(X) for estimator in self.estimators[25:30]]
         
         return np.mean(y_preds, axis=0)
@@ -1530,7 +1530,14 @@ class VotingModel(BaseEstimator, RegressorMixin):
         return np.mean(y_preds, axis=0)
 
 
-model = VotingModel(fitted_models_cat1 + fitted_models_cat2 +fitted_models_cat3+ fitted_models_lgb1 + fitted_models_lgb2+fitted_models_lgb3)
+model = VotingModel(
+    fitted_models_cat1 + 
+    fitted_models_cat2 +
+    fitted_models_cat3 + 
+    fitted_models_lgb1 + 
+    fitted_models_lgb2 +
+    fitted_models_lgb3
+)
 
 
 # ================= hacking ======================= 
@@ -1564,8 +1571,14 @@ print(valid_score)
 df_train['predict'] = valid_preds
 df_train["target"] = y
 
+
 from IPython import embed
 embed()
+
+df_train['absolute_difference'] = abs(df_train['predict'] - df_train['target'])
+count_greater_than_05 = df_train[df_train['absolute_difference'] >= 0.5].shape[0]
+print(count_greater_than_05)
+
 # ================= cleanning =======================
 
 # ================= hacking ======================= 
