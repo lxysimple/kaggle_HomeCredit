@@ -1581,11 +1581,11 @@ count_greater_than_05 = df_train[index].shape[0]
 print(count_greater_than_05)
 df_train[index]
 
-# 0.9~0.99之间
+# 0.9~0.99之间, [0.9, 0.99, 0.95, 0.92, 0.97]
 len(df_train[df_train['target']==1])
 len(df_train[(df_train['absolute_difference'] >= 0.92) & (df_train['target']==1)])
 
-# 0.1~0.2之间
+# 0.1~0.2之间, [0.1, 0.2, 0.15, 0.17, 0.12]
 len(df_train[df_train['target']==0])
 len(df_train[(df_train['absolute_difference'] >= 0.1) & (df_train['target']==0)])
 
