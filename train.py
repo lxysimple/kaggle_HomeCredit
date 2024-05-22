@@ -813,53 +813,53 @@ TEST_DIR        = ROOT / "parquet_files" / "test"
 
 print('开始读取数据!')
 
-train_credit_bureau_a_1 = SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_a_1_*.parquet', 1)
-train_credit_bureau_a_1 = train_credit_bureau_a_1.with_columns(
-    ((pl.col('max_dateofcredend_289D') - pl.col('max_dateofcredstart_739D')).dt.total_days()).alias('max_credit_duration_daysA')
-).with_columns(
-    ((pl.col('max_dateofcredend_353D') - pl.col('max_dateofcredstart_181D')).dt.total_days()).alias('max_closed_credit_duration_daysA')
-).with_columns(
-    ((pl.col('max_dateofrealrepmt_138D') - pl.col('max_overdueamountmax2date_1002D')).dt.total_days()).alias('max_time_from_overdue_to_closed_realrepmtA')
-).with_columns(
-    ((pl.col('max_dateofrealrepmt_138D') - pl.col('max_overdueamountmax2date_1142D')).dt.total_days()).alias('max_time_from_active_overdue_to_realrepmtA')
-)
+# train_credit_bureau_a_1 = SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_a_1_*.parquet', 1)
+# train_credit_bureau_a_1 = train_credit_bureau_a_1.with_columns(
+#     ((pl.col('max_dateofcredend_289D') - pl.col('max_dateofcredstart_739D')).dt.total_days()).alias('max_credit_duration_daysA')
+# ).with_columns(
+#     ((pl.col('max_dateofcredend_353D') - pl.col('max_dateofcredstart_181D')).dt.total_days()).alias('max_closed_credit_duration_daysA')
+# ).with_columns(
+#     ((pl.col('max_dateofrealrepmt_138D') - pl.col('max_overdueamountmax2date_1002D')).dt.total_days()).alias('max_time_from_overdue_to_closed_realrepmtA')
+# ).with_columns(
+#     ((pl.col('max_dateofrealrepmt_138D') - pl.col('max_overdueamountmax2date_1142D')).dt.total_days()).alias('max_time_from_active_overdue_to_realrepmtA')
+# )
 
-train_credit_bureau_b_1 = SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_b_1.parquet', 1)
-train_credit_bureau_b_1 = train_credit_bureau_b_1.with_columns(
-    ((pl.col('max_contractmaturitydate_151D') - pl.col('max_contractdate_551D')).dt.total_days()).alias('contract_duration_days')
-).with_columns(
-    ((pl.col('max_lastupdate_260D') - pl.col('max_contractdate_551D')).dt.total_days()).alias('last_update_duration_days')
-)
+# train_credit_bureau_b_1 = SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_b_1.parquet', 1)
+# train_credit_bureau_b_1 = train_credit_bureau_b_1.with_columns(
+#     ((pl.col('max_contractmaturitydate_151D') - pl.col('max_contractdate_551D')).dt.total_days()).alias('contract_duration_days')
+# ).with_columns(
+#     ((pl.col('max_lastupdate_260D') - pl.col('max_contractdate_551D')).dt.total_days()).alias('last_update_duration_days')
+# )
 
-train_static = SchemaGen.scan_files(TRAIN_DIR / 'train_static_0_*.parquet', 1)
-condition_all_nan = (
-    pl.col('max_maxdbddpdlast1m_3658939P').is_null() &
-    pl.col('max_maxdbddpdtollast12m_3658940P').is_null() &
-    pl.col('max_maxdbddpdtollast6m_4187119P').is_null()
-)
+# train_static = SchemaGen.scan_files(TRAIN_DIR / 'train_static_0_*.parquet', 1)
+# condition_all_nan = (
+#     pl.col('max_maxdbddpdlast1m_3658939P').is_null() &
+#     pl.col('max_maxdbddpdtollast12m_3658940P').is_null() &
+#     pl.col('max_maxdbddpdtollast6m_4187119P').is_null()
+# )
 
-condition_exceed_thresholds = (
-    (pl.col('max_maxdbddpdlast1m_3658939P') > 31) |
-    (pl.col('max_maxdbddpdtollast12m_3658940P') > 366) |
-    (pl.col('max_maxdbddpdtollast6m_4187119P') > 184)
-)
+# condition_exceed_thresholds = (
+#     (pl.col('max_maxdbddpdlast1m_3658939P') > 31) |
+#     (pl.col('max_maxdbddpdtollast12m_3658940P') > 366) |
+#     (pl.col('max_maxdbddpdtollast6m_4187119P') > 184)
+# )
 
-train_static = train_static.with_columns(
-    pl.when(condition_all_nan | condition_exceed_thresholds)
-    .then(0)
-    .otherwise(1)
-    .alias('max_dbddpd_boolean')
-)
-train_static = train_static.with_columns(
-    pl.when(
-        (pl.col('max_maxdbddpdlast1m_3658939P') <= 0) &
-        (pl.col('max_maxdbddpdtollast12m_3658940P') <= 0) &
-        (pl.col('max_maxdbddpdtollast6m_4187119P') <= 0)
-    )
-    .then(1)
-    .otherwise(0)
-    .alias('max_pays_debt_on_timeP')
-)
+# train_static = train_static.with_columns(
+#     pl.when(condition_all_nan | condition_exceed_thresholds)
+#     .then(0)
+#     .otherwise(1)
+#     .alias('max_dbddpd_boolean')
+# )
+# train_static = train_static.with_columns(
+#     pl.when(
+#         (pl.col('max_maxdbddpdlast1m_3658939P') <= 0) &
+#         (pl.col('max_maxdbddpdtollast12m_3658940P') <= 0) &
+#         (pl.col('max_maxdbddpdtollast6m_4187119P') <= 0)
+#     )
+#     .then(1)
+#     .otherwise(0)
+#     .alias('max_pays_debt_on_timeP')
+# )
 
 # data_store = {
 #     "df_base": read_file(TRAIN_DIR / "train_base.parquet"),
@@ -896,8 +896,8 @@ data_store:dict = {
         SchemaGen.scan_files(TRAIN_DIR / 'train_static_cb_0.parquet'),
 
         # ZhiXing Jiang
-        # SchemaGen.scan_files(TRAIN_DIR / 'train_static_0_*.parquet'),
-        train_static,
+        SchemaGen.scan_files(TRAIN_DIR / 'train_static_0_*.parquet'),
+        # train_static,
         
     ],
     'depth_1': [
@@ -905,14 +905,14 @@ data_store:dict = {
         SchemaGen.scan_files(TRAIN_DIR / 'train_tax_registry_a_1.parquet', 1),
 
         # ZhiXing Jiang
-        # SchemaGen.scan_files(TRAIN_DIR / 'train_tax_registry_b_1.parquet', 1),
-        train_credit_bureau_b_1,
+        SchemaGen.scan_files(TRAIN_DIR / 'train_tax_registry_b_1.parquet', 1),
+        # train_credit_bureau_b_1,
 
         SchemaGen.scan_files(TRAIN_DIR / 'train_tax_registry_c_1.parquet', 1),
 
         # ZhiXing Jiang
-        # SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_a_1_*.parquet', 1),
-        train_credit_bureau_a_1,
+        SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_a_1_*.parquet', 1),
+        # train_credit_bureau_a_1,
 
         SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_b_1.parquet', 1),
         SchemaGen.scan_files(TRAIN_DIR / 'train_other_1.parquet', 1),
@@ -922,14 +922,14 @@ data_store:dict = {
     ],
     'depth_2': [
         # ZhiXing Jiang
-        # SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_a_2_*.parquet', 2),
+        SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_a_2_*.parquet', 2),
 
         SchemaGen.scan_files(TRAIN_DIR / 'train_credit_bureau_b_2.parquet', 2),
    
         # ZhiXing Jiang
         # # 829+386
-        # SchemaGen.scan_files(TRAIN_DIR / 'train_applprev_2.parquet', 2), 
-        # SchemaGen.scan_files(TRAIN_DIR / 'train_person_2.parquet', 2), 
+        SchemaGen.scan_files(TRAIN_DIR / 'train_applprev_2.parquet', 2), 
+        SchemaGen.scan_files(TRAIN_DIR / 'train_person_2.parquet', 2), 
     ]
 }
 
