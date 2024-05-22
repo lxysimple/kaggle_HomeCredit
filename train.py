@@ -1589,6 +1589,9 @@ len(df_train[(df_train['absolute_difference'] >= 0.92) & (df_train['target']==1)
 len(df_train[df_train['target']==0])
 len(df_train[(df_train['absolute_difference'] >= 0.1) & (df_train['target']==0)])
 
+index.to_csv('clean.csv', header=['0.9'])
+clean_data = pd.read_csv('clean.csv')['0.9']
+
 # ================= cleanning =======================
 
 # ================= hacking ======================= 
