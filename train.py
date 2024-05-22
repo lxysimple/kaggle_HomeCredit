@@ -102,8 +102,8 @@ class Pipeline:
             if col not in ["target", "case_id", "WEEK_NUM"]:
                 isnull = df[col].is_null().mean()
                 # if isnull > 0.7:
-                if isnull > 0.95: # ZhiXing Jiang
-                # if isnull == 1:
+                # if isnull > 0.95: # ZhiXing Jiang
+                if isnull == 1:
 #                 if isnull > 0.99:
                     df = df.drop(col)
         
@@ -378,10 +378,10 @@ class Aggregator:
         # return expr_max + expr_min + expr_last + expr_first + expr_mean
 
         # return expr_max + expr_mean + expr_var # notebookv8 
-        # return expr_max +expr_last+expr_mean # 829+386 
+        return expr_max +expr_last+expr_mean # 829+386 
         # return expr_max +expr_last+expr_mean+expr_var # 829+386 + notebookv8
 
-        return expr_max # ZhiXing Jiang
+        # return expr_max # ZhiXing Jiang
     
     
     def date_expr(df):
@@ -401,9 +401,9 @@ class Aggregator:
         # return  expr_max + expr_min  +  expr_last + expr_first + expr_mean
 
         # return expr_max + expr_mean + expr_var # notebookv8
-        # return  expr_max +expr_last+expr_mean # 829+386
+        return  expr_max +expr_last+expr_mean # 829+386
         # return  expr_max +expr_last+expr_mean+expr_var # 829+386+notebookv8 
-        return expr_max # ZhiXing Jiang
+        # return expr_max # ZhiXing Jiang
 
 
     
@@ -426,9 +426,9 @@ class Aggregator:
         
 
         # return expr_max # notebookv8
-        # return expr_max +expr_last # 829+386
+        return expr_max +expr_last # 829+386
         # return  expr_max +expr_last # 829+386+notebookv8
-        return expr_max # ZhiXing Jiang
+        # return expr_max # ZhiXing Jiang
 
 
     def other_expr(df):
@@ -455,9 +455,9 @@ class Aggregator:
 
 
         # return expr_max # notebookv8
-        # return  expr_max +expr_last # 829+386
+        return  expr_max +expr_last # 829+386
         # return  expr_max +expr_last # 829+386+notebookv8
-        return expr_max # ZhiXing Jiang
+        # return expr_max # ZhiXing Jiang
 
 
 
@@ -481,9 +481,9 @@ class Aggregator:
 
 
         # return expr_max # notebookv8
-        # return  expr_max +expr_last # 829+386
+        return  expr_max +expr_last # 829+386
         # return  expr_max +expr_last # 829+386+notebookv8
-        return expr_max # ZhiXing Jiang
+        # return expr_max # ZhiXing Jiang
     
     def get_exprs(df):
         exprs = Aggregator.num_expr(df) + \
@@ -1503,11 +1503,11 @@ class VotingModel(BaseEstimator, RegressorMixin):
 
         X[cat_cols] = X[cat_cols].astype("str")
         # y_preds += [estimator.predict_proba(X[df_train_829])[:, 1] for estimator in self.estimators[0:5]]
-        # y_preds += [estimator.predict_proba(X[df_train_386])[:, 1] for estimator in self.estimators[5:10]]
-        y_preds += [estimator.predict_proba(X)[:, 1] for estimator in self.estimators[10:15]]
+        y_preds += [estimator.predict_proba(X[df_train_386])[:, 1] for estimator in self.estimators[5:10]]
+        # y_preds += [estimator.predict_proba(X)[:, 1] for estimator in self.estimators[10:15]]
         
-        # X[cat_cols] = X[cat_cols].astype("category")
-        # y_preds += [estimator.predict(X[df_train]) for estimator in self.estimators[15:20]]
+        X[cat_cols] = X[cat_cols].astype("category")
+        y_preds += [estimator.predict(X[df_train_386]) for estimator in self.estimators[15:20]]
         # y_preds += [estimator.predict(X) for estimator in self.estimators[25:30]]
         
         return np.mean(y_preds, axis=0)
@@ -1544,8 +1544,7 @@ model = VotingModel(fitted_models_cat1 + fitted_models_cat2 +fitted_models_cat3+
 # # from IPython import embed
 # # embed()
 
-from IPython import embed
-embed()
+
 
 # 5min
 print('开始计算cv')
@@ -1561,6 +1560,13 @@ print(valid_score)
 # valid_score += [(valid_score[0]+valid_score[1])/2.0]
 # print(valid_score)
 
+# ================= cleanning =======================
+df_train['predict'] = valid_preds
+df_train["target"] = y
+
+from IPython import embed
+embed()
+# ================= cleanning =======================
 
 # ================= hacking ======================= 
 # def gini_stability_custom_metric(y_pred: np.array, y_true: np.array, week: np.array):
