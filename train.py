@@ -1589,15 +1589,6 @@ len(df_train[(df_train['absolute_difference'] >= 0.92) & (df_train['target']==1)
 len(df_train[df_train['target']==0])
 len(df_train[(df_train['absolute_difference'] >= 0.1) & (df_train['target']==0)])
 
-"""
-df_train.shape: (1526659, 832)
->=0.5: 45466, 2.9%
->=0.6: 42545, 2.7%
->=0.7: 37968, 2.4%
->=0.8: 30558, 2.0%
->=0.9: 18578, 1.2%
->=0.95: 9492, 0.6%
-"""
 # ================= cleanning =======================
 
 # ================= hacking ======================= 
