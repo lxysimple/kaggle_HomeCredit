@@ -162,8 +162,8 @@ def filter_cols(df: pl.DataFrame) -> pl.DataFrame:
     for col in df.columns:
         if col not in ["case_id", "year", "month", "week_num", "target"]:
             null_pct = df[col].is_null().mean()
-
-            if null_pct > 0.95:
+            if isnull > 0.9: # kontsev
+            # if null_pct > 0.95:
             # if null_pct == 1: 
                 df = df.drop(col) 
 
@@ -173,7 +173,8 @@ def filter_cols(df: pl.DataFrame) -> pl.DataFrame:
         ):
             freq = df[col].n_unique()
 
-            if (freq > 200) | (freq == 1):
+            if (freq == 1) | (freq > 1000): # kontsev
+            # if (freq > 200) | (freq == 1): 
                 df = df.drop(col)
 
     return df
@@ -230,127 +231,6 @@ def transform_cols(df: pl.DataFrame) -> pl.DataFrame:
         df.drop("riskassesment_302T")
 
     return df
-
-class Aggregator2:
-    @staticmethod
-    def max_expr(df: pl.LazyFrame) -> list[pl.Series]:
-        """
-        Generates expressions for calculating maximum values for specific columns.
-
-        Args:
-        - df (pl.LazyFrame): Input LazyFrame.
-
-        Returns:
-        - list[pl.Series]: List of expressions for maximum values.
-        """
-        cols: list[str] = [
-            col
-            for col in df.columns
-            if (col[-1] in ("P", "M", "A", "D", "T", "L")) or ("num_group" in col)
-        ]
-
-        expr_max: list[pl.Series] = [
-            pl.col(col).max().alias(f"max_{col}") for col in cols
-        ]
-
-        return expr_max
-
-    @staticmethod
-    def min_expr(df: pl.LazyFrame) -> list[pl.Series]:
-        """
-        Generates expressions for calculating minimum values for specific columns.
-
-        Args:
-        - df (pl.LazyFrame): Input LazyFrame.
-
-        Returns:
-        - list[pl.Series]: List of expressions for minimum values.
-        """
-        cols: list[str] = [
-            col
-            for col in df.columns
-            if (col[-1] in ("P", "M", "A", "D", "T", "L")) or ("num_group" in col)
-        ]
-
-        expr_min: list[pl.Series] = [
-            pl.col(col).min().alias(f"min_{col}") for col in cols
-        ]
-
-        return expr_min
-
-    @staticmethod
-    def mean_expr(df: pl.LazyFrame) -> list[pl.Series]:
-        """
-        Generates expressions for calculating mean values for specific columns.
-
-        Args:
-        - df (pl.LazyFrame): Input LazyFrame.
-
-        Returns:
-        - list[pl.Series]: List of expressions for mean values.
-        """
-        cols: list[str] = [col for col in df.columns if col.endswith(("P", "A", "D"))]
-
-        expr_mean: list[pl.Series] = [
-            pl.col(col).mean().alias(f"mean_{col}") for col in cols
-        ]
-
-        return expr_mean
-
-    @staticmethod
-    def var_expr(df: pl.LazyFrame) -> list[pl.Series]:
-        """
-        Generates expressions for calculating variance for specific columns.
-
-        Args:
-        - df (pl.LazyFrame): Input LazyFrame.
-
-        Returns:
-        - list[pl.Series]: List of expressions for variance.
-        """
-        cols: list[str] = [col for col in df.columns if col.endswith(("P", "A", "D"))]
-
-        expr_mean: list[pl.Series] = [
-            pl.col(col).var().alias(f"var_{col}") for col in cols
-        ]
-
-        return expr_mean
-
-    @staticmethod
-    def mode_expr(df: pl.LazyFrame) -> list[pl.Series]:
-        """
-        Generates expressions for calculating mode values for specific columns.
-
-        Args:
-        - df (pl.LazyFrame): Input LazyFrame.
-
-        Returns:
-        - list[pl.Series]: List of expressions for mode values.
-        """
-        cols: list[str] = [col for col in df.columns if col.endswith("M")]
-
-        expr_mode: list[pl.Series] = [
-            pl.col(col).drop_nulls().mode().first().alias(f"mode_{col}") for col in cols
-        ]
-
-        return expr_mode
-
-    @staticmethod
-    def get_exprs(df: pl.LazyFrame) -> list[pl.Series]:
-        """
-        Combines expressions for maximum, mean, and variance calculations.
-
-        Args:
-        - df (pl.LazyFrame): Input LazyFrame.
-
-        Returns:
-        - list[pl.Series]: List of combined expressions.
-        """
-        exprs = (
-            Aggregator2.max_expr(df) + Aggregator2.mean_expr(df) + Aggregator2.var_expr(df)
-        )
-
-        return exprs
 
 
 class Aggregator:
