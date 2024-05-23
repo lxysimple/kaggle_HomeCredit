@@ -842,6 +842,11 @@ df_train = feature_eng(**data_store).collect() # 别忘记829+386要多加载2�
 # ===============================================================
 df_train = pd.DataFrame(df_train)
 
+
+from IPython import embed
+embed()
+
+
 df_train['past_now_annuity'] = np.where(df_train['annuity_780A'] == 0, 0, df_train['annuity_853A'] / df_train['annuity_780A'])
 # df_test['past_now_annuity'] = np.where(df_test['annuity_780A'] == 0, 0, df_test['annuity_853A'] / df_test['annuity_780A'])
 
