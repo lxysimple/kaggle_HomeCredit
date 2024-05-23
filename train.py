@@ -1176,7 +1176,7 @@ cat_cols = cat_cols_386
 0.1：99551，0.2：22531，0.15：45841，0.17：34396，0.12：72329
 0.9：18918，0.99：945，0.95：9612，0.92：15492，0.97：5142
 """
-index = pd.read_csv('clean0.9.csv', header=None)[0]
+index = pd.read_csv('clean0.99.csv', header=None)[0]
 df_train = df_train[~index]
 y = y[~index]
 weeks = weeks[~index]
