@@ -1597,14 +1597,14 @@ df_train[index]
 threshold = 0.97
 len(df_train[(df_train['absolute_difference'] >= threshold) & (df_train['target']==1)])
 index = (df_train['absolute_difference'] >= threshold) & (df_train['target']==1)
-index.to_csv(f'clean{threshold}.csv', header=[f'{threshold}'])
+index.to_csv(f'clean{threshold}.csv')
 
 
 # 0.1~0.2之间, [0.1, 0.2, 0.15, 0.17, 0.12]
 threshold = 0.12
 len(df_train[(df_train['absolute_difference'] >= threshold) & (df_train['target']==0)])
 index = (df_train['absolute_difference'] >= threshold) & (df_train['target']==0)
-index.to_csv(f'clean{threshold}.csv', header=[f'{threshold}'])
+index.to_csv(f'clean{threshold}.csv')
 
 # ================= cleanning =======================
 
