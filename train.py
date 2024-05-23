@@ -840,14 +840,19 @@ df_train = feature_eng(**data_store).collect() # 别忘记829+386要多加载2�
 
 
 # ===============================================================
+""" 为了适应以下特征工程代码，我将pl.df转换为pd.df，然后进行特征工程 """
+
 df_train_columns = list(df_train.columns)
 df_train = pd.DataFrame(df_train)
 df_train.columns = df_train_columns 
 df_train = df_train.set_index('case_id')
 
-from IPython import embed
-embed()
+# from IPython import embed
+# embed()
 
+# 将DataFrame中的所有NaN替换为numpy中的NaN值
+# 这将会将DataFrame中所有的NA值（包括NaN和None）替换为numpy中的NaN值
+df_train.replace({pd.NA: np.nan}, inplace=True)
 
 df_train['past_now_annuity'] = np.where(df_train['annuity_780A'] == 0, 0, df_train['annuity_853A'] / df_train['annuity_780A'])
 # df_test['past_now_annuity'] = np.where(df_test['annuity_780A'] == 0, 0, df_test['annuity_853A'] / df_test['annuity_780A'])
@@ -1153,21 +1158,22 @@ df_train['feature8'] = np.where(df_train['amtinstpaidbefduel24m_4187115A'] == 0,
 df_train['feature9'] = np.where(df_train['totaldebt_9A'] == 0, 0, df_train['avgoutstandbalancel6m_4187114A']/df_train['totaldebt_9A'])
 df_train['feature10'] = (df_train['credamount_770A'] > df_train['annuitynextmonth_57A']).replace({False: 0, True: 1})
 
-print((df_train == np.inf).any().any(), (df_train == -np.inf).any().any(), (df_test == np.inf).any().any(), (df_test == -np.inf).any().any())
-df_train.replace([np.inf, -np.inf], np.nan, inplace=True)
-print((df_train == np.inf).any().any(), (df_train == -np.inf).any().any(), (df_test == np.inf).any().any(), (df_test == -np.inf).any().any())
+# print((df_train == np.inf).any().any(), (df_train == -np.inf).any().any())
+# df_train.replace([np.inf, -np.inf], np.nan, inplace=True)
+# print((df_train == np.inf).any().any(), (df_train == -np.inf).any().any())
 
 cols2drop = ['cacccardblochreas_147M', 'cancelreason_3545846M', 'contaddr_smempladdr_334L', 'contaddr_matchlist_1032L', 'credor_3940957M', ]
 df_train.drop(columns=cols2drop, inplace=True)
 # df_test.drop(columns=cols2drop, inplace=True)
 
+df_train = pl.DataFrame(df_train)
+
 columns_to_drop = [column for column in df_train.columns if column.startswith('num_group')]
 for col in columns_to_drop:
     if col in list(df_train.columns):
         df_train.drop(columns=col, inplace=True)
-    if col in list(df_test.columns):
-        df_test.drop(columns=col, inplace=True)
 
+# df_train = pl.DataFrame(df_train)
 # ===============================================================
 
 
@@ -1519,102 +1525,102 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     
 
     # ===============================
-    # X_train[cat_cols] = X_train[cat_cols].astype("category")
-    # X_valid[cat_cols] = X_valid[cat_cols].astype("category")
+    X_train[cat_cols] = X_train[cat_cols].astype("category")
+    X_valid[cat_cols] = X_valid[cat_cols].astype("category")
 
-    # # if fold%2 ==1:
-    # #     params = {
-    # #         "boosting_type": "gbdt",
-    # #         "colsample_bynode": 0.8,
-    # #         "colsample_bytree": 0.8,
-    # #         "device": device,
-    # #         "extra_trees": True,
-    # #         "learning_rate": 0.05,
-    # #         "l1_regularization": 0.1,
-    # #         "l2_regularization": 10,
-    # #         "max_depth": 20,
-    # #         "metric": "auc",
-    # #         "n_estimators": 2000,
-    # #         "num_leaves": 64,
-    # #         "objective": "binary",
-    # #         "random_state": 42,
-    # #         "verbose": -1,
-    # #     }
-    # # else:
-    # #     params = {
-    # #         "boosting_type": "gbdt",
-    # #         "colsample_bynode": 0.8,
-    # #         "colsample_bytree": 0.8,
-    # #         "device": device,
-    # #         "extra_trees": True,
-    # #         "learning_rate": 0.03,
-    # #         "l1_regularization": 0.1,
-    # #         "l2_regularization": 10,
-    # #         "max_depth": 16,
-    # #         "metric": "auc",
-    # #         "n_estimators": 2000,
-    # #         "num_leaves": 72,
-    # #         "objective": "binary",
-    # #         "random_state": 42,
-    # #         "verbose": -1,
-    # #     }
+    # if fold%2 ==1:
+    #     params = {
+    #         "boosting_type": "gbdt",
+    #         "colsample_bynode": 0.8,
+    #         "colsample_bytree": 0.8,
+    #         "device": device,
+    #         "extra_trees": True,
+    #         "learning_rate": 0.05,
+    #         "l1_regularization": 0.1,
+    #         "l2_regularization": 10,
+    #         "max_depth": 20,
+    #         "metric": "auc",
+    #         "n_estimators": 2000,
+    #         "num_leaves": 64,
+    #         "objective": "binary",
+    #         "random_state": 42,
+    #         "verbose": -1,
+    #     }
+    # else:
+    #     params = {
+    #         "boosting_type": "gbdt",
+    #         "colsample_bynode": 0.8,
+    #         "colsample_bytree": 0.8,
+    #         "device": device,
+    #         "extra_trees": True,
+    #         "learning_rate": 0.03,
+    #         "l1_regularization": 0.1,
+    #         "l2_regularization": 10,
+    #         "max_depth": 16,
+    #         "metric": "auc",
+    #         "n_estimators": 2000,
+    #         "num_leaves": 72,
+    #         "objective": "binary",
+    #         "random_state": 42,
+    #         "verbose": -1,
+    #     }
 
 
 
-    # params = {
-    #     "boosting_type": "gbdt",
-    #     "objective": "binary",
-    #     "metric": "auc",
-    #     "max_depth": 10,  
-    #     "learning_rate": 0.05,
-    #     "n_estimators": 2000,  
-    #     # 则每棵树在构建时会随机选择 80% 的特征进行训练，剩下的 20% 特征将不参与训练，从而增加模型的泛化能力和稳定性
-    #     "colsample_bytree": 0.8, 
-    #     "colsample_bynode": 0.8, # 控制每个节点的特征采样比例
-    #     "verbose": -1,
-    #     "random_state": 42,
-    #     "reg_alpha": 0.1,
-    #     "reg_lambda": 10,
-    #     "extra_trees":True,
-    #     'num_leaves':64,
-    #     "device": 'gpu', # gpu
-    #     'gpu_use_dp' : True, # 转化float为64精度
+    params = {
+        "boosting_type": "gbdt",
+        "objective": "binary",
+        "metric": "auc",
+        "max_depth": 10,  
+        "learning_rate": 0.05,
+        "n_estimators": 2000,  
+        # 则每棵树在构建时会随机选择 80% 的特征进行训练，剩下的 20% 特征将不参与训练，从而增加模型的泛化能力和稳定性
+        "colsample_bytree": 0.8, 
+        "colsample_bynode": 0.8, # 控制每个节点的特征采样比例
+        "verbose": -1,
+        "random_state": 42,
+        "reg_alpha": 0.1,
+        "reg_lambda": 10,
+        "extra_trees":True,
+        'num_leaves':64,
+        "device": 'gpu', # gpu
+        'gpu_use_dp' : True, # 转化float为64精度
 
-    #     # # 平衡类别之间的权重  损失函数不会因为样本不平衡而被“推向”样本量偏少的类别中
-    #     # "sample_weight":'balanced',
-    # }
+        # # 平衡类别之间的权重  损失函数不会因为样本不平衡而被“推向”样本量偏少的类别中
+        # "sample_weight":'balanced',
+    }
 
-    # # 一次训练
-    # model = lgb.LGBMClassifier(**params)
-    # model.fit(
+    # 一次训练
+    model = lgb.LGBMClassifier(**params)
+    model.fit(
+        X_train, y_train,
+        eval_set = [(X_valid, y_valid)],
+        callbacks = [lgb.log_evaluation(200), lgb.early_stopping(100)],
+        # init_model = f"/home/xyli/kaggle/kaggle_HomeCredit/dataset/lgbm_fold{fold}.txt",
+    )
+    model.booster_.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/lgbm_fold{fold}.txt')
+    model2 = model
+
+    # # 二次优化
+    # params['learning_rate'] = 0.01
+    # model2 = lgb.LGBMClassifier(**params)
+    # model2.fit(
     #     X_train, y_train,
     #     eval_set = [(X_valid, y_valid)],
-    #     callbacks = [lgb.log_evaluation(200), lgb.early_stopping(100)],
-    #     # init_model = f"/home/xyli/kaggle/kaggle_HomeCredit/dataset/lgbm_fold{fold}.txt",
+    #     callbacks = [lgb.log_evaluation(200), lgb.early_stopping(200)],
+    #     init_model = f"/home/xyli/kaggle/kaggle_HomeCredit/dataset8/lgbm_fold{fold}.txt",
     # )
-    # model.booster_.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/lgbm_fold{fold}.txt')
-    # model2 = model
-
-    # # # 二次优化
-    # # params['learning_rate'] = 0.01
-    # # model2 = lgb.LGBMClassifier(**params)
-    # # model2.fit(
-    # #     X_train, y_train,
-    # #     eval_set = [(X_valid, y_valid)],
-    # #     callbacks = [lgb.log_evaluation(200), lgb.early_stopping(200)],
-    # #     init_model = f"/home/xyli/kaggle/kaggle_HomeCredit/dataset8/lgbm_fold{fold}.txt",
-    # # )
-    # # model2.booster_.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/lgbm_fold{fold}.txt')
+    # model2.booster_.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/lgbm_fold{fold}.txt')
     
 
-    # fitted_models_lgb.append(model2)
-    # y_pred_valid = model2.predict_proba(X_valid)[:,1]
-    # auc_score = roc_auc_score(y_valid, y_pred_valid)
-    # print('auc_score: ', auc_score)
-    # cv_scores_lgb.append(auc_score)
-    # print()
-    # print("分隔符")
-    # print()
+    fitted_models_lgb.append(model2)
+    y_pred_valid = model2.predict_proba(X_valid)[:,1]
+    auc_score = roc_auc_score(y_valid, y_pred_valid)
+    print('auc_score: ', auc_score)
+    cv_scores_lgb.append(auc_score)
+    print()
+    print("分隔符")
+    print()
     # ===========================
 
 
