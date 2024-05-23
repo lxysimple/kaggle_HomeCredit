@@ -1287,6 +1287,10 @@ print(df_train.head())
 
 fold = 1
 for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环5次
+    
+    if fold<4:
+        fold += 1
+        continue
 
     # X_train(≈40000,386), y_train(≈40000)
     X_train, y_train = df_train.iloc[idx_train], y.iloc[idx_train] 
