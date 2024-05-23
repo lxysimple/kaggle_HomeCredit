@@ -1169,6 +1169,7 @@ print('len(df_train): ', len(df_train))
 df_train = df_train[df_train_386]
 index = pd.read_csv('clean0.9.csv')
 df_train = df_train[~index]
+cat_cols = cat_cols[df_train_386]
 print('len(df_train): ', len(df_train))
 # ======================================== 特征列分类 =====================================
 
