@@ -1575,7 +1575,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
 
 
 
-    params = {
+    params = { 
         "boosting_type": "gbdt",
         "objective": "binary",
         "metric": "auc",
@@ -1593,7 +1593,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
         'num_leaves':64,
         "device": 'gpu', # gpu
         'gpu_use_dp' : True, # 转化float为64精度
-        'max_bin'=275, 
+        'max_bin':275,  
 
         # # 平衡类别之间的权重  损失函数不会因为样本不平衡而被“推向”样本量偏少的类别中
         # "sample_weight":'balanced',
