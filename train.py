@@ -1166,7 +1166,7 @@ df_train_344 = ['WEEK_NUM', 'month_decision', 'weekday_decision', 'assignmentdat
 # print(dtypes_list_str)
 # ==================================================
 print('len(df_train): ', len(df_train))
-df_train = df_train[df_train_338]
+df_train = df_train[df_train_386]
 index = pd.read_csv('clean0.9.csv')
 df_train = df_train[~index]
 print('len(df_train): ', len(df_train))
