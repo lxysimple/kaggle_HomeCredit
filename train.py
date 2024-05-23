@@ -173,8 +173,9 @@ def filter_cols(df: pl.DataFrame) -> pl.DataFrame:
         ):
             freq = df[col].n_unique()
 
-            if (freq == 1) | (freq > 1000): # kontsev
-            # if (freq > 200) | (freq == 1): 
+            # lgbm会报错:lightgbm.basic.LightGBMError: bin size 258 cannot run on GPU
+            # if (freq == 1) | (freq > 1000): # kontsev
+            if (freq > 200) | (freq == 1): 
                 df = df.drop(col)
 
     return df
