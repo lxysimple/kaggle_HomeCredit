@@ -1701,6 +1701,28 @@ print("Mean CV AUC score: ", np.mean(cv_scores_lgb_dart))
 print("CV AUC scores: ", cv_scores_lgb_rf)
 print("Mean CV AUC score: ", np.mean(cv_scores_lgb_rf))
 
+with open("log.txt", "a") as f:
+    print("CV AUC scores: ", cv_scores_cat, file=f)
+    print("Mean CV AUC score: ", np.mean(cv_scores_cat), file=f)
+
+    print("CV AUC scores: ", cv_scores_lgb, file=f)
+    print("Mean CV AUC score: ", np.mean(cv_scores_lgb), file=f)
+
+    print("CV AUC scores: ", cv_scores_xgb, file=f)
+    print("Mean CV AUC score: ", np.mean(cv_scores_xgb), file=f)
+
+    print("CV AUC scores: ", cv_scores_cat_dw, file=f)
+    print("Mean CV AUC score: ", np.mean(cv_scores_cat_dw), file=f)
+
+    print("CV AUC scores: ", cv_scores_cat_lg, file=f)
+    print("Mean CV AUC score: ", np.mean(cv_scores_cat_lg), file=f)
+
+    print("CV AUC scores: ", cv_scores_lgb_dart, file=f)
+    print("Mean CV AUC score: ", np.mean(cv_scores_lgb_dart), file=f)
+
+    print("CV AUC scores: ", cv_scores_lgb_rf, file=f)
+    print("Mean CV AUC score: ", np.mean(cv_scores_lgb_rf), file=f)
+
 # ======================================== 训练3树模型 =====================================
 
 
