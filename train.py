@@ -1169,8 +1169,6 @@ print('len(df_train): ', len(df_train))
 
 df_train = df_train[df_train_386]
 cat_cols = cat_cols_338
-y = df_train["target"]
-weeks = df_train["week_num"]
 
 # from IPython import embed
 # embed()
