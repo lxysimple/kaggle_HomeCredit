@@ -1300,102 +1300,102 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     
 
     # ===============================
-    X_train[cat_cols] = X_train[cat_cols].astype("category")
-    X_valid[cat_cols] = X_valid[cat_cols].astype("category")
+    # X_train[cat_cols] = X_train[cat_cols].astype("category")
+    # X_valid[cat_cols] = X_valid[cat_cols].astype("category")
 
-    # if fold%2 ==1:
-    #     params = {
-    #         "boosting_type": "gbdt",
-    #         "colsample_bynode": 0.8,
-    #         "colsample_bytree": 0.8,
-    #         "device": device,
-    #         "extra_trees": True,
-    #         "learning_rate": 0.05,
-    #         "l1_regularization": 0.1,
-    #         "l2_regularization": 10,
-    #         "max_depth": 20,
-    #         "metric": "auc",
-    #         "n_estimators": 2000,
-    #         "num_leaves": 64,
-    #         "objective": "binary",
-    #         "random_state": 42,
-    #         "verbose": -1,
-    #     }
-    # else:
-    #     params = {
-    #         "boosting_type": "gbdt",
-    #         "colsample_bynode": 0.8,
-    #         "colsample_bytree": 0.8,
-    #         "device": device,
-    #         "extra_trees": True,
-    #         "learning_rate": 0.03,
-    #         "l1_regularization": 0.1,
-    #         "l2_regularization": 10,
-    #         "max_depth": 16,
-    #         "metric": "auc",
-    #         "n_estimators": 2000,
-    #         "num_leaves": 72,
-    #         "objective": "binary",
-    #         "random_state": 42,
-    #         "verbose": -1,
-    #     }
+    # # if fold%2 ==1:
+    # #     params = {
+    # #         "boosting_type": "gbdt",
+    # #         "colsample_bynode": 0.8,
+    # #         "colsample_bytree": 0.8,
+    # #         "device": device,
+    # #         "extra_trees": True,
+    # #         "learning_rate": 0.05,
+    # #         "l1_regularization": 0.1,
+    # #         "l2_regularization": 10,
+    # #         "max_depth": 20,
+    # #         "metric": "auc",
+    # #         "n_estimators": 2000,
+    # #         "num_leaves": 64,
+    # #         "objective": "binary",
+    # #         "random_state": 42,
+    # #         "verbose": -1,
+    # #     }
+    # # else:
+    # #     params = {
+    # #         "boosting_type": "gbdt",
+    # #         "colsample_bynode": 0.8,
+    # #         "colsample_bytree": 0.8,
+    # #         "device": device,
+    # #         "extra_trees": True,
+    # #         "learning_rate": 0.03,
+    # #         "l1_regularization": 0.1,
+    # #         "l2_regularization": 10,
+    # #         "max_depth": 16,
+    # #         "metric": "auc",
+    # #         "n_estimators": 2000,
+    # #         "num_leaves": 72,
+    # #         "objective": "binary",
+    # #         "random_state": 42,
+    # #         "verbose": -1,
+    # #     }
 
 
 
-    params = {
-        "boosting_type": "gbdt",
-        "objective": "binary",
-        "metric": "auc",
-        "max_depth": 10,  
-        "learning_rate": 0.05,
-        "n_estimators": 2000,  
-        # 则每棵树在构建时会随机选择 80% 的特征进行训练，剩下的 20% 特征将不参与训练，从而增加模型的泛化能力和稳定性
-        "colsample_bytree": 0.8, 
-        "colsample_bynode": 0.8, # 控制每个节点的特征采样比例
-        "verbose": -1,
-        "random_state": 42,
-        "reg_alpha": 0.1,
-        "reg_lambda": 10,
-        "extra_trees":True,
-        'num_leaves':64,
-        "device": 'gpu', # gpu
-        'gpu_use_dp' : True, # 转化float为64精度
+    # params = {
+    #     "boosting_type": "gbdt",
+    #     "objective": "binary",
+    #     "metric": "auc",
+    #     "max_depth": 10,  
+    #     "learning_rate": 0.05,
+    #     "n_estimators": 2000,  
+    #     # 则每棵树在构建时会随机选择 80% 的特征进行训练，剩下的 20% 特征将不参与训练，从而增加模型的泛化能力和稳定性
+    #     "colsample_bytree": 0.8, 
+    #     "colsample_bynode": 0.8, # 控制每个节点的特征采样比例
+    #     "verbose": -1,
+    #     "random_state": 42,
+    #     "reg_alpha": 0.1,
+    #     "reg_lambda": 10,
+    #     "extra_trees":True,
+    #     'num_leaves':64,
+    #     "device": 'gpu', # gpu
+    #     'gpu_use_dp' : True, # 转化float为64精度
 
-        # # 平衡类别之间的权重  损失函数不会因为样本不平衡而被“推向”样本量偏少的类别中
-        # "sample_weight":'balanced',
-    }
+    #     # # 平衡类别之间的权重  损失函数不会因为样本不平衡而被“推向”样本量偏少的类别中
+    #     # "sample_weight":'balanced',
+    # }
 
-    # 一次训练
-    model = lgb.LGBMClassifier(**params)
-    model.fit(
-        X_train, y_train,
-        eval_set = [(X_valid, y_valid)],
-        callbacks = [lgb.log_evaluation(200), lgb.early_stopping(100)],
-        # init_model = f"/home/xyli/kaggle/kaggle_HomeCredit/dataset/lgbm_fold{fold}.txt",
-    )
-    model.booster_.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/lgbm_fold{fold}.txt')
-    model2 = model
-
-    # # 二次优化
-    # params['learning_rate'] = 0.01
-    # model2 = lgb.LGBMClassifier(**params)
-    # model2.fit(
+    # # 一次训练
+    # model = lgb.LGBMClassifier(**params)
+    # model.fit(
     #     X_train, y_train,
     #     eval_set = [(X_valid, y_valid)],
-    #     callbacks = [lgb.log_evaluation(200), lgb.early_stopping(200)],
-    #     init_model = f"/home/xyli/kaggle/kaggle_HomeCredit/dataset8/lgbm_fold{fold}.txt",
+    #     callbacks = [lgb.log_evaluation(200), lgb.early_stopping(100)],
+    #     # init_model = f"/home/xyli/kaggle/kaggle_HomeCredit/dataset/lgbm_fold{fold}.txt",
     # )
-    # model2.booster_.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/lgbm_fold{fold}.txt')
+    # model.booster_.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/lgbm_fold{fold}.txt')
+    # model2 = model
+
+    # # # 二次优化
+    # # params['learning_rate'] = 0.01
+    # # model2 = lgb.LGBMClassifier(**params)
+    # # model2.fit(
+    # #     X_train, y_train,
+    # #     eval_set = [(X_valid, y_valid)],
+    # #     callbacks = [lgb.log_evaluation(200), lgb.early_stopping(200)],
+    # #     init_model = f"/home/xyli/kaggle/kaggle_HomeCredit/dataset8/lgbm_fold{fold}.txt",
+    # # )
+    # # model2.booster_.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/lgbm_fold{fold}.txt')
     
 
-    fitted_models_lgb.append(model2)
-    y_pred_valid = model2.predict_proba(X_valid)[:,1]
-    auc_score = roc_auc_score(y_valid, y_pred_valid)
-    print('auc_score: ', auc_score)
-    cv_scores_lgb.append(auc_score)
-    print()
-    print("分隔符")
-    print()
+    # fitted_models_lgb.append(model2)
+    # y_pred_valid = model2.predict_proba(X_valid)[:,1]
+    # auc_score = roc_auc_score(y_valid, y_pred_valid)
+    # print('auc_score: ', auc_score)
+    # cv_scores_lgb.append(auc_score)
+    # print()
+    # print("分隔符")
+    # print()
     # ===========================
 
 
@@ -1565,18 +1565,6 @@ print("Mean CV AUC score: ", np.mean(cv_scores_lgb_rf))
 # )
 
 
-# # ================= hacking ======================= 
-# # df_test = df_train.loc[len(df_train)//2:len(df_train)]
-# # weeks = weeks[len(df_train)//2:len(df_train)]
-# # df_train = df_train.loc[0:len(df_train)//2] 
-
-# # df_test.loc[:len(df_test)//2, 'score'] = (df_test.loc[:len(df_test)//2, 'score'] - 0.01).clip(0)
-# # ================= hacking ======================= 
-
-# # # from IPython import embed
-# # # embed()
-
-
 
 # # 5min
 # print('开始计算cv')
@@ -1626,55 +1614,7 @@ print("Mean CV AUC score: ", np.mean(cv_scores_lgb_rf))
 
 # # ================= cleanning =======================
 
-# # ================= hacking ======================= 
-# # def gini_stability_custom_metric(y_pred: np.array, y_true: np.array, week: np.array):
-# #    '''
-# #    :param y_pred:
-# #    :param y_true:
-# #    :param week: 
-# #    :return eval_name: str
-# #    :return eval_result: float
-# #    :return is_higher_better: bool
-# #    '''
 
-# #    w_fallingrate = 88.0
-# #    w_resstd = -0.5
-
-# #    base = pd.DataFrame()
-# #    base['WEEK_NUM'] = week
-# #    base['target'] = y_true
-# #    base['score'] = y_pred
-# #    gini_in_time = base.loc[:, ["WEEK_NUM", "target", "score"]]\
-# #        .sort_values("WEEK_NUM")\
-# #        .groupby("WEEK_NUM")[["target", "score"]]\
-# #        .apply(lambda x: 2*roc_auc_score(x["target"], x["score"])-1).tolist()
-
-# #    x = np.arange(len(gini_in_time))
-# #    y = gini_in_time
-# #    a, b = np.polyfit(x, y, 1)
-# #    y_hat = a*x + b
-# #    residuals = y - y_hat
-# #    res_std = np.std(residuals)
-# #    avg_gini = np.mean(gini_in_time)
-
-# #    print('a: ', a)
-# #    print('avg_gini: ', avg_gini)
-# #    print('-0.5*res_std: ', w_resstd * res_std)
-
-# #    final_score = avg_gini + w_fallingrate * min(0, a) + w_resstd * res_std
-
-# #    return 'gini_stability', final_score, True
-
-
-
-# # # max_week = max(weeks)
-# # # min_week = min(weeks)
-# # # condition = weeks < (max_week+min_week)//2
-
-# # # valid_preds[condition] = valid_preds[condition]-0.05
-# # score = gini_stability_custom_metric(valid_preds, y, weeks)
-# # print('gini_stability_custom_metric: ', score)
-# ================= hacking =======================  
 
 # ======================================== 推理验证 =====================================
 
