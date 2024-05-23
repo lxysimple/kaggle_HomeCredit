@@ -840,8 +840,10 @@ df_train = feature_eng(**data_store).collect() # 别忘记829+386要多加载2�
 
 
 # ===============================================================
+df_train_columns = list(df_train.columns)
 df_train = pd.DataFrame(df_train)
-
+df_train.columns = df_train_columns 
+df_train = df_train.set_index('case_id')
 
 from IPython import embed
 embed()
