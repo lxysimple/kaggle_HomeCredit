@@ -1165,25 +1165,25 @@ df_train_344 = ['WEEK_NUM', 'month_decision', 'weekday_decision', 'assignmentdat
 # dtypes_list_str = [str(dtype) for dtype in df_train[non_cat_cols_cat_470].dtypes.values]
 # print(dtypes_list_str)
 # ==================================================
-print('len(df_train): ', len(df_train))
+# print('len(df_train): ', len(df_train))
 
-df_train = df_train[df_train_386]
-cat_cols = cat_cols_386
+# df_train = df_train[df_train_386]
+# cat_cols = cat_cols_386
 
-# from IPython import embed
-# embed()
-"""
-0.1：99551，0.2：22531，0.15：45841，0.17：34396，0.12：72329
-0.9：18918，0.99：945，0.95：9612，0.92：15492，0.97：5142
-"""
+# # from IPython import embed
+# # embed()
+# """
+# 0.1：99551，0.2：22531，0.15：45841，0.17：34396，0.12：72329
+# 0.9：18918，0.99：945，0.95：9612，0.92：15492，0.97：5142
+# """
 
-index = pd.read_csv('clean0.9.csv', header=None)[0]
-# index = (y==1) 
-df_train = df_train[~index]
-y = y[~index]
-weeks = weeks[~index]
+# index = pd.read_csv('clean0.9.csv', header=None)[0]
+# # index = (y==1) 
+# df_train = df_train[~index]
+# y = y[~index]
+# weeks = weeks[~index]
 
-print('len(df_train): ', len(df_train))
+# print('len(df_train): ', len(df_train))
 
 
 # ======================================== 特征列分类 =====================================
