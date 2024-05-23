@@ -1176,7 +1176,7 @@ cat_cols = cat_cols_386
 0.1：99551，0.2：22531，0.15：45841，0.17：34396，0.12：72329
 0.9：18918，0.99：945，0.95：9612，0.92：15492，0.97：5142
 """
-index = pd.read_csv('clean0.1.csv', header=None)[0]
+index = pd.read_csv('clean0.2.csv', header=None)[0]
 df_train = df_train[~index]
 y = y[~index]
 weeks = weeks[~index]
@@ -1288,9 +1288,9 @@ print(df_train.head())
 fold = 1
 for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环5次
     
-    if fold<4:
-        fold += 1
-        continue
+    # if fold<4:
+    #     fold += 1
+    #     continue
 
     # X_train(≈40000,386), y_train(≈40000)
     X_train, y_train = df_train.iloc[idx_train], y.iloc[idx_train] 
