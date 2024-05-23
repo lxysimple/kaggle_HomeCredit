@@ -1168,7 +1168,7 @@ df_train_344 = ['WEEK_NUM', 'month_decision', 'weekday_decision', 'assignmentdat
 print('len(df_train): ', len(df_train))
 
 df_train = df_train[df_train_386]
-cat_cols = cat_cols_338
+cat_cols = cat_cols_386
 
 # from IPython import embed
 # embed()
