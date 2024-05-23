@@ -1172,7 +1172,7 @@ cat_cols = cat_cols_338
 
 # from IPython import embed
 # embed()
-index = pd.read_csv('clean0.1.csv')
+index = pd.read_csv('clean0.1.csv', header=None)[0]
 df_train = df_train[~index]
 
 print('len(df_train): ', len(df_train))
