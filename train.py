@@ -1166,14 +1166,14 @@ cols2drop = ['cacccardblochreas_147M', 'cancelreason_3545846M', 'contaddr_smempl
 df_train.drop(columns=cols2drop, inplace=True)
 # df_test.drop(columns=cols2drop, inplace=True)
 
-df_train = pl.DataFrame(df_train)
+# df_train = pl.DataFrame(df_train)
 
 columns_to_drop = [column for column in df_train.columns if column.startswith('num_group')]
 for col in columns_to_drop:
     if col in list(df_train.columns):
         df_train.drop(columns=col, inplace=True)
 
-# df_train = pl.DataFrame(df_train)
+df_train = pl.DataFrame(df_train)
 # ===============================================================
 
 
