@@ -241,6 +241,7 @@ class Aggregator:
         cols = [col for col in df.columns if col[-1] in ("P", "A")]
         
         expr_max = [pl.max(col).alias(f"max_{col}") for col in cols]
+        expr = [pl.max(col).alias(f"{col}") for col in cols]
         expr_min = [pl.min(col).alias(f"min_{col}") for col in cols] # 原本是忽略的
         
         expr_last = [pl.last(col).alias(f"last_{col}") for col in cols]
@@ -263,7 +264,7 @@ class Aggregator:
         # return expr_max +expr_last+expr_mean+expr_var # 829+386 + notebookv8
 
         # return expr_max # ZhiXing Jiang
-        return expr_max +expr_last+expr_mean+expr_var+expr_count + expr_median # kontsev
+        return expr +expr_last+expr_mean+expr_var+expr_count + expr_median # kontsev
     
     
     def date_expr(df):
@@ -271,6 +272,7 @@ class Aggregator:
         # 感觉1个均值就行
         cols = [col for col in df.columns if col[-1] in ("D")]
         expr_max = [pl.max(col).alias(f"max_{col}") for col in cols]
+        expr = [pl.max(col).alias(f"{col}") for col in cols]
         expr_min = [pl.min(col).alias(f"min_{col}") for col in cols] # 原本是忽略的
 
         expr_last = [pl.last(col).alias(f"last_{col}") for col in cols]
@@ -287,7 +289,7 @@ class Aggregator:
         # return  expr_max +expr_last+expr_mean+expr_var # 829+386+notebookv8 
         # return expr_max # ZhiXing Jiang
 
-        return  expr_max +expr_last+expr_mean # kontsev
+        return  expr +expr_last+expr_mean # kontsev
 
 
     
@@ -296,6 +298,7 @@ class Aggregator:
         # 1个人最多也就几个地址吧，感觉取2个就可以了
         cols = [col for col in df.columns if col[-1] in ("M",)]
         expr_max = [pl.max(col).alias(f"max_{col}") for col in cols]
+        expr = [pl.max(col).alias(f"{col}") for col in cols]
         expr_min = [pl.min(col).alias(f"min_{col}") for col in cols] # 原本是忽略的 
         expr_last = [pl.last(col).alias(f"last_{col}") for col in cols]
         expr_first = [pl.first(col).alias(f"first_{col}") for col in cols] # 原本是忽略的
@@ -311,15 +314,16 @@ class Aggregator:
 
         # return expr_max # notebookv8
         # return expr_max +expr_last # 829+386
-        return  expr_max +expr_last # 829+386+notebookv8
+        # return  expr_max +expr_last # 829+386+notebookv8
         # return expr_max # ZhiXing Jiang
-        return  expr_max +expr_last # kontsev
+        return  expr +expr_last # kontsev
 
     def other_expr(df):
         # T、L代表各种杂七杂八的信息
         # 这一块可做特征工程提分，但粗略的来说1个均值更合适
         cols = [col for col in df.columns if col[-1] in ("T", "L")]
         expr_max = [pl.max(col).alias(f"max_{col}") for col in cols]
+        expr = [pl.max(col).alias(f"{col}") for col in cols]
         expr_min = [pl.min(col).alias(f"min_{col}") for col in cols] # 原本是忽略的
         expr_last = [pl.last(col).alias(f"last_{col}") for col in cols]
         expr_first = [pl.first(col).alias(f"first_{col}") for col in cols] # 原本是忽略的
@@ -342,7 +346,7 @@ class Aggregator:
         # return  expr_max +expr_last # 829+386
         # return  expr_max +expr_last # 829+386+notebookv8
         # return expr_max # ZhiXing Jiang
-        return  expr_max +expr_last # kontsev
+        return  expr +expr_last # kontsev
 
 
     
@@ -351,6 +355,7 @@ class Aggregator:
         # 其他一个case_id对应多条信息的，由于不知道具体是啥意思，所以统计特征用mean是比较好的感觉
         cols = [col for col in df.columns if "num_group" in col]
         expr_max = [pl.max(col).alias(f"max_{col}") for col in cols] 
+        expr = [pl.max(col).alias(f"{col}") for col in cols]
         expr_min = [pl.min(col).alias(f"min_{col}") for col in cols] # 原本是忽略的
         expr_last = [pl.last(col).alias(f"last_{col}") for col in cols]
         expr_first = [pl.first(col).alias(f"first_{col}") for col in cols] # 原本是忽略的
@@ -368,7 +373,7 @@ class Aggregator:
         # return  expr_max +expr_last # 829+386
         # return  expr_max +expr_last # 829+386+notebookv8
         # return expr_max # ZhiXing Jiang
-        return  expr_max +expr_last+expr_count # kontsev
+        return  expr +expr_last+expr_count # kontsev
     
     def get_exprs(df):
         exprs = Aggregator.num_expr(df) + \
