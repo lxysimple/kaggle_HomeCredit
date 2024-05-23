@@ -1166,10 +1166,15 @@ df_train_344 = ['WEEK_NUM', 'month_decision', 'weekday_decision', 'assignmentdat
 # print(dtypes_list_str)
 # ==================================================
 print('len(df_train): ', len(df_train))
+
 df_train = df_train[df_train_386]
+cat_cols = cat_cols[df_train_386]
+
+from IPython import embed
+embed()
 index = pd.read_csv('clean0.9.csv')
 df_train = df_train[~index]
-cat_cols = cat_cols[df_train_386]
+
 print('len(df_train): ', len(df_train))
 # ======================================== 特征列分类 =====================================
 
