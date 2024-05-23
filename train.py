@@ -1180,6 +1180,8 @@ weeks = df_train["week_num"]
 """
 index = pd.read_csv('clean0.1.csv', header=None)[0]
 df_train = df_train[~index]
+y = y[~index]
+weeks = weeks[~index]
 
 print('len(df_train): ', len(df_train))
 
