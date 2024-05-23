@@ -1178,7 +1178,7 @@ cat_cols = cat_cols_386
 """
 
 # index = pd.read_csv('clean0.99.csv', header=None)[0]
-index = (y!=1) 
+index = (y==1) 
 df_train = df_train[~index]
 y = y[~index]
 weeks = weeks[~index]
