@@ -378,8 +378,8 @@ class Aggregator:
         # return expr_max + expr_min + expr_last + expr_first + expr_mean
 
         # return expr_max + expr_mean + expr_var # notebookv8 
-        return expr_max +expr_last+expr_mean # 829+386 
-        # return expr_max +expr_last+expr_mean+expr_var # 829+386 + notebookv8
+        # return expr_max +expr_last+expr_mean # 829+386 
+        return expr_max +expr_last+expr_mean+expr_var # 829+386 + notebookv8
 
         # return expr_max # ZhiXing Jiang
     
@@ -401,8 +401,8 @@ class Aggregator:
         # return  expr_max + expr_min  +  expr_last + expr_first + expr_mean
 
         # return expr_max + expr_mean + expr_var # notebookv8
-        return  expr_max +expr_last+expr_mean # 829+386
-        # return  expr_max +expr_last+expr_mean+expr_var # 829+386+notebookv8 
+        # return  expr_max +expr_last+expr_mean # 829+386
+        return  expr_max +expr_last+expr_mean+expr_var # 829+386+notebookv8 
         # return expr_max # ZhiXing Jiang
 
 
@@ -426,8 +426,8 @@ class Aggregator:
         
 
         # return expr_max # notebookv8
-        return expr_max +expr_last # 829+386
-        # return  expr_max +expr_last # 829+386+notebookv8
+        # return expr_max +expr_last # 829+386
+        return  expr_max +expr_last # 829+386+notebookv8
         # return expr_max # ZhiXing Jiang
 
 
@@ -455,8 +455,8 @@ class Aggregator:
 
 
         # return expr_max # notebookv8
-        return  expr_max +expr_last # 829+386
-        # return  expr_max +expr_last # 829+386+notebookv8
+        # return  expr_max +expr_last # 829+386
+        return  expr_max +expr_last # 829+386+notebookv8
         # return expr_max # ZhiXing Jiang
 
 
@@ -481,8 +481,8 @@ class Aggregator:
 
 
         # return expr_max # notebookv8
-        return  expr_max +expr_last # 829+386
-        # return  expr_max +expr_last # 829+386+notebookv8
+        # return  expr_max +expr_last # 829+386
+        return  expr_max +expr_last # 829+386+notebookv8
         # return expr_max # ZhiXing Jiang
     
     def get_exprs(df):
@@ -1502,11 +1502,12 @@ class VotingModel(BaseEstimator, RegressorMixin):
         # embed()
 
         X[cat_cols] = X[cat_cols].astype("str")
-        # y_preds += [estimator.predict_proba(X[df_train_829])[:, 1] for estimator in self.estimators[0:5]]
+        y_preds += [estimator.predict_proba(X[df_train_829])[:, 1] for estimator in self.estimators[0:5]]
         y_preds += [estimator.predict_proba(X[df_train_386])[:, 1] for estimator in self.estimators[5:10]]
         # y_preds += [estimator.predict_proba(X)[:, 1] for estimator in self.estimators[10:15]]
         
         X[cat_cols] = X[cat_cols].astype("category")
+        y_preds += [estimator.predict(X[df_train_829]) for estimator in self.estimators[15:20]]
         y_preds += [estimator.predict(X[df_train_386]) for estimator in self.estimators[20:25]]
         # y_preds += [estimator.predict(X) for estimator in self.estimators[25:30]]
         
@@ -1520,8 +1521,8 @@ class VotingModel(BaseEstimator, RegressorMixin):
         X[cat_cols] = X[cat_cols].astype("str")
         y_preds += [estimator.predict_proba(X)[:, 1] for estimator in self.estimators[10:15]]
         
-        # X[cat_cols] = X[cat_cols].astype("category")
-        # y_preds += [estimator.predict(X) for estimator in self.estimators[25:30]] 
+        X[cat_cols] = X[cat_cols].astype("category")
+        y_preds += [estimator.predict(X) for estimator in self.estimators[25:30]] 
        
 
         # X[cat_cols_470] = X[cat_cols_470].astype("category")
