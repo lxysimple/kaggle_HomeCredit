@@ -1579,32 +1579,32 @@ print(valid_score)
 # print(valid_score)
 
 # ================= cleanning =======================
-# df_train['predict'] = valid_preds
-# df_train["target"] = y
+df_train['predict'] = valid_preds
+df_train["target"] = y
 
 
-# from IPython import embed
-# embed()
+from IPython import embed
+embed()
 
-# df_train['absolute_difference'] = abs(df_train['predict'] - df_train['target'])
+df_train['absolute_difference'] = abs(df_train['predict'] - df_train['target'])
 
-# index = df_train['absolute_difference'] >= 0.9
-# count_greater_than_05 = df_train[index].shape[0]
-# print(count_greater_than_05)
-# df_train[index]
+index = df_train['absolute_difference'] >= 0.9
+count_greater_than_05 = df_train[index].shape[0]
+print(count_greater_than_05)
+df_train[index]
 
-# # 0.9~0.99之间, [0.9, 0.99, 0.95, 0.92, 0.97]
-# threshold = 0.97
-# len(df_train[(df_train['absolute_difference'] >= threshold) & (df_train['target']==1)])
-# index = (df_train['absolute_difference'] >= threshold) & (df_train['target']==1)
-# index.to_csv(f'clean{threshold}.csv', header=[f'{threshold}'])
+# 0.9~0.99之间, [0.9, 0.99, 0.95, 0.92, 0.97]
+threshold = 0.97
+len(df_train[(df_train['absolute_difference'] >= threshold) & (df_train['target']==1)])
+index = (df_train['absolute_difference'] >= threshold) & (df_train['target']==1)
+index.to_csv(f'clean{threshold}.csv', header=[f'{threshold}'])
 
 
-# # 0.1~0.2之间, [0.1, 0.2, 0.15, 0.17, 0.12]
-# threshold = 0.12
-# len(df_train[(df_train['absolute_difference'] >= threshold) & (df_train['target']==0)])
-# index = (df_train['absolute_difference'] >= threshold) & (df_train['target']==0)
-# index.to_csv(f'clean{threshold}.csv', header=[f'{threshold}'])
+# 0.1~0.2之间, [0.1, 0.2, 0.15, 0.17, 0.12]
+threshold = 0.12
+len(df_train[(df_train['absolute_difference'] >= threshold) & (df_train['target']==0)])
+index = (df_train['absolute_difference'] >= threshold) & (df_train['target']==0)
+index.to_csv(f'clean{threshold}.csv', header=[f'{threshold}'])
 
 # ================= cleanning =======================
 
