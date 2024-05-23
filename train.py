@@ -1167,7 +1167,10 @@ df_train_344 = ['WEEK_NUM', 'month_decision', 'weekday_decision', 'assignmentdat
 # ==================================================
 
 df_train = df_train[df_train_338]
-
+print('len(df_train): ', len(df_train))
+index = pd.read_csv('clean0.9.csv')
+df_train = df_train[~index]
+print('len(df_train): ', len(df_train))
 # ======================================== 特征列分类 =====================================
 
 
