@@ -862,8 +862,7 @@ df_train.replace({pd.NA: np.nan}, inplace=True)
 df_train['past_now_annuity'] = np.where(df_train['annuity_780A'] == 0, 0, df_train['annuity_853A'] / df_train['annuity_780A'])
 # df_test['past_now_annuity'] = np.where(df_test['annuity_780A'] == 0, 0, df_test['annuity_853A'] / df_test['annuity_780A'])
 
-df_train['days_previous_application'] = df_train['approvaldate_319D'] * -1/365
-# df_test['days_previous_application'] = df_test['approvaldate_319D'] * -1/365
+
 
 df_train['previous_income_to_amtin'] = np.where(df_train['amtinstpaidbefduel24m_4187115A'] == 0, np.nan, df_train['byoccupationinc_3656910L'] / df_train['amtinstpaidbefduel24m_4187115A'])
 # df_test['previous_income_to_amtin'] = np.where(df_test['amtinstpaidbefduel24m_4187115A'] == 0, np.nan, df_test['byoccupationinc_3656910L'] / df_test['amtinstpaidbefduel24m_4187115A'])
@@ -871,8 +870,6 @@ df_train['previous_income_to_amtin'] = np.where(df_train['amtinstpaidbefduel24m_
 df_train['prev_income_child_rate'] = np.where(df_train['childnum_21L'] == 0, df_train['byoccupationinc_3656910L'], df_train['byoccupationinc_3656910L'] / df_train['childnum_21L'])
 # df_test['prev_income_child_rate'] = np.where(df_test['childnum_21L'] == 0, df_test['byoccupationinc_3656910L'], df_test['byoccupationinc_3656910L'] / df_test['childnum_21L'])
 
-df_train['days_creation'] = df_train['creationdate_885D'] * -1/365
-# df_test['days_creation'] = df_test['creationdate_885D'] * -1/365
 
 df_train['days_creation_minus_tax_deduction_date'] = df_train['recorddate_4527225D'] - df_train['days_creation']
 # df_test['days_creation_minus_tax_deduction_date'] = df_test['recorddate_4527225D'] - df_test['days_creation']
@@ -886,24 +883,16 @@ df_train['MONTHLY_ANNUITY_MINUS_TAX_DEDUC_AMT'] = df_train['annuity_780A'] - df_
 df_train['AMT_BUREAU_PAYMENTS_MINUS_TAX_DEDUC_AMT'] = df_train['amount_4527230A'] - df_train['pmtamount_36A']
 # df_test['AMT_BUREAU_PAYMENTS_MINUS_TAX_DEDUC_AMT'] = df_test['amount_4527230A'] - df_test['pmtamount_36A']
 
-df_train['DAYS_DEDUC_DATE'] = df_train['processingdate_168D'] * -1/365
-# df_test['DAYS_DEDUC_DATE'] = df_test['processingdate_168D'] * -1/365
 
 df_train['PMTAMOUNT_TO_BYOCCUPINC'] = np.where(df_train['pmtamount_36A'] == 0, np.nan, df_train['byoccupationinc_3656910L'] / df_train['pmtamount_36A'])
 # df_test['PMTAMOUNT_TO_BYOCCUPINC'] = np.where(df_test['pmtamount_36A'] == 0, np.nan, df_test['byoccupationinc_3656910L'] / df_test['pmtamount_36A'])
 
-
-df_train['PERSON_BIRTHDAY'] = df_train['birth_259D'] * -1/365
-# df_test['PERSON_BIRTHDAY'] = df_test['birth_259D'] * -1/365
 
 df_train['BIRTHDAY_VS_AMT_CREDIT'] = np.where(df_train['pmtamount_36A'] == 0, 0, df_train['birth_259D'] / df_train['pmtamount_36A'])
 # df_test['BIRTHDAY_VS_AMT_CREDIT'] = np.where(df_test['pmtamount_36A'] == 0, 0, df_test['birth_259D'] / df_test['pmtamount_36A'])
 
 df_train['DAYS_CREDIT_VS_DAYS_BIRTHDAY'] = np.where(df_train['days120_123L'] == 0, 0, df_train['birth_259D'] / df_train['days120_123L'])
 # df_test['DAYS_CREDIT_VS_DAYS_BIRTHDAY'] = np.where(df_test['days120_123L'] == 0, 0, df_test['birth_259D'] / df_test['days120_123L'])
-
-df_train['START_EMPLOYMENT'] = df_train['empl_employedfrom_271D'] * -1/365
-# df_test['START_EMPLOYMENT'] = df_test['empl_employedfrom_271D'] * -1/365
 
 df_train['NEW_DAYS_EMPLOYED_PERC'] = df_train['START_EMPLOYMENT'] / df_train['PERSON_BIRTHDAY']
 # df_test['NEW_DAYS_EMPLOYED_PERC'] = df_test['START_EMPLOYMENT'] / df_test['PERSON_BIRTHDAY']
@@ -971,17 +960,6 @@ df_train['CREDENTDATE_MINUS_BIRTHDAY'] = df_train['dateofcredend_289D'] - df_tra
 df_train['CREDENTDATE_VS_BIRTHDAY'] = np.where(df_train['PERSON_BIRTHDAY'] == 0, np.nan, df_train['dateofcredend_289D'] / df_train['PERSON_BIRTHDAY'])
 # df_test['CREDENTDATE_VS_BIRTHDAY'] = np.where(df_test['PERSON_BIRTHDAY'] == 0, np.nan, df_test['dateofcredend_289D'] / df_test['PERSON_BIRTHDAY'])
 
-df_train['PREVCREDENTDATE'] = df_train['dateofcredend_353D'] * -1/365
-# df_test['PREVCREDENTDATE'] = df_test['dateofcredend_353D'] * -1/365
-
-df_train['PREVCREDENTDATE_CLOSEDCONTR'] = df_train['dateofcredstart_181D'] * -1/365
-# df_test['PREVCREDENTDATE_CLOSEDCONTR'] = df_test['dateofcredstart_181D'] * -1/365
-
-df_train['PREVCREDENTDATE_OPENCONTR'] = df_train['dateofcredstart_739D'] * -1/365
-# df_test['PREVCREDENTDATE_OPENCONTR'] = df_test['dateofcredstart_739D'] * -1/365
-
-df_train['PREVCREDENTDATE_CLOSEDCONTR_REAL'] = df_train['dateofrealrepmt_138D'] * -1/365
-# df_test['PREVCREDENTDATE_CLOSEDCONTR_REAL'] = df_test['dateofrealrepmt_138D'] * -1/365
 
 df_train['CREDIT_OVERDUE'] = (df_train['PREVCREDENTDATE_CLOSEDCONTR_REAL'] > df_train['PREVCREDENTDATE_CLOSEDCONTR']).replace({False: 0, True: 1})
 # df_test['CREDIT_OVERDUE'] = (df_test['PREVCREDENTDATE_CLOSEDCONTR_REAL'] > df_test['PREVCREDENTDATE_CLOSEDCONTR']).replace({False: 0, True: 1})
@@ -1031,9 +1009,6 @@ df_train['OUTSTANDING_AMT_VS_CONTRSUM'] = np.where(df_train['contractssum_508571
 df_train['DEBIT_OUT_VS_OVERDUE_AMT'] = np.where(df_train['overdueamount_659A'] == 0, np.nan, df_train['debtoutstand_525A'] / df_train['overdueamount_659A'])
 # df_test['DEBIT_OUT_VS_OVERDUE_AMT'] = np.where(df_test['overdueamount_659A'] == 0, np.nan, df_test['debtoutstand_525A'] / df_test['overdueamount_659A'])
 
-df_train['OVERDUE_AMT_DATE'] = df_train['overdueamountmax2date_1002D'] * -1/365
-# df_test['OVERDUE_AMT_DATE'] = df_test['overdueamountmax2date_1002D'] * -1/365
-
 df_train['DEBIT_OUT_VS_OVERDUE_CNT'] = np.where(df_train['overdueamountmax_155A'] == 0, np.nan, df_train['debtoutstand_525A'] / df_train['overdueamountmax_155A'])
 # df_test['DEBIT_OUT_VS_OVERDUE_CNT'] = np.where(df_test['overdueamountmax_155A'] == 0, np.nan, df_test['debtoutstand_525A'] / df_test['overdueamountmax_155A'])
 
@@ -1076,11 +1051,6 @@ df_train['OUTSTANDING_DEBIT_VS_ACTIVE_CONT'] = np.where(df_train['amount_1115A']
 df_train['ACTIVE_CONT_VS_AMTDEPOSIT_INC'] = np.where(df_train['amount_1115A'] == 0, 0, df_train['amtdepositincoming_4809444A'] / df_train['amount_1115A'])
 # df_test['ACTIVE_CONT_VS_AMTDEPOSIT_INC'] = np.where(df_test['amount_1115A'] == 0, 0, df_test['amtdepositincoming_4809444A'] / df_test['amount_1115A'])
 
-df_train['ACTIVE_CONT_DATE'] = df_train['contractdate_551D'] * -1/365
-# df_test['ACTIVE_CONT_DATE'] = df_test['contractdate_551D'] * -1/365
-
-df_train['ACTIVE_CONT_MATURITY'] = df_train['contractmaturitydate_151D'] * -1/365
-# df_test['ACTIVE_CONT_MATURITY'] = df_test['contractmaturitydate_151D'] * -1/365
 
 df_train['EMP_VS_ACRIVE_CONT_DATE'] = (df_train['START_EMPLOYMENT'] < df_train['ACTIVE_CONT_MATURITY']).replace({False: 0, True: 1})
 # df_test['EMP_VS_ACRIVE_CONT_DATE'] = (df_test['START_EMPLOYMENT'] < df_test['ACTIVE_CONT_MATURITY']).replace({False: 0, True: 1})
@@ -1101,55 +1071,18 @@ df_train['CREDIT_LOAN_ACT_VS_CHILD_NUM'] = np.where(df_train['childnum_21L'] == 
 # df_test['CREDIT_LOAN_ACT_VS_CHILD_NUM'] = np.where(df_test['childnum_21L'] == 0, 0, df_test['credlmt_3940954A'] / df_test['childnum_21L'])
 
 df_train['CREDIT_LOAN_ACT_VS_TOTAL_DEBT'] = np.where(df_train['totaldebt_9A'] == 0, 0, df_train['credlmt_3940954A'] / df_train['totaldebt_9A'])
-# df_test['CREDIT_LOAN_ACT_VS_TOTAL_DEBT'] = np.where(df_test['totaldebt_9A'] == 0, 0, df_test['credlmt_3940954A'] / df_test['totaldebt_9A'])
 
 df_train['DEBT_PAST_DUE_VS_TOTAL_DEBT'] = np.where(df_train['totaldebt_9A'] == 0, 0, df_train['debtpastduevalue_732A'] / df_train['totaldebt_9A'])
-# df_test['DEBT_PAST_DUE_VS_TOTAL_DEBT'] = np.where(df_test['totaldebt_9A'] == 0, 0, df_test['debtpastduevalue_732A'] / df_test['totaldebt_9A'])
 
 df_train['DEBT_PAST_DUE_VS_ANNUITY'] = np.where(df_train['annuity_780A'] == 0, 0, df_train['debtpastduevalue_732A'] / df_train['annuity_780A'])
-# df_test['DEBT_PAST_DUE_VS_ANNUITY'] = np.where(df_test['annuity_780A'] == 0, 0, df_test['debtpastduevalue_732A'] / df_test['annuity_780A'])
 
 df_train['DEPOSIT_DEBT_PAST_DUE'] = np.where(df_train['debtpastduevalue_732A'] == 0, 0, df_train['amtdepositbalance_4809441A'] / df_train['debtpastduevalue_732A'])
-# df_test['DEPOSIT_DEBT_PAST_DUE'] = np.where(df_test['debtpastduevalue_732A'] == 0, 0, df_test['amtdepositbalance_4809441A'] / df_test['debtpastduevalue_732A'])
-
-df_train['LAST_UPDATE'] = df_train['lastupdate_260D'] * -1/365
-# df_test['LAST_UPDATE'] = df_test['lastupdate_260D'] * -1/365
-
-# 1. Индекс платежной дисциплины
-df_train['payment_discipline_index'] = (df_train['amtinstpaidbefduel24m_4187115A'] / 24) * 100
-# df_test['payment_discipline_index'] = (df_test['amtinstpaidbefduel24m_4187115A'] / 24) * 100
 
 # 2
 df_train['annuity_amtin'] = np.where(df_train['amtinstpaidbefduel24m_4187115A'] == 0, 0, df_train['annuity_780A'] / df_train['amtinstpaidbefduel24m_4187115A'])
-# df_test['annuity_amtin'] = np.where(df_test['amtinstpaidbefduel24m_4187115A'] == 0, 0, df_test['annuity_780A'] / df_test['amtinstpaidbefduel24m_4187115A'])
 
 # 3
 df_train['annuity_next_month_ratio'] = np.where(df_train['annuity_780A'] == 0, 0, df_train['annuitynextmonth_57A'] / df_train['annuity_780A'])
-# df_test['annuity_next_month_ratio'] = np.where(df_test['annuity_780A'] == 0, 0, df_test['annuitynextmonth_57A'] / df_test['annuity_780A'])
-
-# 4
-df_train['annuity_year'] = df_train['annuity_780A'] * 12
-# df_test['annuity_year'] = df_test['annuity_780A'] * 12
-
-# 5
-df_train['annuity_week'] = df_train['annuity_780A'] / 4
-# df_test['annuity_week'] = df_test['annuity_780A'] / 4
-
-# 6
-df_train['application_week'] = df_train['applications30d_658L'] / 4
-# df_test['application_week'] = df_test['applications30d_658L'] / 4
-
-# 7
-df_train['DAYS_BIRTH'] = df_train['birthdate_574D'] * -1 / 365
-# df_test['DAYS_BIRTH'] = df_test['birthdate_574D'] * -1 / 365
-
-# 8
-df_train['CLIENTS_DAYS_BIRTH'] = df_train['dateofbirth_337D'] * -1/365
-# df_test['CLIENTS_DAYS_BIRTH'] = df_test['dateofbirth_337D'] * -1/365
-
-# 9
-df_train['AVG_BUREAU_CONTRACTS_DAY'] = df_train['days120_123L'] / 120
-# df_test['AVG_BUREAU_CONTRACTS_DAY'] = df_test['days120_123L'] / 120
 
 list(df_train.select_dtypes(include=["int", 'float']).columns)
 df_train['feature1'] = np.where(df_train['currdebt_22A'] == 0, 0, df_train['credamount_770A']/df_train['currdebt_22A'])
