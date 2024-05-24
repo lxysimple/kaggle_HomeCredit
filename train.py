@@ -167,7 +167,7 @@ def filter_cols(df: pl.DataFrame) -> pl.DataFrame:
             # if isnull > 0.9: # kontsev
             if null_pct > 0.95:
             # if null_pct == 1: 
-                df = df.drop(col) 
+                df = df.drop(col)  
 
     for col in df.columns:
         if (col not in ["case_id", "year", "month", "week_num", "target"]) & (
@@ -267,8 +267,8 @@ class Aggregator:
         # return expr_max +expr_last+expr_mean+expr_var # 829+386 + notebookv8
 
         # return expr_max # ZhiXing Jiang
-        return expr +expr_last+expr_mean+expr_var+expr_count + expr_median+expr_max # kontsev +expr_max
-
+        # return expr +expr_last+expr_mean+expr_var+expr_count + expr_median+expr_max # kontsev +expr_max
+        return expr + expr_mean + expr_var # kontsev
     
     def date_expr(df):
         # D是借贷日期
@@ -292,7 +292,8 @@ class Aggregator:
         # return  expr_max +expr_last+expr_mean+expr_var # 829+386+notebookv8 
         # return expr_max # ZhiXing Jiang
 
-        return  expr +expr_last+expr_mean+expr_max # kontsev+expr_max
+        # return  expr +expr_last+expr_mean+expr_max # kontsev+expr_max
+        return  expr + expr_mean + expr_var  # kontsev
 
 
     
@@ -319,7 +320,7 @@ class Aggregator:
         # return expr_max +expr_last # 829+386
         # return  expr_max +expr_last # 829+386+notebookv8
         # return expr_max # ZhiXing Jiang
-        return  expr +expr_last+expr_max # kontsev+expr_max
+        return  expr # kontsev
 
     def other_expr(df):
         # T、L代表各种杂七杂八的信息
@@ -349,8 +350,8 @@ class Aggregator:
         # return  expr_max +expr_last # 829+386
         # return  expr_max +expr_last # 829+386+notebookv8
         # return expr_max # ZhiXing Jiang
-        return  expr +expr_last +expr_max # kontsev +expr_max
-
+        # return  expr +expr_last +expr_max # kontsev +expr_max
+        return  expr # kontsev +expr_max
 
     
     def count_expr(df):
@@ -377,6 +378,7 @@ class Aggregator:
         # return  expr_max +expr_last # 829+386+notebookv8
         # return expr_max # ZhiXing Jiang
         return  expr +expr_last+expr_count +expr_max # kontsev +expr_max
+        return  expr # kontsev +expr_max
     
     def get_exprs(df):
         exprs = Aggregator.num_expr(df) + \

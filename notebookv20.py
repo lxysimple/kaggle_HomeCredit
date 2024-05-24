@@ -1313,7 +1313,7 @@ for fold in range(1,6):
     fitted_models_lgb2.append(model2)
 
     clf3 = CatBoostClassifier()
-    clf3.load_model(f"/home/xyli/kaggle/kaggle_HomeCredit/dataset20/catboost_fold{fold}.cbm")
+    clf3.load_model(f"/home/xyli/kaggle/kaggle_HomeCredit/catboost_fold{fold}.cbm")
     fitted_models_cat3.append(clf3) 
     
     model3 = lgb.LGBMClassifier()
@@ -1353,8 +1353,8 @@ class VotingModel(BaseEstimator, RegressorMixin):
         X[cat_cols] = X[cat_cols].astype("str")
         y_preds += [estimator.predict_proba(X)[:, 1] for estimator in self.estimators[10:15]]
         
-        X[cat_cols] = X[cat_cols].astype("category")
-        y_preds += [estimator.predict(X) for estimator in self.estimators[25:30]] 
+        # X[cat_cols] = X[cat_cols].astype("category")
+        # y_preds += [estimator.predict(X) for estimator in self.estimators[25:30]] 
        
 
         # X[cat_cols_470] = X[cat_cols_470].astype("category")
