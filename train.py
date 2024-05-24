@@ -872,10 +872,6 @@ df_train['previous_income_to_amtin'] = np.where(df_train['amtinstpaidbefduel24m_
 df_train['prev_income_child_rate'] = np.where(df_train['childnum_21L'] == 0, df_train['byoccupationinc_3656910L'], df_train['byoccupationinc_3656910L'] / df_train['childnum_21L'])
 # df_test['prev_income_child_rate'] = np.where(df_test['childnum_21L'] == 0, df_test['byoccupationinc_3656910L'], df_test['byoccupationinc_3656910L'] / df_test['childnum_21L'])
 
-
-df_train['days_creation_minus_tax_deduction_date'] = df_train['recorddate_4527225D'] - df_train['days_creation']
-# df_test['days_creation_minus_tax_deduction_date'] = df_test['recorddate_4527225D'] - df_test['days_creation']
-
 df_train['BYOCCUPINC_DIV_TAX_DEDUC_AMT'] = np.where(df_train['amount_4527230A'] == 0, np.nan, df_train['byoccupationinc_3656910L'] / df_train['amount_4527230A'])
 # df_test['BYOCCUPINC_DIV_TAX_DEDUC_AMT'] = np.where(df_test['amount_4527230A'] == 0, np.nan, df_test['byoccupationinc_3656910L'] / df_test['amount_4527230A'])
 
