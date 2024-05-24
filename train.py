@@ -1169,12 +1169,11 @@ cols2drop = ['cacccardblochreas_147M', 'cancelreason_3545846M', 'contaddr_smempl
 df_train.drop(columns=cols2drop, inplace=True)
 # df_test.drop(columns=cols2drop, inplace=True)
 
-# df_train = pl.DataFrame(df_train)
 
-columns_to_drop = [column for column in df_train.columns if column.startswith('num_group')]
-for col in columns_to_drop:
-    if col in list(df_train.columns):
-        df_train.drop(columns=col, inplace=True)
+# columns_to_drop = [column for column in df_train.columns if column.startswith('num_group')]
+# for col in columns_to_drop:
+#     if col in list(df_train.columns):
+#         df_train.drop(columns=col, inplace=True)
 
 df_train = pl.DataFrame(df_train)
 # ===============================================================
@@ -1740,6 +1739,10 @@ with open("log.txt", "a") as f:
 
 
 # ======================================== 推理验证 =====================================
+from IPython import embed
+embed()
+
+
 fitted_models_cat1 = []
 fitted_models_lgb1 = []
 
