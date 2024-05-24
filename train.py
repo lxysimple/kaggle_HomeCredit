@@ -892,8 +892,6 @@ df_train['BIRTHDAY_VS_AMT_CREDIT'] = np.where(df_train['pmtamount_36A'] == 0, 0,
 df_train['DAYS_CREDIT_VS_DAYS_BIRTHDAY'] = np.where(df_train['days120_123L'] == 0, 0, df_train['birth_259D'] / df_train['days120_123L'])
 # df_test['DAYS_CREDIT_VS_DAYS_BIRTHDAY'] = np.where(df_test['days120_123L'] == 0, 0, df_test['birth_259D'] / df_test['days120_123L'])
 
-df_train['NEW_DAYS_EMPLOYED_PERC'] = df_train['START_EMPLOYMENT'] / df_train['PERSON_BIRTHDAY']
-# df_test['NEW_DAYS_EMPLOYED_PERC'] = df_test['START_EMPLOYMENT'] / df_test['PERSON_BIRTHDAY']
 
 df_train['DEBIT_COMIN_VS_BYOCCUPINC'] = np.where(df_train['amtdebitincoming_4809443A'] == 0, 0, df_train['byoccupationinc_3656910L'] / df_train['amtdebitincoming_4809443A'])
 # df_test['DEBIT_COMIN_VS_BYOCCUPINC'] = np.where(df_test['amtdebitincoming_4809443A'] == 0, 0, df_test['byoccupationinc_3656910L'] / df_test['amtdebitincoming_4809443A'])
@@ -949,18 +947,6 @@ df_train['PREV_CREDLIM_CURRENT_CREDLIM'] = (df_train['credlmt_935A'] > df_train[
 df_train['DEBIT_COMIN_VS_CREDLIM'] = np.where(df_train['credlmt_935A'] == 0, 0, df_train['amtdebitincoming_4809443A'] / df_train['credlmt_935A'])
 # df_test['DEBIT_COMIN_VS_CREDLIM'] = np.where(df_test['credlmt_935A'] == 0, 0, df_test['amtdebitincoming_4809443A'] / df_test['credlmt_935A'])
 
-df_train['EMPL_VS_CREDENTDATE'] = np.where(df_train['dateofcredend_289D'] == 0, np.nan, df_train['START_EMPLOYMENT'] / df_train['dateofcredend_289D'])
-# df_test['EMPL_VS_CREDENTDATE'] = np.where(df_test['dateofcredend_289D'] == 0, np.nan, df_test['START_EMPLOYMENT'] / df_test['dateofcredend_289D'])
-
-df_train['CREDENTDATE_MINUS_BIRTHDAY'] = df_train['dateofcredend_289D'] - df_train['PERSON_BIRTHDAY']
-# df_test['CREDENTDATE_MINUS_BIRTHDAY'] = df_test['dateofcredend_289D'] - df_test['PERSON_BIRTHDAY']
-
-df_train['CREDENTDATE_VS_BIRTHDAY'] = np.where(df_train['PERSON_BIRTHDAY'] == 0, np.nan, df_train['dateofcredend_289D'] / df_train['PERSON_BIRTHDAY'])
-# df_test['CREDENTDATE_VS_BIRTHDAY'] = np.where(df_test['PERSON_BIRTHDAY'] == 0, np.nan, df_test['dateofcredend_289D'] / df_test['PERSON_BIRTHDAY'])
-
-
-df_train['CREDIT_OVERDUE'] = (df_train['PREVCREDENTDATE_CLOSEDCONTR_REAL'] > df_train['PREVCREDENTDATE_CLOSEDCONTR']).replace({False: 0, True: 1})
-# df_test['CREDIT_OVERDUE'] = (df_test['PREVCREDENTDATE_CLOSEDCONTR_REAL'] > df_test['PREVCREDENTDATE_CLOSEDCONTR']).replace({False: 0, True: 1})
 
 df_train['OUTSTANDING_DEBIT'] = (df_train['debtoutstand_525A'] > df_train['amtdepositbalance_4809441A']).replace({False: 0, True: 1})
 # df_test['OUTSTANDING_DEBIT'] = (df_test['debtoutstand_525A'] > df_test['amtdepositbalance_4809441A']).replace({False: 0, True: 1})
@@ -997,9 +983,6 @@ df_train['ANNUITY_VS_DEBT_OVERDUE'] = np.where(df_train['debtoverdue_47A'] == 0,
 
 df_train['ANNUITY_VS_DEBT_OVERSTAND'] = np.where(df_train['debtoutstand_525A'] == 0, np.nan, df_train['annuity_780A'] / df_train['debtoutstand_525A'])
 # df_test['ANNUITY_VS_DEBT_OVERSTAND'] = np.where(df_test['debtoutstand_525A'] == 0, np.nan, df_test['annuity_780A'] / df_test['debtoutstand_525A'])
-
-df_train['EMP_BIGGER_CREDITDATE'] = (df_train['START_EMPLOYMENT'] < df_train['PREVCREDENTDATE']).replace({False: 0, True: 1})
-# df_test['EMP_BIGGER_CREDITDATE'] = (df_test['START_EMPLOYMENT'] < df_test['PREVCREDENTDATE']).replace({False: 0, True: 1})
 
 df_train['OUTSTANDING_AMT_VS_CONTRSUM'] = np.where(df_train['contractssum_5085716L'] == 0, np.nan, df_train['outstandingamount_362A'] / df_train['contractssum_5085716L'])
 # df_test['OUTSTANDING_AMT_VS_CONTRSUM'] = np.where(df_test['contractssum_5085716L'] == 0, np.nan, df_test['outstandingamount_362A'] / df_test['contractssum_5085716L'])
@@ -1049,9 +1032,6 @@ df_train['OUTSTANDING_DEBIT_VS_ACTIVE_CONT'] = np.where(df_train['amount_1115A']
 df_train['ACTIVE_CONT_VS_AMTDEPOSIT_INC'] = np.where(df_train['amount_1115A'] == 0, 0, df_train['amtdepositincoming_4809444A'] / df_train['amount_1115A'])
 # df_test['ACTIVE_CONT_VS_AMTDEPOSIT_INC'] = np.where(df_test['amount_1115A'] == 0, 0, df_test['amtdepositincoming_4809444A'] / df_test['amount_1115A'])
 
-
-df_train['EMP_VS_ACRIVE_CONT_DATE'] = (df_train['START_EMPLOYMENT'] < df_train['ACTIVE_CONT_MATURITY']).replace({False: 0, True: 1})
-# df_test['EMP_VS_ACRIVE_CONT_DATE'] = (df_test['START_EMPLOYMENT'] < df_test['ACTIVE_CONT_MATURITY']).replace({False: 0, True: 1})
 
 df_train['TAXAM_CREDLIM_ACTIVE'] = (df_train['pmtamount_36A'] > df_train['credlmt_1052A']).replace({False: 0, True: 1})
 # df_test['TAXAM_CREDLIM_ACTIVE'] = (df_test['pmtamount_36A'] > df_test['credlmt_1052A']).replace({False: 0, True: 1})
