@@ -843,8 +843,8 @@ print('读取数据完毕！')
 
 df_train = feature_eng(**data_store).collect() # 别忘记829+386要多加载2个文件
 
-from IPython import embed
-embed()
+# from IPython import embed
+# embed()
 
 # ===============================================================
 """ 为了适应以下特征工程代码，我将pl.df转换为pd.df，然后进行特征工程,这一块要等10min左右 """
@@ -854,8 +854,8 @@ df_train = pd.DataFrame(df_train)
 df_train.columns = df_train_columns 
 df_train = df_train.set_index('case_id')
 
-# from IPython import embed
-# embed()
+from IPython import embed
+embed()
 
 # 将DataFrame中的所有NaN替换为numpy中的NaN值
 # 这将会将DataFrame中所有的NA值（包括NaN和None）替换为numpy中的NaN值
