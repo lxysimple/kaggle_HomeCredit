@@ -843,6 +843,8 @@ print('读取数据完毕！')
 
 df_train = feature_eng(**data_store).collect() # 别忘记829+386要多加载2个文件
 
+from IPython import embed
+embed()
 
 # ===============================================================
 """ 为了适应以下特征工程代码，我将pl.df转换为pd.df，然后进行特征工程,这一块要等10min左右 """
