@@ -267,8 +267,8 @@ class Aggregator:
         # return expr_max +expr_last+expr_mean+expr_var # 829+386 + notebookv8
 
         # return expr_max # ZhiXing Jiang
-        return expr +expr_last+expr_mean+expr_var+expr_count + expr_median # kontsev
-    
+        return expr +expr_last+expr_mean+expr_var+expr_count + expr_median+expr_max # kontsev +expr_max
+
     
     def date_expr(df):
         # D是借贷日期
@@ -292,7 +292,7 @@ class Aggregator:
         # return  expr_max +expr_last+expr_mean+expr_var # 829+386+notebookv8 
         # return expr_max # ZhiXing Jiang
 
-        return  expr +expr_last+expr_mean # kontsev
+        return  expr +expr_last+expr_mean+expr_max # kontsev+expr_max
 
 
     
@@ -319,7 +319,7 @@ class Aggregator:
         # return expr_max +expr_last # 829+386
         # return  expr_max +expr_last # 829+386+notebookv8
         # return expr_max # ZhiXing Jiang
-        return  expr +expr_last # kontsev
+        return  expr +expr_last+expr_max # kontsev+expr_max
 
     def other_expr(df):
         # T、L代表各种杂七杂八的信息
@@ -349,7 +349,7 @@ class Aggregator:
         # return  expr_max +expr_last # 829+386
         # return  expr_max +expr_last # 829+386+notebookv8
         # return expr_max # ZhiXing Jiang
-        return  expr +expr_last # kontsev
+        return  expr +expr_last +expr_max # kontsev +expr_max
 
 
     
@@ -376,7 +376,7 @@ class Aggregator:
         # return  expr_max +expr_last # 829+386
         # return  expr_max +expr_last # 829+386+notebookv8
         # return expr_max # ZhiXing Jiang
-        return  expr +expr_last+expr_count # kontsev
+        return  expr +expr_last+expr_count +expr_max # kontsev +expr_max
     
     def get_exprs(df):
         exprs = Aggregator.num_expr(df) + \
@@ -1797,8 +1797,8 @@ class VotingModel(BaseEstimator, RegressorMixin):
         X[cat_cols] = X[cat_cols].astype("category")
         # y_preds += [estimator.predict(X[df_train_829]) for estimator in self.estimators[15:20]]
         y_preds += [estimator.predict(X[df_train_386]) for estimator in self.estimators[20:25]]
-        y_preds += [estimator.predict(X) for estimator in self.estimators[25:30]]
-        
+        y_preds += [estimator.predict(X[df_train_714]) for estimator in self.estimators[25:30]]
+         
         return np.mean(y_preds, axis=0)
     
     def predict_proba_scan(self, X):
