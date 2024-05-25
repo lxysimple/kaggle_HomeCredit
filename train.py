@@ -1459,6 +1459,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     # ===============================
     X_train = df_train
     y_train = y
+    fold = 6
     # ===============================
 
 
