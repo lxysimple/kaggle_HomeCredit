@@ -111,9 +111,9 @@ class Pipeline:
         for col in df.columns:
             if (col not in ["target", "case_id", "WEEK_NUM"]) & (df[col].dtype == pl.String):
                 freq = df[col].n_unique()
-                # if (freq == 1) | (freq > 200):
+                if (freq == 1) | (freq > 200):
                 # if (freq == 1) | (freq > 1000):
-                if freq > 200:
+                # if freq > 200:
 #                 if (freq == 1) | (freq > 400):
 #                 if (freq == 1):
                     df = df.drop(col)
@@ -563,14 +563,14 @@ class SchemaGen:
         """
 
         # ===============================================================
-        # """ 为了兼容0.592的模型，我自己加上去的 """
-        # df_base = (
-        #     df_base
-        #     .with_columns(
-        #         month_decision = pl.col("date_decision").dt.month(),
-        #         weekday_decision = pl.col("date_decision").dt.weekday(),
-        #     )
-        # )
+        """ 为了兼容0.592的模型，我自己加上去的 """
+        df_base = (
+            df_base
+            .with_columns(
+                month_decision = pl.col("date_decision").dt.month(),
+                weekday_decision = pl.col("date_decision").dt.weekday(),
+            )
+        )
         # ===============================================================
 
         for i, df in enumerate(depth_0 + depth_1 + depth_2):
