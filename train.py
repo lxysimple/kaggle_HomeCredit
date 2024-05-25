@@ -289,11 +289,11 @@ class Aggregator:
 
         # return expr_max + expr_mean + expr_var # notebookv8
         # return  expr_max +expr_last+expr_mean # 829+386
-        # return  expr_max +expr_last+expr_mean+expr_var # 829+386+notebookv8 
+        return  expr_max +expr_last+expr_mean+expr_var # 829+386+notebookv8 
         # return expr_max # ZhiXing Jiang
 
         # return  expr +expr_last+expr_mean+expr_max # kontsev+expr_max
-        return  expr + expr_mean + expr_var  # kontsev
+        # return  expr + expr_mean + expr_var  # kontsev
 
 
     
@@ -318,9 +318,9 @@ class Aggregator:
 
         # return expr_max # notebookv8
         # return expr_max +expr_last # 829+386
-        # return  expr_max +expr_last # 829+386+notebookv8
+        return  expr_max +expr_last # 829+386+notebookv8
         # return expr_max # ZhiXing Jiang
-        return  expr # kontsev
+        # return  expr # kontsev
 
     def other_expr(df):
         # T、L代表各种杂七杂八的信息
@@ -348,10 +348,10 @@ class Aggregator:
 
         # return expr_max # notebookv8
         # return  expr_max +expr_last # 829+386
-        # return  expr_max +expr_last # 829+386+notebookv8
+        return  expr_max +expr_last # 829+386+notebookv8
         # return expr_max # ZhiXing Jiang
         # return  expr +expr_last +expr_max # kontsev +expr_max
-        return  expr # kontsev +expr_max
+        # return  expr # kontsev +expr_max
 
     
     def count_expr(df):
@@ -375,10 +375,10 @@ class Aggregator:
 
         # return expr_max # notebookv8
         # return  expr_max +expr_last # 829+386
-        # return  expr_max +expr_last # 829+386+notebookv8
+        return  expr_max +expr_last # 829+386+notebookv8
         # return expr_max # ZhiXing Jiang
         # return  expr +expr_last+expr_count +expr_max # kontsev +expr_max
-        return  expr # kontsev +expr_max
+        # return  expr # kontsev +expr_max
     
     def get_exprs(df):
         exprs = Aggregator.num_expr(df) + \
