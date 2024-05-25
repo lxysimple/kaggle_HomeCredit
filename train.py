@@ -1151,9 +1151,9 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     X_valid, y_valid = df_train.iloc[idx_valid], y.iloc[idx_valid]    
     
     # ===============================
-    """ 去掉坏数据 """
-    X_train = X_train[~index]
-    y_train = y_train[~index]
+    # """ 去掉坏数据 """
+    # X_train = X_train[~index]
+    # y_train = y_train[~index]
     # ===============================
 
     # ===============================
