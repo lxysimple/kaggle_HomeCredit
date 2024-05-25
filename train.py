@@ -102,8 +102,8 @@ class Pipeline:
             if col not in ["target", "case_id", "WEEK_NUM"]:
                 isnull = df[col].is_null().mean()
                 # if isnull > 0.7:
-                # if isnull > 0.95: # ZhiXing Jiang
-                if isnull > 0.9: # kontsev
+                if isnull > 0.95: # ZhiXing Jiang
+                # if isnull > 0.9: # kontsev
                 # if isnull == 1:
 #                 if isnull > 0.99:
                     df = df.drop(col)
@@ -111,8 +111,8 @@ class Pipeline:
         for col in df.columns:
             if (col not in ["target", "case_id", "WEEK_NUM"]) & (df[col].dtype == pl.String):
                 freq = df[col].n_unique()
-                # if (freq == 1) | (freq > 200):
-                if (freq == 1) | (freq > 1000):
+                if (freq == 1) | (freq > 200):
+                # if (freq == 1) | (freq > 1000):
                 # if freq > 200:
 #                 if (freq == 1) | (freq > 400):
 #                 if (freq == 1):
@@ -925,13 +925,13 @@ cv = StratifiedGroupKFold(n_splits=5, shuffle=False)
 
 
 # 找到除cat_cols列外的所有列
-non_cat_cols = df_train.columns.difference(cat_cols) 
-print('cat_cols:')
-print('len(cat_cols):',len(cat_cols))
-print(cat_cols)
-print('df_train.columns')
-print("len(list(df_train.columns)): ", len(list(df_train.columns)))
-print(list(df_train.columns))
+# non_cat_cols = df_train.columns.difference(cat_cols) 
+# print('cat_cols:')
+# print('len(cat_cols):',len(cat_cols))
+# print(cat_cols)
+# print('df_train.columns')
+# print("len(list(df_train.columns)): ", len(list(df_train.columns)))
+# print(list(df_train.columns))
 
 
 # ======================================== 特征列分类 =====================================
