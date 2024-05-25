@@ -102,9 +102,9 @@ class Pipeline:
             if col not in ["target", "case_id", "WEEK_NUM"]:
                 isnull = df[col].is_null().mean()
                 # if isnull > 0.7:
-                if isnull > 0.95: # ZhiXing Jiang
+                # if isnull > 0.95: # ZhiXing Jiang
                 # if isnull > 0.9: # kontsev
-                # if isnull == 1:
+                if isnull == 1:
 #                 if isnull > 0.99:
                     df = df.drop(col)
         
@@ -563,14 +563,14 @@ class SchemaGen:
         """
 
         # ===============================================================
-        """ 为了兼容0.592的模型，我自己加上去的 """
-        df_base = (
-            df_base
-            .with_columns(
-                month_decision = pl.col("date_decision").dt.month(),
-                weekday_decision = pl.col("date_decision").dt.weekday(),
-            )
-        )
+        # """ 为了兼容0.592的模型，我自己加上去的 """
+        # df_base = (
+        #     df_base
+        #     .with_columns(
+        #         month_decision = pl.col("date_decision").dt.month(),
+        #         weekday_decision = pl.col("date_decision").dt.weekday(),
+        #     )
+        # )
         # ===============================================================
 
         for i, df in enumerate(depth_0 + depth_1 + depth_2):
