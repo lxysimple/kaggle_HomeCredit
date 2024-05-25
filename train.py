@@ -1106,8 +1106,8 @@ from IPython import embed
 embed()
 
 # ===============================
-cat_cols = cat_cols_366
-df_train = df_train[df_train_366]
+cat_cols = cat_cols_349
+df_train = df_train[df_train_349]
 # ===============================
 
 fitted_models_cat = []
