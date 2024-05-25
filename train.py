@@ -263,12 +263,12 @@ class Aggregator:
         # return expr_max + expr_min + expr_last + expr_first + expr_mean
 
         # return expr_max + expr_mean + expr_var # notebookv8 
-        # return expr_max +expr_last+expr_mean # 829+386 
+        return expr_max +expr_last+expr_mean # 829+386 
         # return expr_max +expr_last+expr_mean+expr_var # 829+386 + notebookv8
 
         # return expr_max # ZhiXing Jiang
         # return expr +expr_last+expr_mean+expr_var+expr_count + expr_median+expr_max # kontsev +expr_max
-        return expr + expr_mean + expr_var # kontsev
+        # return expr + expr_mean + expr_var # kontsev
     
     def date_expr(df):
         # D是借贷日期
