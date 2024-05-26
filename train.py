@@ -1172,9 +1172,9 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
             "learning_rate": 0.05,
             "l1_regularization": 0.1,
             "l2_regularization": 10,
-            "max_depth": 30, # 20
+            "max_depth": 20, # 30, # 20
             "metric": "auc",
-            "n_estimators": 3000, # 2000
+            "n_estimators": 2000, # 3000, # 2000
             "num_leaves": 64,
             "objective": "binary",
             "random_state": 42,
@@ -1190,9 +1190,9 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
             "learning_rate": 0.03,
             "l1_regularization": 0.1,
             "l2_regularization": 10,
-            "max_depth": 20, # 16
+            "max_depth": 16, # 20, # 16
             "metric": "auc",
-            "n_estimators": 3000, # 2000
+            "n_estimators": 2000, # 3000, # 2000
             "num_leaves": 54, 
             "objective": "binary",
             "random_state": 42,
