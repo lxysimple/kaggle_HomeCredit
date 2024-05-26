@@ -1238,16 +1238,16 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     model.booster_.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/lgbm_fold{fold}.txt')
     model2 = model
 
-    # # 二次优化
-    # params['learning_rate'] = 0.01
-    # model2 = lgb.LGBMClassifier(**params)
-    # model2.fit(
-    #     X_train, y_train,
-    #     eval_set = [(X_valid, y_valid)],
-    #     callbacks = [lgb.log_evaluation(200), lgb.early_stopping(200)],
-    #     init_model = f"/home/xyli/kaggle/kaggle_HomeCredit/lgbm_fold{fold}.txt",
-    # )
-    # model2.booster_.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/lgbm_fold{fold}.txt')
+    # 二次优化
+    params['learning_rate'] = 0.01
+    model2 = lgb.LGBMClassifier(**params)
+    model2.fit(
+        X_train, y_train,
+        eval_set = [(X_valid, y_valid)],
+        callbacks = [lgb.log_evaluation(200), lgb.early_stopping(200)],
+        init_model = f"/home/xyli/kaggle/kaggle_HomeCredit/lgbm_fold{fold}.txt",
+    )
+    model2.booster_.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/lgbm_fold{fold}.txt')
     
 
     fitted_models_lgb.append(model2)
