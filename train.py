@@ -1094,8 +1094,8 @@ df_train_453 = ['month', 'week_num', 'assignmentdate_238D', 'assignmentdate_4527
 # embed()
 
 # ===============================
-cat_cols = cat_cols_349
-df_train = df_train[df_train_349]
+cat_cols = cat_cols_453
+df_train = df_train[df_train_453]
 # ===============================
 
 fitted_models_cat = []
@@ -1246,7 +1246,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     #     # "sample_weight":'balanced',
     # }
 
-    一次训练
+    # 一次训练
     model = lgb.LGBMClassifier(**params)
     model.fit(
         X_train, y_train,
