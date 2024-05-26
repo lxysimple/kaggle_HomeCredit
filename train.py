@@ -1156,42 +1156,42 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     X_train[cat_cols] = X_train[cat_cols].astype("category")
     X_valid[cat_cols] = X_valid[cat_cols].astype("category")
 
-    # if fold%2 ==1:
-    #     params = {
-    #         "boosting_type": "gbdt",
-    #         "colsample_bynode": 0.8,
-    #         "colsample_bytree": 0.8,
-    #         "device": device,
-    #         "extra_trees": True,
-    #         "learning_rate": 0.05,
-    #         "l1_regularization": 0.1,
-    #         "l2_regularization": 10,
-    #         "max_depth": 30, # 20
-    #         "metric": "auc",
-    #         "n_estimators": 3000, # 2000
-    #         "num_leaves": 64,
-    #         "objective": "binary",
-    #         "random_state": 42,
-    #         "verbose": -1,
-    #     }
-    # else:
-    #     params = {
-    #         "boosting_type": "gbdt",
-    #         "colsample_bynode": 0.8,
-    #         "colsample_bytree": 0.8,
-    #         "device": device,
-    #         "extra_trees": True,
-    #         "learning_rate": 0.03,
-    #         "l1_regularization": 0.1,
-    #         "l2_regularization": 10,
-    #         "max_depth": 16,
-    #         "metric": "auc",
-    #         "n_estimators": 3000, # 2000
-    #         "num_leaves": 54, # 72
-    #         "objective": "binary",
-    #         "random_state": 42,
-    #         "verbose": -1,
-    #     }
+    if fold%2 ==1:
+        params = {
+            "boosting_type": "gbdt",
+            "colsample_bynode": 0.8,
+            "colsample_bytree": 0.8,
+            "device": device,
+            "extra_trees": True,
+            "learning_rate": 0.05,
+            "l1_regularization": 0.1,
+            "l2_regularization": 10,
+            "max_depth": 30, # 20
+            "metric": "auc",
+            "n_estimators": 3000, # 2000
+            "num_leaves": 64,
+            "objective": "binary",
+            "random_state": 42,
+            "verbose": -1,
+        }
+    else:
+        params = {
+            "boosting_type": "gbdt",
+            "colsample_bynode": 0.8,
+            "colsample_bytree": 0.8,
+            "device": device,
+            "extra_trees": True,
+            "learning_rate": 0.03,
+            "l1_regularization": 0.1,
+            "l2_regularization": 10,
+            "max_depth": 20, # 16
+            "metric": "auc",
+            "n_estimators": 3000, # 2000
+            "num_leaves": 54, 
+            "objective": "binary",
+            "random_state": 42,
+            "verbose": -1,
+        }
 
 
 
@@ -1222,40 +1222,40 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     #     # "sample_weight":'balanced',
     # }
 
-    params = { 
-        "boosting_type": "gbdt",
-        "objective": "binary",
-        "metric": "auc",
-        "max_depth": 10,  
-        "learning_rate": 0.05,
-        "n_estimators": 2000,  
-        # 则每棵树在构建时会随机选择 80% 的特征进行训练，剩下的 20% 特征将不参与训练，从而增加模型的泛化能力和稳定性
-        "colsample_bytree": 0.8, 
-        "colsample_bynode": 0.8, # 控制每个节点的特征采样比例
-        "verbose": -1,
-        "random_state": 42,
-        "reg_alpha": 0.1,
-        "reg_lambda": 10,
-        "extra_trees":True,
-        'num_leaves':64,
-        "device": 'gpu', # gpu
-        # "device": 'cpu', # gpu
-        'gpu_use_dp' : True, # 转化float为64精度
+    # params = { 
+    #     "boosting_type": "gbdt",
+    #     "objective": "binary",
+    #     "metric": "auc",
+    #     "max_depth": 10,  
+    #     "learning_rate": 0.05,
+    #     "n_estimators": 2000,  
+    #     # 则每棵树在构建时会随机选择 80% 的特征进行训练，剩下的 20% 特征将不参与训练，从而增加模型的泛化能力和稳定性
+    #     "colsample_bytree": 0.8, 
+    #     "colsample_bynode": 0.8, # 控制每个节点的特征采样比例
+    #     "verbose": -1,
+    #     "random_state": 42,
+    #     "reg_alpha": 0.1,
+    #     "reg_lambda": 10,
+    #     "extra_trees":True,
+    #     'num_leaves':64,
+    #     "device": 'gpu', # gpu
+    #     # "device": 'cpu', # gpu
+    #     'gpu_use_dp' : True, # 转化float为64精度
 
-        # # 平衡类别之间的权重  损失函数不会因为样本不平衡而被“推向”样本量偏少的类别中
-        # "sample_weight":'balanced',
-    }
+    #     # # 平衡类别之间的权重  损失函数不会因为样本不平衡而被“推向”样本量偏少的类别中
+    #     # "sample_weight":'balanced',
+    # }
 
-    # 一次训练
-    # model = lgb.LGBMClassifier(**params)
-    # model.fit(
-    #     X_train, y_train,
-    #     eval_set = [(X_valid, y_valid)],
-    #     callbacks = [lgb.log_evaluation(200), lgb.early_stopping(100)],
-    #     # init_model = f"/home/xyli/kaggle/kaggle_HomeCredit/dataset/lgbm_fold{fold}.txt",
-    # )
-    # model.booster_.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/lgbm_fold{fold}.txt')
-    # model2 = model
+    一次训练
+    model = lgb.LGBMClassifier(**params)
+    model.fit(
+        X_train, y_train,
+        eval_set = [(X_valid, y_valid)],
+        callbacks = [lgb.log_evaluation(200), lgb.early_stopping(100)],
+        # init_model = f"/home/xyli/kaggle/kaggle_HomeCredit/dataset/lgbm_fold{fold}.txt",
+    )
+    model.booster_.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/lgbm_fold{fold}.txt')
+    model2 = model
 
     # 二次优化
     params['learning_rate'] = 0.01
@@ -1281,23 +1281,23 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
 
 
     # ======================================
-#     X_train[cat_cols] = X_train[cat_cols].astype("str")
-#     X_valid[cat_cols] = X_valid[cat_cols].astype("str")
-#     train_pool = Pool(X_train, y_train,cat_features=cat_cols)
-#     val_pool = Pool(X_valid, y_valid,cat_features=cat_cols)
+    X_train[cat_cols] = X_train[cat_cols].astype("str")
+    X_valid[cat_cols] = X_valid[cat_cols].astype("str")
+    train_pool = Pool(X_train, y_train,cat_features=cat_cols)
+    val_pool = Pool(X_valid, y_valid,cat_features=cat_cols)
 
-#     # clf = CatBoostClassifier( 
-#     #     best_model_min_trees = 1200, # 1000
-#     #     boosting_type = "Plain",
-#     #     eval_metric = "AUC",
-#     #     iterations = 6000,
-#     #     learning_rate = 0.05,
-#     #     l2_leaf_reg = 10,
-#     #     max_leaves = 64,
-#     #     random_seed = 42,
-#     #     task_type = "GPU",
-#     #     use_best_model = True
-#     # ) 
+    clf = CatBoostClassifier( 
+        best_model_min_trees = 1000, 
+        boosting_type = "Plain",
+        eval_metric = "AUC",
+        iterations = 12000,
+        learning_rate = 0.05,
+        l2_leaf_reg = 10,
+        max_leaves = 64,
+        random_seed = 42,
+        task_type = "GPU",
+        use_best_model = True
+    ) 
 
 #     clf = CatBoostClassifier(
 #         eval_metric='AUC',
@@ -1307,21 +1307,21 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
 # #         early_stopping_rounds = 500,
 #     )
 
-#     clf.fit(
-#         train_pool, 
-#         eval_set=val_pool,
-#         verbose=300,
-# #         # 保证调试的时候不需要重新训练
-# #         save_snapshot = True, 
-# #         snapshot_file = '/kaggle/working/catboost.cbsnapshot',
-# #         snapshot_interval = 10
-#     )
-#     clf.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/catboost_fold{fold}.cbm')
-#     fitted_models_cat.append(clf)
-#     y_pred_valid = clf.predict_proba(X_valid)[:,1]
-#     auc_score = roc_auc_score(y_valid, y_pred_valid)
-#     print('auc_score: ', auc_score)
-#     cv_scores_cat.append(auc_score)
+    clf.fit(
+        train_pool, 
+        eval_set=val_pool,
+        verbose=300,
+#         # 保证调试的时候不需要重新训练
+#         save_snapshot = True, 
+#         snapshot_file = '/kaggle/working/catboost.cbsnapshot',
+#         snapshot_interval = 10
+    )
+    clf.save_model(f'/home/xyli/kaggle/kaggle_HomeCredit/catboost_fold{fold}.cbm')
+    fitted_models_cat.append(clf)
+    y_pred_valid = clf.predict_proba(X_valid)[:,1]
+    auc_score = roc_auc_score(y_valid, y_pred_valid)
+    print('auc_score: ', auc_score)
+    cv_scores_cat.append(auc_score)
     
 #     # =================================
 
