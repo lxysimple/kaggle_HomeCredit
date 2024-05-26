@@ -425,7 +425,8 @@ def feature_eng(df_base, depth_0, depth_1, depth_2):
     # for i, df in enumerate(depth_0):
     #     df_base = df_base.join(df, how="left", on="case_id", suffix=f"_{i}")
 
-    df_base = df_base.pipe(Pipeline.handle_dates)
+    # df_base = df_base.pipe(Pipeline.handle_dates) # 这个是829+386处理date的方式
+    df_base = df_base.pipe(handle_dates) # 这个是notebookv20的处理date方式
     return df_base
 
 def to_pandas(df_data, cat_cols=None):
@@ -765,7 +766,7 @@ print('读取数据完毕！')
 # print("df_train_scan shape:\t", df_train_scan.shape)
 # df_train = df_train_scan
 
-df_train = feature_eng(**data_store).collect() # 别忘记829+386要多加载2个文件
+df_train = feature_eng(**data_store).collect() # 别忘记829+386要多加载2个文件、更换不同处理date的方式
 df_train = df_train.pipe(Pipeline.filter_cols)
 df_train, cat_cols = to_pandas(df_train)    
 df_train = Utility.reduce_memory_usage(df_train, "df_train")
