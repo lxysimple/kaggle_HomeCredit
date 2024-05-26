@@ -1214,7 +1214,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     #     'num_leaves':64,
     #     # "device": 'gpu', # gpu
     #     "device": 'cpu', # gpu
-    #     'gpu_use_dp' : True, # 转化float为64精度
+    #     'gpu_use_dp' : True, # 转化float为64精度，不加这个训练飞快！
 
 
     #     # 'max_bin':275,  
