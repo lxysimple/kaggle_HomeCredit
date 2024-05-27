@@ -1269,25 +1269,25 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     train_pool = Pool(X_train, y_train,cat_features=cat_cols)
     val_pool = Pool(X_valid, y_valid,cat_features=cat_cols)
 
-    clf = CatBoostClassifier( 
-        best_model_min_trees = 1000, 
-        boosting_type = "Plain",
-        eval_metric = "AUC",
-        iterations = 6000,
-        learning_rate = 0.05,
-        l2_leaf_reg = 10,
-        max_leaves = 64,
-        random_seed = 42,
-        task_type = "GPU",
-        use_best_model = True
-    ) 
+    # clf = CatBoostClassifier( 
+    #     best_model_min_trees = 1000, 
+    #     boosting_type = "Plain",
+    #     eval_metric = "AUC",
+    #     iterations = 6000,
+    #     learning_rate = 0.05,
+    #     l2_leaf_reg = 10,
+    #     max_leaves = 64,
+    #     random_seed = 42,
+    #     task_type = "GPU",
+    #     use_best_model = True
+    # ) 
 
-    # clf = CatBoostClassifier(
-    #     eval_metric='AUC',
-    #     task_type='GPU',
-    #     learning_rate=0.03, # 0.03
-    #     iterations=6000, # n_est
-    # )
+    clf = CatBoostClassifier(
+        eval_metric='AUC',
+        task_type='GPU',
+        learning_rate=0.03, # 0.03
+        iterations=6000, # n_est
+    )
 
     clf.fit(
         train_pool, 
