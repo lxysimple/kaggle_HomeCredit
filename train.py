@@ -1100,8 +1100,8 @@ df_train_453 = ['month', 'week_num', 'assignmentdate_238D', 'assignmentdate_4527
 # embed()
 
 # ===============================
-cat_cols = cat_cols_453
-df_train = df_train[df_train_453]
+# cat_cols = cat_cols_453
+# df_train = df_train[df_train_453]
 # ===============================
 
 fitted_models_cat = []
@@ -1145,16 +1145,16 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
 
     # ===============================
     """ 全数据训练 """
-    # cat_cols = cat_cols_386
-    # X_train = df_train[df_train_386]
-    # y_train = y
-    # if fold==1:
-    #     fold = 6
-    # else:
-    #     break
+    cat_cols = cat_cols_386
+    X_train = df_train[df_train_386]
+    y_train = y
+    if fold==1:
+        fold = 6
+    else:
+        break
 
-    # X_valid = X_train
-    # y_valid = y
+    X_valid = X_train
+    y_valid = y
     # ===============================
 
  
@@ -1162,68 +1162,68 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     X_train[cat_cols] = X_train[cat_cols].astype("category")
     X_valid[cat_cols] = X_valid[cat_cols].astype("category")
 
-    if fold%2 ==1:
-        params = {
-            "boosting_type": "gbdt",
-            "colsample_bynode": 0.8,
-            "colsample_bytree": 0.8,
-            "device": device,
-            "extra_trees": True,
-            "learning_rate": 0.05,
-            "l1_regularization": 0.1,
-            "l2_regularization": 10,
-            "max_depth": 20, # 30, # 20
-            "metric": "auc",
-            "n_estimators": 2000, # 3000, # 2000
-            "num_leaves": 64,
-            "objective": "binary",
-            "random_state": 42,
-            "verbose": -1,
-        }
-    else:
-        params = {
-            "boosting_type": "gbdt",
-            "colsample_bynode": 0.8,
-            "colsample_bytree": 0.8,
-            "device": device,
-            "extra_trees": True,
-            "learning_rate": 0.03,
-            "l1_regularization": 0.1,
-            "l2_regularization": 10,
-            "max_depth": 16, # 20, # 16
-            "metric": "auc",
-            "n_estimators": 2000, # 3000, # 2000
-            "num_leaves": 54, 
-            "objective": "binary",
-            "random_state": 42,
-            "verbose": -1,
-        }
+    # if fold%2 ==1:
+    #     params = {
+    #         "boosting_type": "gbdt",
+    #         "colsample_bynode": 0.8,
+    #         "colsample_bytree": 0.8,
+    #         "device": device,
+    #         "extra_trees": True,
+    #         "learning_rate": 0.05,
+    #         "l1_regularization": 0.1,
+    #         "l2_regularization": 10,
+    #         "max_depth": 20, # 30, # 20
+    #         "metric": "auc",
+    #         "n_estimators": 2000, # 3000, # 2000
+    #         "num_leaves": 64,
+    #         "objective": "binary",
+    #         "random_state": 42,
+    #         "verbose": -1,
+    #     }
+    # else:
+    #     params = {
+    #         "boosting_type": "gbdt",
+    #         "colsample_bynode": 0.8,
+    #         "colsample_bytree": 0.8,
+    #         "device": device,
+    #         "extra_trees": True,
+    #         "learning_rate": 0.03,
+    #         "l1_regularization": 0.1,
+    #         "l2_regularization": 10,
+    #         "max_depth": 16, # 20, # 16
+    #         "metric": "auc",
+    #         "n_estimators": 2000, # 3000, # 2000
+    #         "num_leaves": 54, 
+    #         "objective": "binary",
+    #         "random_state": 42,
+    #         "verbose": -1,
+    #     }
 
 
 
-    # params = { 
-    #     "boosting_type": "gbdt",
-    #     "objective": "binary",
-    #     "metric": "auc",
-    #     "max_depth": 10,  
-    #     "learning_rate": 0.05,
-    #     "n_estimators": 2000,  
-    #     # 则每棵树在构建时会随机选择 80% 的特征进行训练，剩下的 20% 特征将不参与训练，从而增加模型的泛化能力和稳定性
-    #     "colsample_bytree": 0.8, 
-    #     "colsample_bynode": 0.8, # 控制每个节点的特征采样比例
-    #     "verbose": -1,
-    #     "random_state": 42,
-    #     "reg_alpha": 0.1,
-    #     "reg_lambda": 10,
-    #     "extra_trees":True,
-    #     'num_leaves':64,
-    #     "device": 'gpu', # gpu
+    params = { 
+        "boosting_type": "gbdt",
+        "objective": "binary",
+        "metric": "auc",
+        "max_depth": 10,  
+        "learning_rate": 0.05,
+        "n_estimators": 2000,  
+        # 则每棵树在构建时会随机选择 80% 的特征进行训练，剩下的 20% 特征将不参与训练，从而增加模型的泛化能力和稳定性
+        "colsample_bytree": 0.8, 
+        "colsample_bynode": 0.8, # 控制每个节点的特征采样比例
+        "verbose": -1,
+        "random_state": 42,
+        "reg_alpha": 0.1,
+        "reg_lambda": 10,
+        "extra_trees":True,
+        'num_leaves':64,
+        "device": 'gpu', # gpu
 
-    #     # "device": 'cpu', # gpu
-    #     'gpu_use_dp' : True, # 转化float为64精度，不加这个训练飞快！但会降低一点精度！！！
-    #     # # 平衡类别之间的权重  损失函数不会因为样本不平衡而被“推向”样本量偏少的类别中
-    #     # "sample_weight":'balanced',
-    # }
+        # "device": 'cpu', # gpu
+        'gpu_use_dp' : True, # 转化float为64精度，不加这个训练飞快！但会降低一点精度！！！
+        # # 平衡类别之间的权重  损失函数不会因为样本不平衡而被“推向”样本量偏少的类别中
+        # "sample_weight":'balanced',
+    }
 
   
 
