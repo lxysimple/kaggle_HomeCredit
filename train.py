@@ -1219,7 +1219,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
         "reg_lambda": 10,
         "extra_trees":True,
         'num_leaves':64,
-        "device": 'gpu', # gpu
+        "device": 'cpu', # gpu
 
         # "device": 'cpu', # gpu
         # 'gpu_use_dp' : True, # 转化float为64精度，不加这个训练飞快！但会降低一点精度！！！
