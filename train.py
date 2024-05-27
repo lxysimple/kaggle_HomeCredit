@@ -1183,7 +1183,7 @@ for idx_train, idx_valid in cv.split(df_train, y, groups=weeks): # 5折，循环
     # #         "verbose": -1,
     # #     }
     # # else:
-    # #     params = {
+    # #     params = { # 减少一点复杂度
     # #         "boosting_type": "gbdt",
     # #         "colsample_bynode": 0.8,
     # #         "colsample_bytree": 0.8,
